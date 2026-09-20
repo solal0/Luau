@@ -1,15 +1,23 @@
 DD/MM/2026 - 0.1: Created the library as well as Begin and Menu.
+
 DD/MM/2026 - 0.2: Added Button, Toggle and Label. Added element tracking.
+
 DD/MM/2026 - 0.3: Added Separator, Slider, ??? and Column. Renamed Menu to Window
+
 DD/MM/2026 - 0.4: Updated Separator. Renamed ??? to Holder. Added Notify and syntaxes check.
+
 DD/MM/2026 - 0.5: Added ColorPicker, Dropdown and Theme.
+
 DD/MM/2026 - 0.6: Fixed ZIndex fight between ColorPicker and Dropdown.
 
 DD/MM/2026 - 1.0: Initial release of the library and creation of the documentation.
+
 DD/MM/2026 - 1.1: Added close callback to window.
 
 11/06/2026 - 1.2: Added KeyPicker. Made all api's set function run the given callback.
+
 11/06/2026 - 1.3: Added maxScale setting and a api to Dropdown as well as changing it's syntax and layout. Index was removed from every dropdown interaction.
+
 11/06/2026 - 1.4: Added TextBox. Made Sliders label a textbox.
 
 15/06/2026 - 1.5:

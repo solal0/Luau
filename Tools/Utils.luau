@@ -1,4 +1,24 @@
+if cloneref and type(cloneref) == "function" then
+	return cloneref
+else
+	cloneref = function(...) return ... end
+end
+
 local utils = {}
+
+utils.services = setmetatable({}, { -- thanks IY
+	__index = function(self, name)
+		local success, cache = pcall(function()
+			return cloneref(game:GetService(name))
+		end)
+		if success then
+			rawset(self, name, cache)
+			return cache
+		else
+			error("Invalid Service: " .. tostring(name))
+		end
+	end
+})
 
 -- base64 made by xDeltaXen: https://www.roblox.com/users/1298068279
 -- dev forum post: https://devforum.roblox.com/t/base64-encoding-and-decoding-in-lua/1719860
@@ -38,7 +58,7 @@ end
 
 utils.base64toImage = function(base64)
 	local data
-	
+
 	if utils.icons[base64] then
 		data = utils.decode(utils.icons[base64])
 	else
@@ -103,6 +123,47 @@ utils.base64toImage = function(base64)
 
 	return Content.fromObject(image),image,width,height
 	--     for Image instances,       raw    X      Y
+end
+
+utils.randomString = function()
+	local length = math.random(10,20)
+	local array = {}
+	for i = 1, length do
+		array[i] = string.char(math.random(32, 126))
+	end
+	return table.concat(array)
+end
+
+-- taken from Infinite Yield
+local CoreGui = utils.services.CoreGui or utils.services.Players.LocalPlayer.PlayerGui
+utils.getSafeGui = function()
+	local parent = nil
+	if gethui then
+		local Main = Instance.new("ScreenGui")
+		Main.Name = utils.randomString()
+		Main.ResetOnSpawn = false
+		Main.DisplayOrder = 1.7976931348623157e308
+		Main.Parent = gethui()
+		parent = Main
+	elseif (not is_sirhurt_closure) and syn_protect_gui then
+		local Main = Instance.new("ScreenGui")
+		Main.Name = utils.randomString()
+		Main.ResetOnSpawn = false
+		Main.DisplayOrder = 1.7976931348623157e308
+		syn_protect_gui(Main)
+		Main.Parent = CoreGui
+		parent = Main
+	elseif CoreGui:FindFirstChild("RobloxGui") then
+		parent = CoreGui.RobloxGui
+	else
+		local Main = Instance.new("ScreenGui")
+		Main.Name = utils.randomString()
+		Main.ResetOnSpawn = false
+		Main.DisplayOrder = 1.7976931348623157e308
+		Main.Parent = CoreGui
+		parent = Main
+	end
+	return parent
 end
 
 return utils

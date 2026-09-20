@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skira's Library - Changelog</title>
+
+<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.34.1/min/vs/loader.js"></script>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', system-ui, 'Helvetica Neue', sans-serif;
+}
+
+body {
+    background: #121212;
+    height: 100vh;
+    display: flex;
+    color: #e8e8e8;
+}
+
+.sidebar {
+    width: 280px;
+    background: #1a1a1a;
+    border-right: 1px solid #2c2c2e;
+    padding: 2rem 1rem 2rem 1.5rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-title {
+    font-weight: 500;
+    font-size: 1.2rem;
+    margin-bottom: 2.5rem;
+    letter-spacing: 0.3px;
+    color: #c0c0c0;
+    padding-left: 0.3rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sidebar-icon {
+    width: 28px;
+    height: 28px;
+    background-image: url('/env/SkiraLibrary/Data/icon.png');
+    background-size: cover;
+}
+
+.sidebar-title span {
+    color: rgb(0,170,255);
+    font-weight: 600;
+}
+
+.chapter-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.chapter-item {
+    padding: 0.65rem 1rem 0.65rem 1.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #b0b0b0;
+    transition: 0.2s;
+    border-left: 3px solid transparent;
+}
+
+.chapter-item:hover {
+    background: #2a2a2c;
+    color: #f0f0f0;
+    padding-left: 2rem;
+}
+
+.chapter-item.active {
+    background: #1e2a30;
+    border-left: 3px solid rgb(0,170,255);
+    color: white;
+}
+
+.main-content {
+    margin-left: 280px;
+    flex: 1;
+    padding: 2.5rem 3rem;
+    height: 100vh;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    background: #121212;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+}
+
+.doc-card {
+    background: #1a1a1a;
+    border-radius: 20px;
+    padding: 2.5rem 2.5rem;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+    border: 1px solid #2e2e32;
+    transition: opacity 0.4s cubic-bezier(0.23, 1, 0.32, 1), transform 0.3s ease;
+    width: 100%;
+}
+.doc-card.fade-in {
+    animation: slideFade 0.45s ease forwards;
+}
+@keyframes slideFade {
+    0% { opacity: 0.4; transform: translateY(8px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.version-title {
+    font-size: 2.2rem;
+    font-weight: 500;
+    color: #e0e0e0;
+    margin-bottom: 1.5rem;
+}
+
+/* CHANGE ITEM BLOCK */
+.change-block {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #2a2a2c;
+}
+
+.change-title {
+    font-size: 1.3rem;
+    color: #f0f0f0;
+    margin-bottom: 0.3rem;
+}
+
+.change-label {
+    font-size: 0.75rem;
+    color: #7a7a7a;
+    margin-bottom: 0.8rem;
+}
+
+.change-text {
+    color: #b8b8b8;
+    line-height: 1.6;
+}
+
+/* MONACO SAME STYLE */
+.monaco-wrap {
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid #2e2e32;
+    background: #1e1e1e;
+    margin-top: 1rem;
+    height: 220px;
+}
+
+/* SCROLLBARS (unchanged feel) */
+.main-content::-webkit-scrollbar { width: 8px; }
+.main-content::-webkit-scrollbar-thumb { background: #3a3a3e; border-radius: 12px; }
+.sidebar::-webkit-scrollbar { width: 5px; }
+.sidebar::-webkit-scrollbar-thumb { background: #2e2e32; border-radius: 12px; }
+
+</style>
+</head>
+
+<body>
+
+<nav class="sidebar">
+    <div class="sidebar-title">
+        <span class="sidebar-icon"></span>
+        <span>Changelog</span>
+    </div>
+    <ul class="chapter-list" id="list"></ul>
+</nav>
+
+<main class="main-content" id="main"></main>
+
+<script>
+/*
+-- Changelog --
+DD/MM/2026 - 0.1: Created the library as well as Begin and Menu.
+DD/MM/2026 - 0.2: Added Button, Toggle and Label. Added element tracking.
+DD/MM/2026 - 0.3: Added Separator, Slider, ??? and Column. Renamed Menu to Window
+DD/MM/2026 - 0.4: Updated Separator. Renamed ??? to Holder. Added Notify and syntaxes check.
+DD/MM/2026 - 0.5: Added ColorPicker, Dropdown and Theme.
+DD/MM/2026 - 0.6: Fixed ZIndex fight between ColorPicker and Dropdown.
+
+DD/MM/2026 - 1.0: Initial release of the library and creation of the documentation.
+DD/MM/2026 - 1.1: Added close callback to window.
+
+11/06/2026 - 1.2: Added KeyPicker. Made all api's set function run the given callback.
+11/06/2026 - 1.3: Added maxScale setting and a api to Dropdown as well as changing it's syntax and layout. Index was removed from every dropdown interaction.
+11/06/2026 - 1.4: Added TextBox. Made Sliders label a textbox.
+
+15/06/2026 - 1.5:
+- made the set functions run the callback, added api to dropdown, added max height to dropdown
+- added wrapped setting to label, added textbox, working on making sliders label textboxes
+- fixed Windows being resizable when collapsed, changed notifications movement direction, added hover label setting on all options (setting is called hoverLabel), added information icon to the default config
+- made slider callback a value instead of a string, made slider value show a decimal only if being one
+
+- 1.6: ...
+*/
+
+const DATA = [
+{
+    version: "v0.1",
+    changes: [
+        {
+            label: "DD/MM/2026",
+            text: "Created the library as well as Begin and Menu.",
+        }
+    ]
+},
+{
+    version: "v0.2",
+    changes: [
+        {
+            label: "DD/MM/2026",
+            text: "Added Button, Toggle and Label. Added element tracking.",
+        }
+    ]
+},
+{
+    version: "v0.3",
+    changes: [
+        {
+            label: "DD/MM/2026",
+            text: "Added Separator, Slider, ??? and Column. Renamed Menu to Window",
+        }
+    ]
+},
+{
+    version: "v0.4",
+    changes: [
+        {
+            label: "DD/MM/2026",
+            text: "Updated Separator. Renamed ??? to Holder. Added Notify and syntaxes check.",
+        }
+    ]
+},
+{
+    version: "v0.5",
+    changes: [
+        {
+            label: "DD/MM/2026",
+            text: "Added ColorPicker, Dropdown and Theme.",
+        }
+    ]
+},
+{
+    version: "v0.6",
+    changes: [
+        {
+            label: "DD/MM/2026",
+            text: "Fixed ZIndex fight between ColorPicker and Dropdown.",
+        }
+    ]
+},
+{
+    version: "v1.0",
+    changes: [
+        {
+            label: "DD/MM/2026",
+            text: "Initial release of the library and creation of the documentation.",
+        }
+    ]
+},
+{
+    version: "v1.1",
+    changes: [
+        {
+            label: "DD/MM/2026",
+            text: "Added close callback to window.",
+        }
+    ]
+},
+{
+    version: "v1.2",
+    changes: [
+        {
+            label: "11/06/2026",
+            text: "Added KeyPicker. Made all api's set function run the given callback.",
+        }
+    ]
+},
+{
+    version: "v1.3",
+    changes: [
+        {
+            label: "11/06/2026",
+            text: "Added maxScale setting and a api to Dropdown as well as changing it's syntax and layout. Index was removed from every dropdown interaction.",
+        }
+    ]
+},
+{
+    version: "v1.4",
+    changes: [
+        {
+            label: "11/06/2026",
+            text: "Added TextBox. Made Sliders label a textbox.",
+        }
+    ]
+},
+{
+    version: "v1.5",
+    changes: [
+        {
+            label: "15/06/2026",
+            text: "Made the set functions run the callback, added api to dropdown, added max height to dropdown"
+        },
+        {
+            text: "Added wrapped setting to label, added textbox, working on making sliders label textboxes",
+        },
+        {
+            title: "",
+            label: "",
+            text: "Fixed Windows being resizable when collapsed, changed notifications movement direction, added hover label setting on all options (setting is called hoverLabel), added information icon to the default config",
+            code: `-- hoverLabel setting used on a Label
+            
+local lib = require(game.ReplicatedStorage.SkiraLib) -- don't mind this, it's there so the script makes sense.
+local container = lib:Begin(game.Players.LocalPlayer.PlayerGui,"",{enabled = true}) -- don't mind this, it's there so the script makes sense.
+local _, content = lib:Window(container,"Demo",UDim2.new(0,250,0,250),{position = UDim2.new(1,-260,0,92),}) -- don't mind this, it's there so the script makes sense.
+
+local label = lib:Label(content,"This is a label",{hoverLabel = "Example hover text"}) -- if hoverLabel is used, when the mouse hover on top of the element, a box will show up, show the text while following the mouse.`
+        },
+        {
+            text: "Made slider callback a value instead of a string, made slider value show a decimal only if being one",
+        },
+    ]
+},
+/*
+{
+    version: "codebox",
+    changes: [
+        {
+            title: "Window System Rewrite",
+            label: "UI",
+            text: "Dragging, resizing and layering system fully rebuilt.",
+            code: `window:EnableDrag(true)\nwindow:Resize(true)`
+        },
+        {
+            title: "Toggle Fix",
+            label: "Fix",
+            text: "Fixed desync between UI state and internal toggle value."
+        }
+    ]
+},
+*/
+];
+
+const list = document.getElementById("list");
+const main = document.getElementById("main");
+
+function build() {
+    DATA.forEach(v => {
+        const li = document.createElement("li");
+        li.className = "chapter-item";
+        li.textContent = v.version;
+        li.onclick = () => document.getElementById(v.version).scrollIntoView({behavior:"smooth"});
+        list.appendChild(li);
+
+        const section = document.createElement("div");
+        section.className = "doc-card";
+        section.id = v.version;
+
+        const title = document.createElement("div");
+        title.className = "version-title";
+        title.textContent = v.version;
+
+        section.appendChild(title);
+
+        v.changes.forEach(c => {
+            const block = document.createElement("div");
+            block.className = "change-block";
+
+            const t = document.createElement("div");
+            t.className = "change-title";
+            t.textContent = c.title;
+
+            const l = document.createElement("div");
+            l.className = "change-label";
+            l.textContent = c.label || "";
+
+            const d = document.createElement("div");
+            d.className = "change-text";
+            d.textContent = c.text || "";
+
+            block.appendChild(t);
+            block.appendChild(l);
+            block.appendChild(d);
+
+            if (c.code) {
+                const editor = document.createElement("div");
+                editor.className = "monaco-wrap";
+                const id = c.title.replace(/\s/g,"") + "-code";
+                editor.id = id;
+                block.appendChild(editor);
+            }
+
+            section.appendChild(block);
+        });
+
+        main.appendChild(section);
+    });
+
+    document.querySelector(".chapter-item").classList.add("active");
+}
+
+require.config({paths:{vs:"https://cdn.jsdelivr.net/npm/monaco-editor@0.34.1/min/vs"}});
+
+require(["vs/editor/editor.main"], function() {
+    build();
+
+    DATA.forEach(v => {
+        v.changes.forEach(c => {
+            if (!c.code) return;
+
+            monaco.editor.create(
+                document.getElementById(c.title.replace(/\s/g,"") + "-code"),
+                {
+                    value: c.code,
+                    language: "lua",
+                    theme: "vs-dark",
+                    readOnly: true,
+                    minimap: { enabled:false },
+                    fontSize: 14,
+                    automaticLayout: true
+                }
+            );
+        });
+    });
+});
+</script>
+
+</body>
+</html>

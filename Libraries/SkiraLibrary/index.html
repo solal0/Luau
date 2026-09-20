@@ -713,10 +713,54 @@ local keypicker = lib:TextBox(
 	"This is text", -- default written text
 	{
 		text = "Placeholder", -- text shown when textbox is empty.
+        label = "This is a textbox", -- text shown next to the textbox, outside of it.
+        clear = false, -- wether or not the text should clear when textbox is focused.
 		nospace = false, -- by default there's spaces added to the text so it's not too close to edges.
 		textscaled = false, -- wether or not the text should fit.
 		alignmentX = Enum.TextXAlignment.Left, -- text direction on the X axis.
 		alignmentY = Enum.TextYAlignment.Center, -- text direction on the Y axis.
+		requireEnter = false, -- if true, callback with only fire if user pressed enter to exit the textbox
+		callback = function(v) -- code written in the textbox
+			print("Text:",v)
+		end,
+	}
+)`,
+                media: []
+            },
+            {
+                id: 'codebox',
+                title: 'lib:CodeBox()',
+                description: "A textbox is a box the user can write text in.",
+                exampleCode: `local lib = require(game.ReplicatedStorage.SkiraLib) -- don't mind this, it's there so the script makes sense.
+local container = lib:Begin(game.Players.LocalPlayer.PlayerGui,"",{enabled = true}) -- don't mind this, it's there so the script makes sense.
+local _, content = lib:Window(container,"Demo",UDim2.new(0,250,0,250),{position = UDim2.new(1,-260,0,92),}) -- don't mind this, it's there so the script makes sense.
+
+local codebox = lib:CodeBox(
+	content, -- the parent
+[[
+-- Example code
+
+local function greet(name: string): string
+    return \`Hello, {name}!\`
+end
+
+print(greet("World"))
+
+local numbers = {1, 2, 3, 4, 5}
+local sum = 0
+for _, n in numbers do
+    sum += n
+end
+print("Sum:", sum)
+]], -- the codebox content, can be a single line as well as multiline
+	{
+		style = "studio", -- codebox style, can also be set to: "default", "vscode_light", "vscode_dark", "github_light", "github_dark", "github_dimmed", "monaco_dark", "monaco_light", "visual_studio_dark", "visual_studio_light", "jetbrains_dark", "jetbrains_light", "darcula", "one_dark", "one_light", "dracula", "monokai", "nord", "gruvbox_dark", "gruvbox_light", "solarized_dark", "solarized_light", "tokyo_night", "tokyo_night_light", "catppuccin_mocha", "catppuccin_latte", "ayu_dark", "ayu_light", "ayu_mirage", "night_owl", "palenight", "rose_pine", "kanagawa", "synthwave", "cyberpunk", "hacker", "terminal_green", "terminal_amber", "obsidian", "midnight", "ocean", "forest", "coffee", "slate", "graphite", "amethyst", "emerald", "ruby", "azure", "crimson", "high_contrast_dark", "high_contrast_light", "paper", "blueprint", "neon", "minimal_dark", "minimal_light" and "terminal"
+		display = false, -- if true, the code won't be editable
+		spacing = 60, -- amount of pixels at the bottom of the script. If set to 0 the code won't be able to expand lower
+		requireEnter = false, -- if true, callback with only fire if user pressed enter to exit the codebox
+		callback = function(v) -- code written in the codebox
+			print("Code:",v)
+		end,
 	}
 )`,
                 media: []
@@ -789,7 +833,7 @@ api.setTab() -- set the selected tab as the tab who owns the api`,
                         });
                         
                         document.getElementById('btnChangelog')?.addEventListener('click', () => {
-                            window.open('Changelog', '_blank');
+                            window.open('Changelog/changelog.md', '_blank');
                         });
 
                         document.getElementById('btnLicense')?.addEventListener('click', () => {

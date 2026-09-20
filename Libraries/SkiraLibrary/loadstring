@@ -1,0 +1,1 @@
+loadstring(game:HttpGet("https://skira.me/lua/SkiraLibrary/source"))()

@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skira's Library - Home</title>
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.34.1/min/vs/loader.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, 'Helvetica Neue', sans-serif;
+        }
+        body {
+            background: #121212;
+            height: 100vh;
+            display: flex;
+            color: #e8e8e8;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: #1a1a1a;
+            border-right: 1px solid #2c2c2e;
+            padding: 2rem 1rem 2rem 1.5rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar-title {
+            font-weight: 500;
+            font-size: 1.2rem;
+            margin-bottom: 2.5rem;
+            letter-spacing: 0.3px;
+            color: #c0c0c0;
+            padding-left: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sidebar-icon {
+            width: 28px;
+            height: 28px;
+            background-image: url('Data/icon.png');
+            background-size: cover;
+        }
+        .sidebar-title span {
+            color: rgb(0,170,255);
+            font-weight: 600;
+        }
+
+        .chapter-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+            position: relative;
+            padding-left: 0;
+        }
+        .chapter-item {
+            padding: 0.65rem 1rem 0.65rem 1.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 400;
+            transition: background 0.2s ease, color 0.25s ease, padding-left 0.2s;
+            color: #b0b0b0;
+            background: transparent;
+            position: relative;
+            border-left: 3px solid transparent;
+            z-index: 2;
+        }
+        .chapter-item:hover {
+            background: #2a2a2c;
+            color: #f0f0f0;
+            padding-left: 2rem;
+        }
+        .chapter-item.active {
+            color: white;
+            background: #1e2a30;
+            border-left: 3px solid rgb(0,170,255);
+            box-shadow: inset 0 0 12px rgba(0,170,255,0.08);
+            padding-left: 1.8rem;
+        }
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 2.5rem 3rem;
+            height: 100vh;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            background: #121212;
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+        }
+        .section-container {
+            display: flex;
+            flex-direction: column;
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .doc-card {
+            background: #1a1a1a;
+            border-radius: 20px;
+            padding: 2.5rem 2.5rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+            border: 1px solid #2e2e32;
+            transition: opacity 0.4s cubic-bezier(0.23, 1, 0.32, 1), transform 0.3s ease;
+            width: 100%;
+        }
+        .doc-card.fade-in {
+            animation: slideFade 0.45s ease forwards;
+        }
+        @keyframes slideFade {
+            0% { opacity: 0.4; transform: translateY(8px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .home-section {
+            text-align: center;
+            padding: 3.5rem 2.5rem;
+        }
+        .home-title {
+            font-size: 3.6rem;
+            font-weight: 600;
+            letter-spacing: -1px;
+            color: #f0f0f0;
+            margin-bottom: 1.2rem;
+        }
+        .home-sub {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: #b8b8b8;
+            max-width: 720px;
+            margin: 0 auto 2.5rem auto;
+            font-weight: 350;
+        }
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            justify-content: center;
+        }
+        .btn-accent {
+            background: transparent;
+            border: 1.5px solid rgb(0,170,255);
+            color: rgb(0,170,255);
+            padding: 0.9rem 2.2rem;
+            border-radius: 60px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.25s ease;
+            background: rgba(0,170,255,0.04);
+            letter-spacing: 0.3px;
+        }
+        .btn-accent:hover {
+            background: rgb(0,170,255);
+            color: #0e0e0e;
+            box-shadow: 0 0 20px rgba(0,170,255,0.3);
+            border-color: rgb(0,170,255);
+            transform: scale(1.02);
+        }
+        .fn-name {
+            font-size: 2.2rem;
+            font-weight: 500;
+            color: #e0e0e0;
+            margin-bottom: 0.4rem;
+            letter-spacing: -0.3px;
+        }
+        .fn-desc {
+            font-size: 1.15rem;
+            line-height: 1.6;
+            color: #b9b9b9;
+            margin-bottom: 2rem;
+            font-weight: 350;
+        }
+        .monaco-wrap {
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid #2e2e32;
+            background: #1e1e1e;
+            margin-bottom: 2rem;
+            height: 240px;
+            width: 100%;
+        }
+        .media-slider {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding: 0.3rem 0.2rem 0.6rem 0.2rem;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: thin;
+            scrollbar-color: #3a3a3e #121212;
+            width: 100%;
+        }
+        .media-slider::-webkit-scrollbar {
+            height: 6px;
+        }
+        .media-slider::-webkit-scrollbar-track {
+            background: #121212;
+        }
+        .media-slider::-webkit-scrollbar-thumb {
+            background: #3a3a3e;
+            border-radius: 12px;
+        }
+        .media-item {
+            flex: 0 0 auto;
+            min-width: 200px;
+            height: 140px;
+            background: #19191b;
+            border-radius: 14px;
+            border: 1.5px dashed #3a3a40;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #5a5a60;
+            font-size: 0.9rem;
+            scroll-snap-align: start;
+            overflow: hidden;
+            transition: border 0.2s;
+        }
+        .media-item img, .media-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .media-placeholder-text {
+            opacity: 0.6;
+            padding: 0.5rem;
+        }
+        .media-slider:has(.media-item:nth-last-child(-n+2):first-child) .media-item {
+            flex: 1 1 0;
+            min-width: 0;
+        }
+        .media-slider:has(.media-item:only-child) .media-item {
+            flex: 1 1 100%;
+        }
+        .monaco-wrap .monaco-editor .margin, 
+        .monaco-wrap .monaco-editor .monaco-editor-background {
+            font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace !important;
+        }
+        .main-content::-webkit-scrollbar { width: 8px; }
+        .main-content::-webkit-scrollbar-track { background: #121212; }
+        .main-content::-webkit-scrollbar-thumb { background: #3a3a3e; border-radius: 12px; }
+        .sidebar::-webkit-scrollbar { width: 5px; }
+        .sidebar::-webkit-scrollbar-thumb { background: #2e2e32; border-radius: 12px; }
+
+        @media (max-width: 750px) {
+            .sidebar { width: 220px; padding: 1.5rem 0.8rem; }
+            .main-content { margin-left: 220px; padding: 1.8rem 1.5rem; }
+            .doc-card { padding: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="sidebar" id="sidebarNav">
+        <div class="sidebar-title">
+            <span class="sidebar-icon"></span>
+            <span>Home</span>
+        </div>
+        <div style="position:relative; flex:1;">
+            <ul class="chapter-list" id="chapterList">
+
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-content" id="mainContent"></main>
+
+    <script>
+        const DOCS_DATA = [
+            {
+                id: 'home',
+                title: 'Home',
+                type: 'home',
+                description: "Skira's Library is a UI Library made for roblox developement and personnal use.<br><br>Writing a new script from scratch everytime I needed a menu was a pain in the ass.<br>So I decided to make this library and share it.<br><br>If you have a new feature idea or just wanna talk,<br>you can find ways to contact me at https://skira.me/contact"
+            },
+            {
+                id: 'first',
+                title: 'First Steps',
+                description: "Before you start scrolling through functions, I need to specify something.<br><br>lib:Begin() is the beginning of every script who uses this library and the config it has at the end is global, if an existing or new variable is written in it, every element will have access to it. While elements can also change or add variables but they will only affect themself.<br><br>For example, if in lib:Begin() I write {text1 = Color3.fromRGB(255,0,0)} at the end, any element who uses text1 as a color will be red. But if I write the same config on a lib:Button(), only elements who use the color text1 within that button will be affected.<br><br>And obviously, if in lib:Begin() you set {text1 = Color3.fromRGB(255,0,0)} and in lib:Button() you set {text1 = Color3.fromRGB(0,255,0)} the final color will be green.<br><br>Also, for all functions, everything outside the optional table (the one at the end of function calls) is required. Everything inside is obviously optional.",
+                exampleCode: `local lib = require(game.ReplicatedStorage.SkiraLib)
+
+local container, config = lib:Begin(game.Players.LocalPlayer.PlayerGui,"random",true,
+	{text1 = Color3.fromRGB(255,0,0)}
+) -- text1 is red globally
+
+local window, content, api = lib:Container(container,"This is a title",UDim2.new(0,250,0,495),
+	{text1 = Color3.fromRGB(255,255,255)}
+) -- text1 is white only to this element
+
+local label = lib:Label(content,
+	"Hello world!"
+) -- text1 is still red
+
+print(config.text1) -- text1 is red`
+            },
+            {
+                id: 'config',
+                title: 'Config',
+                description: "The config is the base of the library, it contains all icons, colors, fonts, etc...<br><br>The best way to interact with it is by using lib:Begin(), see how below.",
+                exampleCode: `local config = {
+	-- icons
+	plus = "rbxassetid://108806973668987",
+	star = "rbxassetid://6031068428",
+	cube = "rbxassetid://114729923396522",
+	close = "rbxassetid://73985264213635",
+	palette = "rbxassetid://14008802626",
+	minimize = "rbxassetid://114685507187940",
+	notification = "rbxassetid://134341920489415",
+
+	-- sizes
+	textS = 13,
+	titleS = 16,
+
+	-- colors
+	background = Color3.fromRGB(36,36,36),
+	separator = Color3.fromRGB(55,55,55),
+	header = Color3.fromRGB(24,24,24),
+	dropdown = Color3.fromRGB(30,30,30),
+	scalebar = Color3.fromRGB(255,255,255),
+	textbox = Color3.fromRGB(30,30,30),
+	colorpickerbox = Color3.fromRGB(30,30,30),
+
+	button0 = Color3.fromRGB(255,255,255),
+	button0hover = Color3.fromRGB(255,255,255),
+	button0active = Color3.fromRGB(255,255,255),
+
+	button1 = Color3.fromRGB(30,30,30),
+	button1hover = Color3.fromRGB(45,45,45),
+	button1active = Color3.fromRGB(120,120,120),
+
+	checkbox = Color3.fromRGB(30,30,30),
+	checkboxfill = Color3.fromRGB(0,170,255),
+
+	slider = Color3.fromRGB(30,30,30),
+	sliderfill = Color3.fromRGB(0,170,255),
+	slidercursor = Color3.fromRGB(255,255,255),
+
+	text0 = Color3.fromRGB(255,255,255),
+	text1 = Color3.fromRGB(220,220,220),
+	text2 = Color3.fromRGB(120,120,120),
+
+	outline0 = Color3.fromRGB(18,18,18),
+	outline1 = Color3.fromRGB(60,60,60),
+
+	icon = Color3.fromRGB(255,255,255),
+	obj = Color3.fromRGB(0,170,255),
+
+	-- fonts
+	font0 = Enum.Font.Gotham,
+	font1 = Enum.Font.GothamMedium,
+	font2 = Enum.Font.GothamBold,
+	font3 = Enum.Font.GothamBlack,
+}`,
+                media: [
+                    'https://via.placeholder.com/400x250/1e1e1e/00aaff?text=window+preview',
+                    'https://via.placeholder.com/400x250/2a2a2e/ffffff?text=resize+demo'
+                ]
+            },
+            {
+                id: 'begin',
+                title: 'lib:Begin()',
+                description: "lib:Begin() creates a ScreenGui to contain the rest of the UI. You cannot create without it.<br><br>when called, it will return the created ScreenGui and the global config wether it was updated or not.",
+                exampleCode: `local lib = require(game.ReplicatedStorage.SkiraLib) -- don't mind this, it's there so the script makes sense.
+
+--            .---| The screengui windows can later use as their parent.
+--            |               .---| The global config with all variables including the new and/or modified ones set at the end of the function.
+local container, config = lib:Begin(
+	game.Players.LocalPlayer.PlayerGui, -- The parent of the new ScreenGui.
+	"random", -- The name of the ScreenGui. It can be set to anything except "random" who will set it to a random string of 10 to 200 characters.
+	{ -- This is the global config, if you add a variable or write an existing one, it will be added or changed for every other element.
+		noguiset = true, -- The IgnoreGuiInSet property. If set to true, the gui can float behind Roblox's Guis.
+		resetonspawn = false, -- If true, when the player dies the ui won't come back.
+		enabled = true, -- You can set this to false and at the end of your script set the gui to true. This way elements are not shown spawning one by one.
+		text1 = Color3.fromRGB(255,0,0) -- In this case, every element who uses text1 as a color will become red. If left empty or not specified it will use the default one.
+	} -- you can also replace the table with lib:Theme(color,brightness), if given a color, lib:Theme will return the default config with a neon style based of the given color.
+)`,
+                media: [
+                    'https://via.placeholder.com/400x250/22222a/00aaff?text=button+state',
+                    'https://via.placeholder.com/400x250/1e2a1e/88ff88?text=hover+effect'
+                ]
+            },
+            {
+                id: 'window',
+                title: 'lib:Window()',
+                description: "The window is what will contain all the elements, it's the most important element.<br><br>lib:Window() returns an api and two frames, one that can contain elements and the other that holds everything.<br>See the example below for more informations.",
+                exampleCode: `local lib = require(game.ReplicatedStorage.SkiraLib) -- don't mind this, it's there so the script makes sense.
+local container, config = lib:Begin(game.Players.LocalPlayer.PlayerGui,"",{enabled = true}) -- don't mind this, it's there so the script makes sense.
+
+--             .---| The frame who contains everything
+--             |            .---| The frame who receives and holds elements
+--             |            |          .---| The api provides functions to interact with the element, seek below for explanations.
+local window, content, api = lib:Window(
+	container, -- parent of the window, can be any ScreenGui but come on, lib:Begin() exist for a reason, no ?
+	"This is a title", -- text in the header of the window.
+	UDim2.new(0,250,0,250), -- window size
+	{
+		iconcolor = Color3.fromRGB(255,255,255), -- color of the icon, only usefull if there's one.
+		position = UDim2.new(1,-260,0,92), -- position of the window
+		symbol = config.star, -- can be set to a "rbxassetid://" image id or simply not specified to not have an icon.
+		collapsable = true, -- wether the +/- button exist or not
+		closable = true, -- wether the close button exist or not
+		Xresizable = true, -- if the X axis of the window can be resized (resize bar is on the left side of the window)
+		Yresizable = true, -- if the Y axis of the window can be resized (resize bar is at the bottom of the window)
+		draggable = true, -- if the window can be dragged with a left click on the header.
+		noheader = false, -- if a header should be created or not.
+		noscroll = false, -- if the content frame should be a frame (true) or a scrolling frame (false). Default is false.
+		nobar = false, -- if the scroll bar should show up when content frame is hovered. If noscroll is true, this settings won't matter.
+		callback = function(v) -- function that will execute when menu is closing and has been closed.
+			print(v) -- will print closing if button was just pressed and closed when the menu has destroyed.
+		end
+
+	} -- these are all the custom settings, they can be set in any order and if not specified there will be a fallback in the library.
+)
+
+api:Set("This is a new title") -- changes the window header title to "This is a new title" or whatever string it's set to.
+api:Collapse(true) -- open or closes the window, true closes it and false opens it. collapsable variable state won't affect the function.`,
+                media: [
+                    'https://via.placeholder.com/400x250/2a1e1e/ff8888?text=key+press'
+                ]
+            },
+            {
+                id: 'button',
+                title: 'lib:Button()',
+                description: 'A button you can click on, i mean, everyone knows what a button is, right ?',
+                exampleCode: `local lib = require(game.ReplicatedStorage.SkiraLib) -- don't mind this, it's there so the script makes sense.
+local container = lib:Begin(game.Players.LocalPlayer.PlayerGui,"",{enabled = true}) -- don't mind this, it's there so the script makes sense.
+local _, content = lib:Window(container,"Demo",UDim2.new(0,250,0,250),{position = UDim2.new(1,-260,0,92),}) -- don't mind this, it's there so the script makes sense.
+
+local btn = lib:Button(
+	content, -- parent of the button. Should be set to the content frame of a window.
+	"I'm a Button", -- text on the button
+	{
+		alignmentX = Enum.TextXAlignment.Left, -- alignment of the text on the button. Most but not all elements who have text handle that variable so i put it here so you know it exist.
+		alignmentY = Enum.TextYAlignment.Top, -- alignment of the text too but on the Y axis.
+		inactive = false, -- if set to true, any interaction with the button won't work. This can also be changed using the button's Inactive attribute.
+		callback = function() -- function to execute on click.
+			print("Clicked")
+		end
+	}
+)`,
+                media: []
+            },
+            {
+                id: 'toggle',
+                title: 'lib:Toggle()',
+                description: 'A button who when clicked turns on/off (true/false).',
+                exampleCode: `-- !! If a callback is set, it will be ran when the element is created unless you set nocall to true in the settings (settings is the table at the end) !!
+local lib = require(game.ReplicatedStorage.SkiraLib) -- don't mind this, it's there so the script makes sense.
+local container = lib:Begin(game.Players.LocalPlayer.PlayerGui,"",{enabled = true}) -- don't mind this, it's there so the script makes sense.
+local _, content = lib:Window(container,"Demo",UDim2.new(0,250,0,250),{position = UDim2.new(1,-260,0,92),}) -- don't mind this, it's there so the script makes sense.
+
+--           .---| The frame who contains the label and the checkbox.
+--           |         .---| This api returns two functions. Examples at the bottom of this script.
+local toggle, api = lib:Toggle(
+	content, -- the parent, yes.
+	"There's a skeleton dancing on my keyboard, no joke.", -- text to display on the left, the toggle will be on the right.
+	{
+		state = true, -- initial state
+		shape = "smooth", -- "round" for a circle, "square" for a square and "smooth" for a square with rounded corners. If you add a X at the end, instead of a filling the box it will be a cross, ex. "square" turns into "squareX".
+		animation = "fill", -- "fill" will make the X or color grow when true and shrink when false while "fade" makes them fade to apparent if true and transparent if false.
+		callback = function(v) -- will be called when the state changes. v is new state (true/false).
+			print("Set to",v)
+		end
+	}
+)
+
+api.get() -- will return the current toggle state (true/false)
+api.set(true) -- sets the toggle to true or false, it's up to you.`,
+                media: []
+            },
+            {
+                id: 'label',
+                title: 'lib:Label()',
+                description: 'A simple text that can take one line like it can take the whole frame.',
+                exampleCode: `local lib = require(game.ReplicatedStorage.SkiraLib) -- don't mind this, it's there so the script makes sense.
+local container = lib:Begin(game.Players.LocalPlayer.PlayerGui,"",{enabled = true}) -- don't mind this, it's there so the script makes sense.
+local _, content = lib:Window(container,"Demo",UDim2.new(0,250,0,250),{position = UDim2.new(1,-260,0,92),}) -- don't mind this, it's there so the script makes sense.
+
+local label = lib:Label(
+	content,
+	"there's a still a skeleton dancing on my keyboard and i swear i'm fr.",
+	{
+		alignmentX = Enum.TextXAlignment.Left, -- alignment on the X axis. Same as lib:Button().
+		alignmentY = Enum.TextYAlignment.Center, -- alignment on the Y axis. Same as lib:Button().
+		size = UDim2.new(1,0,1,0), -- don't specify if you want a regular one line text. It's up to you.
+		textscaled = true, -- duh, I don't think i need to explain but i still will. If set to true, the text will take as much space as he can and always fit.
+		nospace = true -- if you don't set alignment to center, there will be spaces before or after the text. This option will remove them. It's only usefull if you have a big text and don't set it's alignment to the center.
+	}
+)`,
+                media: []
+            },
+            {
+                id: 'separator',
+                title: 'lib:Separator()',
+                description: "Look, i'm 99% sure anyone reading this documentation knows what lib:Button() or even lib:Separator() could possibly mean, matter of fact, every element is easy to guess. Except lib:Begin(), but uh... whatever.<br><br>A separator is an element who crosses a line between two elements. Personnally i use it as a title.",
+                exampleCode: `local lib = require(game.ReplicatedStorage.SkiraLib) -- don't mind this, it's there so the script makes sense.
+local container = lib:Begin(game.Players.LocalPlayer.PlayerGui,"",{enabled = true}) -- don't mind this, it's there so the script makes sense.
+local _, content = lib:Window(container,"Demo",UDim2.new(0,250,0,250),{position = UDim2.new(1,-260,0,92),}) -- don't mind this, it's there so the script makes sense.
+
+local separator = lib:Separator(
+	content, -- parent of the separator.
+	{
+		text = "Amazing Stuff Below", -- a text shown on the bar on it's left side. If not specified, no text will be created/shown.
+		mode = "none" -- if set to none, there won't be any bar or text, it will just create an empty element.
+	}
+)`,
+                media: []
+            },
+            {
+                id: 'holder',
+                title: 'lib:Holder()',
+                description: "I don't have much to say about this element, it's pretty much made to contain lib:Column() elements and nothing else. See below how to use lib:Columns() and what lib:Holder() purpose is.",
+                exampleCode: `local lib = require(game.ReplicatedStorage.SkiraLib) -- don't mind this, it's there so the script makes sense.
+local container = lib:Begin(game.Players.LocalPlayer.PlayerGui,"",{enabled = true}) -- don't mind this, it's there so the script makes sense.
+local _, content = lib:Window(container,"Demo",UDim2.new(0,250,0,250),{position = UDim2.new(1,-260,0,92),}) -- don't mind this, it's there so the script makes sense.
+
+local holder = lib:Holder(
+	content, -- parent of the holder.
+	6 -- padding between each element/column.
+) -- this one is very short because there's nothing much to say about it other than the fact that it's a frame made to contain columns.`,
+                media: []
+            },
+            {
+                id: 'column',
+                title: 'lib:Column()',
+                description: 'A column is a frame who con contain elements but also be on the same line as other columns. The more content there is in a column, the taller it gets.',
+                exampleCode: `local lib = require(game.ReplicatedStorage.SkiraLib) -- don't mind this, it's there so the script makes sense.
+local container = lib:Begin(game.Players.LocalPlayer.PlayerGui,"",{enabled = true}) -- don't mind this, it's there so the script makes sense.
+local _, content = lib:Window(container,"Demo",UDim2.new(0,250,0,250),{position = UDim2.new(1,-260,0,92),}) -- don't mind this, it's there so the script makes sense.
+local holder = lib:Holder(content,6) -- don't mind this, it's there so the script makes sense.
+
+local column1 = lib:Column(
+	holder, -- parent of the column. Should be a lib:Holder().
+	0.49, -- width of the column. Must be a number between 0 and 1.
+	Enum.HorizontalAlignment.Left -- the alignment of the column.
+) -- as far as i know, you can put as much columns as you want in a holder. It all comes down to the size and visibility.
+-- 
+
+local column2 = lib:Column(holder,0.49,Enum.HorizontalAlignment.Right) -- don't mind this, it's there so the demo is cleaner.
+lib:Button(column1,"I'm on the left") -- don't mind this, it's there so the demo is cleaner.
+lib:Button(column2,"I'm on the right") -- don't mind this, it's there so the demo is cleaner.
+lib:Button(column1," My column is longer",{nospace = true,textscaled = true}) -- don't mind this, it's there so the demo is cleaner.`,
+                media: []
+            },
+            {
+                id: 'slider',
+                title: 'lib:Slider()',
+                description: "A slider is a bar with a cursor. The cursor can be moved to increase or decrease the value.",
+                exampleCode: `-- !! If a callback is set, it will be ran when the element is created unless you set nocall to true in the settings (settings is the table at the end) !!
+local lib = require(game.ReplicatedStorage.SkiraLib) -- don't mind this, it's there so the script makes sense.
+local container = lib:Begin(game.Players.LocalPlayer.PlayerGui,"",{enabled = true}) -- don't mind this, it's there so the script makes sense.
+local _, content = lib:Window(container,"Demo",UDim2.new(0,250,0,250),{position = UDim2.new(1,-260,0,92),}) -- don't mind this, it's there so the script makes sense.
+
+--           .---| The frame who contains the label and the checkbox.
+--           |         .---| This api returns two functions. Examples at the bottom of this script.
+local slider, api = lib:Slider(
+	content, -- parent of the slider.
+	"WalkSpeed", -- a text shown on the left side of the slider.
+	16, -- value the slider will start with.
+	100, -- maximum value the slider can go to.
+	0, -- minimum value the slider can go to.
+	{
+		speed = 1, -- speed of the slider, if you set max to 10 and speed to 1, the cursor will snap. If you don't see what i mean, just try and you'll see.
+		barstyle = "smooth", -- if set to "smooth", the bar will have round corners, if set to anything else or not specified, the bar will have sharp corners.
+		cursorstyle = "round", -- if set to "round" the cursor will be a circle, if set to "square" the cursor will be a square, if set to "bar" the cursor will be a thin bar and if set to "spike" the cursor will be a spike, no shit.
+		nodisplay = false, -- if set to true, the value display will be hidden.
+		callback = function(v) -- in this scenario v is the slider value.
+			game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = v
+		end
+	}
+)
+
+api.get() -- will return the current slider value
+api.set(0) -- sets the slider value to however much you want (if too low or too high it will be set to lowest or highest).`,
+                media: []
+            },
+            {
+                id: 'colorpicker',
+                title: 'lib:ColorPicker()',
+                description: "This function creates a color preview and three textboxes, one for each color (Red, Green, Blue) and who range from 0 to 255.<br><br>The color preview can be clicked to reveal a window containing a brightness slider and a color palette.",
+                exampleCode: `-- !! If a callback is set, it will be ran when the element is created unless you set nocall to true in the settings (settings is the table at the end) !!
+local lib = require(game.ReplicatedStorage.SkiraLib) -- don't mind this, it's there so the script makes sense.
+local container = lib:Begin(game.Players.LocalPlayer.PlayerGui,"",{enabled = true}) -- don't mind this, it's there so the script makes sense.
+local _, content = lib:Window(container,"Demo",UDim2.new(0,250,0,250),{position = UDim2.new(1,-260,0,92),}) -- don't mind this, it's there so the script makes sense.
+
+--          .---| The frame who contains everything (label, color preview and Red Green and Blue textboxes).
+--          |         .---| This api returns two functions. Examples at the bottom of this script.
+local frame, api = lib:ColorPicker(
+	content, -- parent of the slider.
+	"Theme Color", -- text next to the color picker.
+	Color3.fromRGB(0,170,255), -- default selected color.
+	{
+		callback = function(v) -- v is the color the user selected by clicking the color and picking or by simply changing one of the three values.
+			print(v) -- Color3.fromRGB(red,green,blue)
+		end
+	}
+)
+
+api.get() -- this returns the currently selected color
+api.set(Color3.fromRGB(138,43,226)) -- sets the current color to whatever you want. In this case it sets it to purple.`,
+                media: []
+            },
+            {
+                id: 'dropdown',
+                title: 'lib:Dropdown()',
+                description: "A dropdown is a frame that can be opened to choose from a range of options.",
+                exampleCode: `-- !! If a callback is set, it will be ran when the element is created unless you set nocall to true in the settings (settings is the table at the end) !!
+local lib = require(game.ReplicatedStorage.SkiraLib) -- don't mind this, it's there so the script makes sense.
+local container = lib:Begin(game.Players.LocalPlayer.PlayerGui,"",{enabled = true}) -- don't mind this, it's there so the script makes sense.
+local _, content = lib:Window(container,"Demo",UDim2.new(0,250,0,250),{position = UDim2.new(1,-260,0,92),}) -- don't mind this, it's there so the script makes sense.
+
+--             .---| The frame who contains everything
+--             |
+--             |             .---| The api who provides functions to interact with the element. Usage demo at the bottom of the script.
+local dropdown, api = lib:Dropdown(
+	content, -- parent of the slider.
+	"Minimum", -- the default selected option.
+	{"Minimum","Medium","Maximum"}, -- options in the dropdown. The default option selected must be in here too and won't be duplicated.
+	{
+		callback = function(v) -- v is the option that was selected.
+			if v == "Minimum" then
+				print("Minimum settings or something.")
+			else
+				print(v)
+			end
+		end
+	}
+)
+
+api.set("Maximum") -- changes the dropdown's selected option
+api.add("Ultra") -- adds a new option
+api.sub("Medium") -- removes an existing option`,
+                media: []
+            },
+            {
+                id: 'notify',
+                title: 'lib:Notify()',
+                description: "This function will create a frame in the bottom left corner of your screen that smoothly moves in frame and after a defined amount of time it will go away the same way it came in.",
+                exampleCode: `local lib = require(game.ReplicatedStorage.SkiraLib) -- don't mind this, it's there so the script makes sense.
+local container = lib:Begin(game.Players.LocalPlayer.PlayerGui,"",{enabled = true}) -- don't mind this, it's there so the script makes sense.
+
+--             .---| The frame who contains everything
+--             |                  .---| The frame who receives and holds elements
+--             |                  |          .---| The api who provides functions to interact with the element. Usage demo at the bottom of the script.
+local notification, content, api = lib:Notify(
+	container, -- parent of the notification. Must be a ScreenGui or lib:Begin().
+	10, -- amount of seconds before the notification goes away.
+	{
+		text = "Hello world !", -- text in the notification.
+		title = "Notification", -- title of the notification.
+		alignX = Enum.TextXAlignment.Left, -- alignment of the text in the notification only on the X axis.
+		alignY = Enum.TextYAlignment.Center, -- alignment of the text in the notification only on the Y axis.
+		textscaled = true, -- if the text textscaled property should be true or false. I am not explaining what textscaled is again.
+		btntype = 4, -- 0 means no button, 1 creates a OK button, 2 creates OK and CANCEL buttons, 3 creates YES and NO buttons, 4 creates YES, NO and CANCEL buttons and 5 makes the notification content empty, no buttons, no text.
+		X = 300, -- X size of the notification. Default is 300.
+		Y = 100, -- Y size of the notification. Default is 100.
+		callback = function(i,v)
+			print(i) -- the button index, if btntype is set to 4, YES = 1, NO = 2 and CANCEL = 3.
+			print(v) -- the button text, can be OK, CANCEL, YES or NO.
+		end
+	} -- If one of the button created from btntype is pressed, the callback will be ran and the notification will go away.
+)
+
+api.current = 0 -- the current time of waiting it's at, if set higher than total the notification will go away.
+api.total = 10 -- how much time the notification has to wait before leaving. Changing this value won't reset current.`,
+                media: []
+            },
+            {
+                id: 'keypicker',
+                title: 'lib:KeyPicker()',
+                description: "A key picker is a button who, when clicked, registers the keyboard/mouse key press. Usefull for keybinds and uhh... stuff.",
+                exampleCode: `local lib = require(game.ReplicatedStorage.SkiraLib) -- don't mind this, it's there so the script makes sense.
+local container = lib:Begin(game.Players.LocalPlayer.PlayerGui,"",{enabled = true}) -- don't mind this, it's there so the script makes sense.
+local _, content = lib:Window(container,"Demo",UDim2.new(0,250,0,250),{position = UDim2.new(1,-260,0,92),}) -- don't mind this, it's there so the script makes sense.
+
+local keypicker, api = lib:KeyPicker(
+	content, -- parent of the keypicker
+	"Pick a key", -- label next to the keypicker (left)
+	{
+		key = Enum.KeyCode.W, -- key set by default, if nothing it will show "None"
+		callback = function(v) -- v can be a UserInputType or KeyCode Enum
+			print("Set key to",v)
+		end,
+	}
+)
+
+api.set(Enum.UserInputType.MouseButton1) -- define the keypicker key as either Enum.UserInputType or Enum.KeyCode`,
+                media: []
+            },
+            {
+                id: 'textbox',
+                title: 'lib:TextBox()',
+                description: "A textbox is a box the user can write text in.",
+                exampleCode: `local lib = require(game.ReplicatedStorage.SkiraLib) -- don't mind this, it's there so the script makes sense.
+local container = lib:Begin(game.Players.LocalPlayer.PlayerGui,"",{enabled = true}) -- don't mind this, it's there so the script makes sense.
+local _, content = lib:Window(container,"Demo",UDim2.new(0,250,0,250),{position = UDim2.new(1,-260,0,92),}) -- don't mind this, it's there so the script makes sense.
+
+local keypicker = lib:TextBox(
+	content, -- parent of the textbox
+	"This is text", -- default written text
+	{
+		text = "Placeholder", -- text shown when textbox is empty.
+		nospace = false, -- by default there's spaces added to the text so it's not too close to edges.
+		textscaled = false, -- wether or not the text should fit.
+		alignmentX = Enum.TextXAlignment.Left, -- text direction on the X axis.
+		alignmentY = Enum.TextYAlignment.Center, -- text direction on the Y axis.
+	}
+)`,
+                media: []
+            },
+            {
+                id: 'tab',
+                title: 'lib:Tab()',
+                description: "Creates a container once right below the header (or at the top of the window is noheader is true) and for each lib:Tab() call creates a button (tab) inside of it.<br><br>Each tab has it's own content and the current window's content frame will be hidden forever.",
+                exampleCode: `local lib = require(game.ReplicatedStorage.SkiraLib) -- don't mind this, it's there so the script makes sense.
+local container = lib:Begin(game.Players.LocalPlayer.PlayerGui,"",{enabled = true}) -- don't mind this, it's there so the script makes sense.
+local window = lib:Window(container,"Demo",UDim2.new(0,250,0,250),{position = UDim2.new(1,-260,0,92),}) -- don't mind this, it's there so the script makes sense.
+
+local tab, content, api = lib:Tab(
+	window, -- has to be a lib:Window window, not content.
+	"Example", -- tab name
+	{
+		nobar = false, -- if true, the scrollbar will be hidden. ignored if noscroll is true
+		noscroll = false, -- if true, the tab's content will be a frame instead of a ScrollingFrame
+		callback = function() -- now idea what this could be for but it's there.
+			print("Tab selected")
+		end
+	}
+)
+
+api.setTab() -- set the selected tab as the tab who owns the api`,
+                media: []
+            },
+        ];
+
+        const sidebarList = document.getElementById('chapterList');
+        const mainContent = document.getElementById('mainContent');
+        const scrollBeacon = document.getElementById('scrollBeacon');
+
+        function buildUI() {
+            mainContent.innerHTML = '';
+
+            DOCS_DATA.forEach((item, idx) => {
+                const li = document.createElement('li');
+                li.className = 'chapter-item';
+                li.dataset.sectionId = item.id;
+                li.textContent = item.title;
+                sidebarList.appendChild(li);
+
+                const sectionWrap = document.createElement('div');
+                sectionWrap.className = 'section-container';
+                sectionWrap.id = item.id;
+
+                if (item.type === 'home') {
+                    const card = document.createElement('div');
+                    card.className = 'doc-card home-section fade-in';
+                    card.innerHTML = `
+                        <div class="home-title">${item.title}</div>
+                        <div class="home-sub">${item.description}</div>
+                        <div class="button-group">
+                            <button class="btn-accent" id="btnLatest">Latest Version</button>
+                            <button class="btn-accent" id="btnLoadstring">Loadstring</button>
+                            <button class="btn-accent" id="btnChangelog">Changelog</button>
+                            <button class="btn-accent" id="btnLicense">License</button>
+                        </div>
+                    `;
+                    sectionWrap.appendChild(card);
+                    mainContent.appendChild(sectionWrap);
+                    setTimeout(() => {
+                        document.getElementById('btnLatest')?.addEventListener('click', () => {
+                            window.open('source', '_blank');
+                        });
+
+                        document.getElementById('btnLoadstring')?.addEventListener('click', () => {
+                            window.open('loadstring', '_blank');
+                        });
+                        
+                        document.getElementById('btnChangelog')?.addEventListener('click', () => {
+                            window.open('Changelog', '_blank');
+                        });
+
+                        document.getElementById('btnLicense')?.addEventListener('click', () => {
+                            window.open('license', '_blank');
+                        });
+
+                    }, 0);
+                } else {
+                    const card = document.createElement('div');
+                    card.className = 'doc-card fade-in';
+                    card.dataset.fnId = item.id;
+
+                    const fnName = document.createElement('div');
+                    fnName.className = 'fn-name';
+                    fnName.textContent = item.title;
+
+                    const desc = document.createElement('div');
+                    desc.className = 'fn-desc';
+                    desc.innerHTML = item.description;
+
+                    const monacoContainer = document.createElement('div');
+                    monacoContainer.className = 'monaco-wrap';
+                    monacoContainer.id = `monaco-${item.id}`;
+
+                    let slider = null;
+                    if (item.media && item.media.length > 0) {
+                        slider = document.createElement('div');
+                        slider.className = 'media-slider';
+                        item.media.forEach(url => {
+                            const mediaDiv = document.createElement('div');
+                            mediaDiv.className = 'media-item';
+                            if (url.match(/\.(mp4|webm|ogg)$/i)) {
+                                mediaDiv.innerHTML = `<video src="${url}" muted controls style="width:100%;height:100%;object-fit:cover;"></video>`;
+                            } else {
+                                mediaDiv.innerHTML = `<img src="${url}" alt="media" loading="lazy" style="width:100%;height:100%;object-fit:cover;">`;
+                            }
+                            slider.appendChild(mediaDiv);
+                        });
+                    }
+
+                    card.appendChild(fnName);
+                    card.appendChild(desc);
+                    card.appendChild(monacoContainer);
+                    if (slider) card.appendChild(slider);
+                    sectionWrap.appendChild(card);
+                    mainContent.appendChild(sectionWrap);
+
+                    setTimeout(() => initMonaco(item), 20);
+                }
+            });
+
+            const chapters = document.querySelectorAll('.chapter-item');
+            const sections = DOCS_DATA.map(d => document.getElementById(d.id)).filter(Boolean);
+
+            chapters.forEach(ch => {
+                ch.addEventListener('click', function() {
+                    const targetId = this.dataset.sectionId;
+                    const targetEl = document.getElementById(targetId);
+                    if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+            });
+
+            function updateBeacon() {
+                const active = document.querySelector('.chapter-item.active');
+                if (!active || !scrollBeacon) return;
+                const parent = active.closest('.chapter-list');
+                if (!parent) return;
+                const itemTop = active.offsetTop;
+                const itemHeight = active.offsetHeight;
+                scrollBeacon.style.top = itemTop + 'px';
+                scrollBeacon.style.height = itemHeight + 'px';
+                scrollBeacon.style.transform = 'translateY(0)';
+            }
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id;
+                        chapters.forEach(item => {
+                            item.classList.remove('active');
+                            if (item.dataset.sectionId === id) item.classList.add('active');
+                        });
+                        updateBeacon();
+                    }
+                });
+            }, { root: document.querySelector('.main-content'), rootMargin: '-20% 0% -60% 0%', threshold: 0.15 });
+
+            sections.forEach(sec => { if (sec) observer.observe(sec); });
+
+            setTimeout(() => {
+                const first = document.querySelector('.chapter-item');
+                if (first) first.classList.add('active');
+                updateBeacon();
+            }, 100);
+
+            const mainEl = document.querySelector('.main-content');
+            mainEl.addEventListener('scroll', () => requestAnimationFrame(updateBeacon));
+        }
+
+        function initMonaco(item) {
+            const containerId = `monaco-${item.id}`;
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            if (typeof monaco !== 'undefined' && monaco.editor) {
+                monaco.editor.defineTheme('robloxDark', {
+                    base: 'vs-dark',
+                    inherit: true,
+                    rules: [
+                        { token: 'comment', foreground: '6a9955', fontStyle: 'italic' },
+                        { token: 'keyword', foreground: '00aaff', fontStyle: 'bold' },
+                        { token: 'string', foreground: 'ce9178' },
+                        { token: 'number', foreground: 'b5cea8' },
+                        { token: 'function', foreground: 'dcdcaa' },
+                        { token: 'type', foreground: '4ec9b0' },
+                        { token: 'variable', foreground: '9cdcfe' },
+                        { token: 'constant', foreground: '4fc1ff' },
+                        { token: 'operator', foreground: 'd4d4d4' },
+                    ],
+                    colors: {
+                        'editor.background': '#1e1e1e',
+                        'editor.foreground': '#d4d4d4',
+                        'editor.lineHighlightBackground': '#2a2d2e',
+                        'editor.selectionBackground': '#264f78',
+                        'editorCursor.foreground': '#00aaff',
+                        'editorLineNumber.foreground': '#858585',
+                        'editorLineNumber.activeForeground': '#c6c6c6',
+                    }
+                });
+                monaco.editor.create(container, {
+                    value: item.exampleCode || '-- no example',
+                    language: 'lua',
+                    theme: 'robloxDark',
+                    fontSize: 15,
+                    fontFamily: 'Courier New',
+                    readOnly: true,
+                    automaticLayout: true,
+                    minimap: { enabled: false },
+                    scrollBeyondLastLine: false,
+                    padding: { top: 16, bottom: 16 },
+                    lineNumbers: 'on',
+                    glyphMargin: false,
+                    folding: false,
+                    lineDecorationsWidth: 16,
+                });
+            } else {
+                container.style.background = '#1e1e1e';
+                container.style.color = '#c0c0c0';
+                container.style.padding = '1.2rem';
+                container.style.fontFamily = 'Consolas, monospace';
+                container.style.whiteSpace = 'pre-wrap';
+                container.style.fontSize = '1.1rem';
+                container.textContent = item.exampleCode || '-- code';
+            }
+        }
+
+        require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.34.1/min/vs' } });
+        require(['vs/editor/editor.main'], function() {
+            buildUI();
+            DOCS_DATA.forEach(item => {
+                if (item.type !== 'home') {
+                    const c = document.getElementById(`monaco-${item.id}`);
+                    if (c && !c.querySelector('.monaco-editor')) initMonaco(item);
+                }
+            });
+        });
+
+        setTimeout(() => {
+            if (!document.querySelector('.monaco-editor')) buildUI();
+        }, 2000);
+    </script>
+</body>
+</html>

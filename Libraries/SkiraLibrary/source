@@ -1,0 +1,2638 @@
+--[[
+
+SkiraLib / v1.5
+
+Made by Skira for personnal use.
+Originally uploaded at https://skira.me
+Find the latest version at https://skira.me/lua/SkiraLibrary/latest
+
+Use lib:Demo() to create a ui containing everything the Library has to offer.
+
+LICENSE (https://skira.me/lua/SkiraLibrary/license):
+
+Copyright (c) 2026 CaptainSkira
+
+Permission is granted to use this Lua UI library in personal and commercial Roblox projects as long as you give visible credit to CaptainSkira.
+
+You may NOT:
+- Reupload or redistribute this library.
+- Sell this library.
+- Claim this library as your own.
+- Publish modified versions of this library.
+- Remove this license or copyright notice.
+
+This library is provided "AS IS",without warranty of any kind.
+
+-- Changelog --
+DD/MM/2026 - 0.1: Created the library as well as Begin and Menu.
+DD/MM/2026 - 0.2: Added Button, Toggle and Label. Added element tracking.
+DD/MM/2026 - 0.3: Added Separator, Slider, ??? and Column. Renamed Menu to Window
+DD/MM/2026 - 0.4: Updated Separator. Renamed ??? to Holder. Added Notify and syntaxes check.
+DD/MM/2026 - 0.5: Added ColorPicker, Dropdown and Theme.
+DD/MM/2026 - 0.6: Fixed ZIndex fight between ColorPicker and Dropdown.
+
+DD/MM/2026 - 1.0: Initial release of the library and creation of the documentation.
+DD/MM/2026 - 1.1: Added close callback to window.
+
+11/06/2026 - 1.2: Added KeyPicker. Made all api's set function run the given callback.
+11/06/2026 - 1.3: Added maxScale setting and a api to Dropdown as well as changing it's syntax and layout. Index was removed from every dropdown interaction.
+11/06/2026 - 1.4: Added TextBox. Made Sliders label a textbox.
+
+15/06/2026 - 1.5:
++ - made the set functions run the callback, added api to dropdown, added max height to dropdown
++ - added wrapped setting to label, added textbox, working on making sliders label textboxes
++ - fixed Windows being resizable when collapsed, changed notifications movement direction, added hover label setting on all options (setting is called hoverLabel), added information icon to the default config
++ - made slider callback a value instead of a string, made slider value show a decimal only if being one
+
+01/07/2026 - 1.5.1: Fixed Window set function returning nil
+
+02/07/2026 - 1.5.2: Added close function to Window and removed settings.size from Label since most, if not all elements use objectS and/or elementS setting for their height.
+
+01/09/2026 - 1.5.3: Added brightness variable to lib:Theme() and fixed notification's text size
+
+06/09/2026 - 1.5.4:
++ - Added Tab function and tabS to the config
++ - Added animated icon to the Demo
++ - Updated Theme function to no longer have a hardcoded table of each element's color
++ - Added Inactive attribute handling to buttons (setting a button to Inactive blocks the set button controls, e.g. hover color change, tween when clicked, callback, etc...)
+
+06/09/2026 - 1.5.4.1: Changed tab's Content attribute to a value because some "environments" can't set an attribute to an instance.
+
+08/09/2026 - 1.5.5:
++ - Added settings setting to Toggles.
++ - Created Utils to load icons (it only has a gear icon for now).
++ - KeyPicker button size is now as small as possible, just enough to fit MouseMiddleButton.
++ - Columns can now handle Scale number and UDim2 (only the X axis will be used)
+
+08/09/2026 - 1.5.5.1:
++ - Removed Utils because it was useless.
++ - Added Floating attribute to ColorPickers and Toggle's setting window so when changing tab they get destroyed.
++ - Fixed ColorPicker element tracking, in clear, OK button is finally at the bottom.
+
+09/09/2026 - 1.5.6:
++ - Updated the check function to check argument's classes and typeof instead of counting the number of arguments.
++ - Added nocheck setting to every element except Begin so elements like Dropdown and hoverLabel don't trigger errors when creating a Window.
+
+10/09/2026 - 1.5.6.1:
++ - Fixed Toggle settings setting window collapsing when opened.
++ - Fixed ColorPicker color preview changing to red when clicked.
++ - Added a warn if Slider speed setting is set to 0 or lower.
+
+11/09/2026 - 1.5.7:
++ - Added return if check function gives an error.
++ - Inverted Slider's min and max arguments (updated Demo).
++ - Updated Slider's textbox to look like ColorPicker textboxes and moved them slightly.
+
+11/09/2026 - 1.5.8:
++ - Rewrote Dropdown entirely so it's list can go outside of the gui.
++ - Added exitkey and deletekey settings to KeyPicker, exitkey does the same thing as Escape (no key change) and deletekey sets the KeyPicker to None.
++ - Added a nil argument check to the check function.
+  
+  +
+  +
+  +
+  
+]]--
+
+local UIS = game:GetService("UserInputService")
+local TS = game:GetService("TweenService")
+
+local lib = {}
+local tracker = {}
+local notifications = {}
+
+local syntaxes = {
+	Begin = {"string"}, -- the parent doesn't matter
+	Label = {"Content","string"},
+	Button = {"Content","string"},
+	Toggle = {"Content","string"},
+	Holder = {"Content","number"},
+	Column = {"Content","Scale","EnumItem"},
+	Notify = {"ScreenGui","number"},
+	Window = {"ScreenGui","string","UDim2"},
+	Slider = {"Content","string","number","number","number"},
+	Dropdown = {"Content","string","table"},
+	Separator = {"Content"},
+	ColorPicker = {"Content","string","Color3"},
+	KeyPicker = {"Content","string"},
+	TextBox = {"Content","string"},
+	Tab = {"Frame","string"}, -- Tab requires Window's window, not content
+}
+
+local config = {
+	-- icons
+	plus = "rbxassetid://108806973668987",
+	star = "rbxassetid://6031068428",
+	cube = "rbxassetid://114729923396522",
+	close = "rbxassetid://73985264213635",
+	palette = "rbxassetid://14008802626",
+	minimize = "rbxassetid://114685507187940",
+	information = "rbxassetid://89633575267800",
+	notification = "rbxassetid://134341920489415",
+
+	-- sizes
+	tabS = 26,
+	textS = 13,
+	titleS = 16,
+	headerS = 28,
+	objectS = 20,
+	elementS = 26,
+
+	-- colors
+	background = Color3.fromRGB(36,36,36),
+	separator = Color3.fromRGB(55,55,55),
+	scrollbar = Color3.fromRGB(90,90,90),
+	header = Color3.fromRGB(24,24,24),
+	dropdown = Color3.fromRGB(30,30,30),
+	scalebar = Color3.fromRGB(255,255,255),
+	textbox = Color3.fromRGB(30,30,30),
+	colorpickerbox = Color3.fromRGB(30,30,30),
+
+	button0 = Color3.fromRGB(255,255,255),
+	button0hover = Color3.fromRGB(255,255,255),
+	button0active = Color3.fromRGB(255,255,255),
+
+	button1 = Color3.fromRGB(30,30,30),
+	button1hover = Color3.fromRGB(45,45,45),
+	button1active = Color3.fromRGB(120,120,120),
+
+	checkbox = Color3.fromRGB(30,30,30),
+	checkboxfill = Color3.fromRGB(0,170,255),
+
+	slider = Color3.fromRGB(30,30,30),
+	sliderfill = Color3.fromRGB(0,170,255),
+	slidercursor = Color3.fromRGB(255,255,255),
+
+	text0 = Color3.fromRGB(255,255,255),
+	text1 = Color3.fromRGB(220,220,220),
+	text2 = Color3.fromRGB(120,120,120),
+	text3 = Color3.new(0,0,0),
+
+	outline0 = Color3.fromRGB(18,18,18),
+	outline1 = Color3.fromRGB(60,60,60),
+
+	icon = Color3.fromRGB(255,255,255),
+	obj = Color3.fromRGB(0,170,255),
+
+	-- fonts
+	font0 = Enum.Font.Gotham,
+	font1 = Enum.Font.GothamMedium,
+	font2 = Enum.Font.GothamBold,
+	font3 = Enum.Font.GothamBlack,
+}
+
+local notificationHeight = 0
+local notificationIndex = 0
+local dropdownamount = 2 -- amount of dropdowns, hopefully i'll be able to get rid of this.
+local dropdownI = dropdownamount + 2
+local began = false
+local err = "[ERROR]:"
+local inf = "[INFO]:"
+
+function check(...)
+	local t = debug and debug.traceback and debug.traceback()
+	if not t then return warn(err, "Traceback couldn't be solved.") end
+
+	local fn
+	for v in t:gmatch("function%s+([%w_]+)") do
+		if v ~= "check" then
+			fn = v
+			break
+		end
+	end
+
+	if not began and fn ~= "Begin" then
+		return warn(err, "Script must start with Library:Begin()")
+	end
+
+	local expected = syntaxes[fn]
+	if not expected then warn("Skira is a dumbass, tell him about this error") return end
+
+	local args = {...}
+
+	for i,v in pairs(args) do
+		-- exceptions
+		if expected[i] == "Content" and (v.ClassName == "Frame" or v.ClassName == "ScrollingFrame") then
+			continue -- the parent of each ui element is the window's content frame who can be either a Frame or a ScrollingFrame
+		end
+		if expected[i] == "Scale" and (typeof(v) == "UDim2" or typeof(v) == "number") then
+			continue -- columns can be given a number used as the scale but also UDim2 after 1.5.5
+		end
+
+		-- fallback
+		local resolved = typeof(v) == "Instance" and v.ClassName or typeof(v)
+		if resolved ~= expected[i] then
+			warn(err, "Invalid argument #"..i.." to "..fn.." (Expected "..expected[i]..", got "..resolved..")")
+			return true
+		end
+	end
+	
+	for i,v in pairs(expected) do
+		if args[i] == nil then
+			warn(err, "Missing argument #"..i.." to "..fn)
+			return true
+		end
+	end
+
+	--[[
+	local missing = {}
+
+	for i = 1, #expected do
+		if args[i] == nil then
+			table.insert(missing, expected[i])
+		end
+	end
+
+	if #missing > 0 then
+		game.TestService:Message(string.format("\n%s The following argument(s) are missing: %s\n%s Correct Syntax: lib:%s(%s)\n%s If you need help, refer to https://skira.me/lua/SkiraLibrary",err,table.concat(missing, ", "),inf,fn,table.concat(expected, ", "),inf))
+	end
+	]]
+end
+
+function track(dad,obj)
+	if tracker[dad] then
+		tracker[dad][obj] = true
+
+		local n = 0
+
+		for i,v in pairs(tracker[dad]) do
+			n += 1
+		end
+
+		local s = ""
+		while n > 0 do
+			n -= 1
+			s = string.char(65+n%26)..s
+			n = math.floor(n/26)
+		end
+
+		obj.Name = s
+	end
+end
+
+function clean(sttg)
+	local settings = {}
+	for i,v in pairs(config) do
+		settings[i] = v
+	end
+	for i,v in pairs(sttg) do
+		settings[i] = v
+	end
+	return settings
+end
+
+function outline(obj,v1,v2,inner)
+	local stroke = Instance.new("UIStroke")
+	stroke.Color = config.outline0
+	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	if v1 then stroke.Transparency = v1 end
+	stroke.Thickness = 1
+	stroke.Parent = obj
+
+	local innerStroke = Instance.new("UIStroke")
+	innerStroke.Color = config.outline1
+	innerStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	innerStroke.BorderStrokePosition = Enum.BorderStrokePosition.Inner
+	if v2 then innerStroke.Transparency = v2 end
+	innerStroke.Parent = obj
+
+	if inner then
+		stroke.BorderStrokePosition = Enum.BorderStrokePosition.Inner
+		innerStroke.Thickness = 2
+		stroke.ZIndex = 2
+	end
+end
+
+function zindexthingy(obj,val)
+	obj.ZIndex = val
+	for i,v in pairs(obj:GetDescendants()) do
+		pcall(function()
+			if v:IsA("UIStroke") or v.ZIndex > 1 then return end
+			v.ZIndex = val
+		end)
+	end
+end
+
+--[[
+function lib:Theme(base,brightness)
+	if not brightness then brightness = 0 end
+
+	local function map(color)
+		local _, s, v = color:ToHSV()
+		return Color3.fromHSV(base:ToHSV(), s, math.clamp(v + brightness / 255, 0, 1))
+	end
+
+	return {
+		background = map(Color3.fromRGB(18,10,28)),
+		header = map(Color3.fromRGB(12,8,20)),
+		separator = map(Color3.fromRGB(55,40,80)),
+		dropdown = map(Color3.fromRGB(25,15,40)),
+		textbox = map(Color3.fromRGB(25,15,40)),
+		scrollbar = map(Color3.fromRGB(160,90,255)),
+		scalebar = map(Color3.fromRGB(180,80,255)),
+		button0 = map(Color3.fromRGB(255,255,255)),
+		button0hover = Color3.fromRGB(230,230,255),
+		button0active = Color3.fromRGB(200,200,255),
+		button1 = map(Color3.fromRGB(35,20,50)),
+		button1hover = map(Color3.fromRGB(60,30,90)),
+		button1active = map(Color3.fromRGB(140,60,255)),
+		checkbox = map(Color3.fromRGB(35,20,50)),
+		checkboxfill = map(Color3.fromRGB(170,80,255)),
+		slider = map(Color3.fromRGB(35,20,50)),
+		sliderfill = map(Color3.fromRGB(170,80,255)),
+		slidercursor = Color3.fromRGB(255,255,255),
+		text0 = Color3.fromRGB(255,255,255),
+		text1 = map(Color3.fromRGB(220,200,255)),
+		text2 = map(Color3.fromRGB(140,120,160)),
+		outline0 = map(Color3.fromRGB(10,6,16)),
+		outline1 = map(Color3.fromRGB(60,40,90)),
+		icon = Color3.fromRGB(255,255,255),
+		obj = map(Color3.fromRGB(170,80,255)),
+	}
+end
+]]
+
+function lib:Theme(base,brightness)
+	brightness = brightness or 0
+
+	local bh,bs,bv = base:ToHSV()
+
+	local function map(color)
+		local _,s,v = color:ToHSV()
+		s = math.max(s,bs * (1 - v))
+		v = math.clamp(v + brightness / 255 + 0.035,0,1)
+		return Color3.fromHSV(bh,s,v)
+	end
+
+	local cfg = {}
+	for i,v in pairs(config) do
+		cfg[i] = typeof(v) == "Color3" and map(v) or v
+	end
+
+	return cfg
+end
+
+function lib:Begin(parent,name,cfg) -- v0.0.0
+	if check(name) then return end
+
+	local enabled = (cfg and cfg.enabled) ~= false
+	local noguiset = cfg and cfg.noguiset or true
+	local resetonspawn = cfg and cfg.resetonspawn or false
+
+	local window = Instance.new("ScreenGui")
+	window.Parent = parent
+	window.Enabled = enabled
+	window.IgnoreGuiInset = noguiset
+	window.ResetOnSpawn = resetonspawn
+
+	if name == "random" then
+		window.Name = game:GetService("HttpService"):GenerateGUID(false):sub(1,math.random(10,200))
+	else
+		window.Name = name
+	end
+
+	if cfg and cfg ~= {} then
+		for i,v in pairs(cfg) do
+			config[i] = v
+		end
+	end
+
+	began = true
+
+	return window, config
+end
+
+function lib:Window(parent,title,size,settings) -- v0.0.1, creation; v0.0.3, renamed to lib:Window
+	settings = clean(settings or {})
+
+	if not settings.nocheck then
+		if check(parent,title,size) then
+			return
+		end
+	end
+
+	local collapsable = settings.collapsable or false
+	local ishoverlabel = settings.ishoverlabel or false
+	local Xresizable = settings.Xresizable or false
+	local Yresizable = settings.Yresizable or false
+	local isdropdown = settings.isdropdown or false
+	local draggable = settings.draggable or false
+	local noheader = settings.noheader or false
+	local noscroll = settings.noscroll or false
+	local closable = settings.closable or false
+	local nobar = settings.nobar or false
+	local icon = settings.symbol or nil
+
+	local api = {collapse = function(v) end,symbol = nil,set = nil,close = nil}
+
+	local frame = Instance.new("Frame")
+	frame.Size = size
+	frame.Position = settings.position or UDim2.new(0,0,0,0)
+	frame.BackgroundColor3 = ishoverlabel and Color3.new(1,1,1) or settings.background
+	frame.ClipsDescendants = true
+	frame.BorderSizePixel = ishoverlabel and 2 or 0
+
+	if ishoverlabel then
+		frame.BorderColor3 = Color3.new(0,0,0)
+	else
+		local corner = Instance.new("UICorner")
+		corner.CornerRadius = UDim.new(0,6)
+		corner.Parent = frame
+		
+		outline(frame,isdropdown and .5 or 0,isdropdown and .5 or 0,isdropdown and true or false)
+	end
+
+	local header = Instance.new("Frame")
+	header.Name = "Header"
+	header.Size = UDim2.new(1,0,0,isdropdown and settings.objectS or settings.headerS)
+	header.BackgroundColor3 = settings.header
+
+	if not noheader then header.Parent = frame end
+
+	local headerCorner = Instance.new("UICorner")
+	headerCorner.CornerRadius = UDim.new(0,6)
+	headerCorner.Parent = header
+
+	local fix = Instance.new("Frame")
+	fix.BorderSizePixel = 0
+	fix.Size = UDim2.new(1,0,0,6)
+	fix.Position = UDim2.new(0,0,1,-6)
+	fix.BackgroundColor3 = settings.header
+	fix.Parent = header
+
+	if isdropdown then
+		frame.Size = UDim2.new(1,0,size.Y.Scale,size.Y.Offset)
+		header.BackgroundTransparency = 1
+		fix.BackgroundTransparency = 1
+	end
+
+	local leftPadding = 10
+	local max = 0
+
+	if icon and icon ~= "" then
+		max += 28
+		local image = Instance.new("ImageLabel")
+		image.BackgroundTransparency = 1
+		image.Size = UDim2.new(0,20,0,20)
+		image.Position = UDim2.new(0,5,.5,-10)
+		image.ImageColor3 = settings.icon
+		image.Image = icon
+		image.Parent = header
+		leftPadding = 30
+		api.symbol = image
+	end
+
+	local titleLabel = Instance.new("TextLabel")
+	titleLabel.BackgroundTransparency = 1
+	titleLabel.Position = UDim2.new(0,leftPadding,0,0)
+	titleLabel.Size = UDim2.new(1,-70,1,0)
+	titleLabel.Font = settings.font1
+	titleLabel.Text = title or ""
+	titleLabel.TextColor3 = isdropdown and settings.text1 or settings.text0
+	titleLabel.TextSize = isdropdown and settings.textS or settings.titleS
+	titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+	titleLabel.Parent = header
+
+	api.set = function(b) titleLabel.Text = b end
+
+	local content = nil
+	if noscroll then
+		content = Instance.new("Frame")
+	else
+		content = Instance.new("ScrollingFrame")
+		content.ScrollBarThickness = 0
+		content.ScrollBarImageColor3 = settings.scrollbar
+	end
+	content.Name = "Content"
+	content.BorderSizePixel = 0
+	content.BackgroundTransparency = 1
+	content.Position = UDim2.new(0,8,0,noheader and 8 or isdropdown and 20 or 36)
+	content.Size = UDim2.new(1,-16,1,noheader and -16 or isdropdown and -24 or -44)
+	content.Parent = frame
+
+	local list = Instance.new("UIListLayout")
+	list.SortOrder = Enum.SortOrder.Name
+	list.Parent = content
+
+	if not noscroll then
+		list:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+			content.CanvasSize = UDim2.new(0,0,0,list.AbsoluteContentSize.Y)
+		end)
+	end
+
+	local collapsebutton = nil
+	local oldSize = isdropdown and settings.size and settings.size.value or frame.Size
+	local minimized = false
+	local hovered = false
+	local off = 0
+
+	local function collapse(v)
+		if collapsebutton then collapsebutton.Image = v and settings.plus or settings.minimize end
+		minimized = v
+		if v then
+			fix.Visible = false
+			content.Visible = false
+			TS:Create(frame,TweenInfo.new(.18,Enum.EasingStyle.Quad),{Size = UDim2.new(frame.Size.X.Scale,frame.Size.X.Offset,frame.Size.Y.Scale,isdropdown and settings.objectS or 28)}):Play()
+		else
+			fix.Visible = true
+			content.Visible = true
+			TS:Create(frame,TweenInfo.new(.18,Enum.EasingStyle.Quad),{Size = isdropdown and settings.size and settings.size.value or oldSize}):Play()
+		end
+	end
+
+	api.collapse = function(v) collapse(v) end
+
+	if settings.collapsed ~= nil then collapse(settings.collapsed) end
+
+	local function headerButton(symbol,callback)
+		max += 28
+
+		local hovering = false
+
+		local button = Instance.new("ImageButton")
+		button.BackgroundTransparency = 1
+		button.Size = UDim2.new(0,18,0,18)
+		button.Position = UDim2.new(1,-24 - off,.5,-9)
+		button.ImageColor3 = settings.button0
+		button.Image = symbol
+		button.Parent = header
+
+		button.MouseEnter:Connect(function()
+			hovering = true
+			button.ImageColor3 = settings.button0hover
+		end)
+
+		button.MouseLeave:Connect(function()
+			hovering = false
+			button.ImageColor3 = settings.button0
+		end)
+
+		button.MouseButton1Down:Connect(function()
+			button.ImageColor3 = settings.button0active
+		end)
+
+		button.MouseButton1Up:Connect(function()
+			button.ImageColor3 = hovering and settings.button0hover or settings.button0
+		end)
+
+		button.MouseButton1Click:Connect(callback)
+
+		off += settings.objectS
+
+		if symbol ~= settings.close then
+			collapsebutton = button
+		end
+
+		return button
+	end
+
+	local function close()
+		if settings.callback then settings.callback("closing") end
+		local tween = TS:Create(frame,TweenInfo.new(.18,Enum.EasingStyle.Quad),{Size = UDim2.new(0,frame.AbsoluteSize.X,0,0),BackgroundTransparency = 1})
+		tween:Play()
+		tween.Completed:Connect(function()
+			frame:Destroy()
+			if settings.callback then settings.callback("closed") end
+		end)
+	end
+
+	if closable then
+		headerButton(settings.close,function()
+			close()
+		end)
+	end
+
+	api.close = function() close() end
+
+	if collapsable then
+		local button
+		button = headerButton(if settings.collapsed then settings.plus else settings.minimize,function() collapse(not minimized,button) end)
+	end
+
+	if draggable then
+		local dragging = false
+		local dragStart
+		local startPos
+
+		header.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 then
+				dragging = true
+				dragStart = input.Position
+				startPos = frame.Position
+			end
+		end)
+
+		UIS.InputEnded:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 then
+				dragging = false
+			end
+		end)
+
+		UIS.InputChanged:Connect(function(input)
+			if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+				local delta = input.Position - dragStart
+				frame.Position = UDim2.new(startPos.X.Scale,startPos.X.Offset + delta.X,startPos.Y.Scale,startPos.Y.Offset + delta.Y)
+			end
+		end)
+	end
+
+	local function resize(side)
+		local line = Instance.new("Frame")
+		line.BackgroundColor3 = settings.scalebar
+		line.BackgroundTransparency = 1
+		line.Parent = frame
+
+		local gradient = Instance.new("UIGradient")
+		gradient.Parent = line
+		gradient.Transparency = NumberSequence.new{NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(.5,0),NumberSequenceKeypoint.new(1,1)}
+
+		if side == "Right" then
+			gradient.Rotation = 90
+			line.Size = UDim2.new(0,2,1,0)
+			line.Position = UDim2.new(1,-1,0,0)
+		elseif side == "Bottom" then
+			line.Size = UDim2.new(1,0,0,2)
+			line.Position = UDim2.new(0,0,1,-1)
+		end
+
+		local resizing = false
+		local startMouse
+		local startSize
+
+		line.MouseEnter:Connect(function()
+			if not minimized then
+				TS:Create(line,TweenInfo.new(.1),{BackgroundTransparency = 0}):Play()
+			end
+		end)
+
+		line.MouseLeave:Connect(function()
+			if not resizing and not minimized then
+				TS:Create(line,TweenInfo.new(.1),{BackgroundTransparency = 1}):Play()
+			end
+		end)
+
+		line.InputBegan:Connect(function(i)
+			if not minimized and i.UserInputType == Enum.UserInputType.MouseButton1 then
+				resizing = true
+				startMouse = i.Position
+				startSize = frame.Size
+			end
+		end)
+
+		UIS.InputEnded:Connect(function(i)
+			if not minimized and i.UserInputType == Enum.UserInputType.MouseButton1 then
+				resizing = false
+				TS:Create(line,TweenInfo.new(.1),{BackgroundTransparency = 1}):Play()
+			end
+		end)
+
+		UIS.InputChanged:Connect(function(i)
+			if resizing and i.UserInputType == Enum.UserInputType.MouseMovement then
+				local delta = i.Position - startMouse
+
+				local x = startSize.X.Offset
+				local y = startSize.Y.Offset
+
+				if side == "Right" then
+					x += delta.X
+				elseif side == "Bottom" then
+					y += delta.Y
+				end
+
+				frame.Size = UDim2.new(0,math.max(x,max),0,math.max(y,28))
+				oldSize = frame.Size
+			end
+		end)
+	end
+
+	if not nobar and not noscroll then
+		content.MouseEnter:Connect(function()
+			hovered = true
+			local t = TS:Create(content,TweenInfo.new(.1),{ScrollBarThickness = 4})
+			t:Play()
+			t.Completed:Wait()
+			if not hovered then
+				content.ScrollBarThickness = 4
+			end
+		end)
+
+		content.MouseLeave:Connect(function()
+			hovered = false
+			local t = TS:Create(content,TweenInfo.new(.1),{ScrollBarThickness = 0})
+			t:Play()
+			t.Completed:Wait()
+			if hovered then
+				content.ScrollBarThickness = 4
+			end
+		end)
+	end
+
+	if Xresizable then resize("Right") end
+	if Yresizable then resize("Bottom") end
+
+	frame.Parent = parent
+
+	tracker[content] = {}
+
+	return frame,content,api
+end
+
+function hoverLabel(parent, obj, text, text2, settings)
+	local window, frame = lib:Window(parent:FindFirstAncestorOfClass("ScreenGui"),text,UDim2.new(0,150,0,100),{nocheck = true,symbol = config.information,collapsable = false,closable = false,draggable = false,noscroll = true,noheader = true})
+	window.Name = "HoverLabel"
+
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.new(1, 0, 1, 0)
+	label.BackgroundTransparency = 1
+	label.Text = text2
+	label.TextColor3 = settings.text1
+	label.Font = settings.font0
+	label.TextWrapped = true
+	label.TextScaled = true
+	label.RichText = true
+	label.Parent = frame
+
+	local elements = {}
+
+	for i,v in pairs(window:GetDescendants()) do
+		if v:IsA("TextLabel") then
+			elements[v] = v.TextTransparency
+		elseif v:IsA("Frame") then
+			elements[v] = v.BackgroundTransparency
+		elseif v:IsA("UIStroke") then
+			elements[v] = v.Transparency
+		end
+	end
+
+	for v,transparency in pairs(elements) do
+		if v:IsA("TextLabel") then
+			v.TextTransparency = 1
+		elseif v:IsA("Frame") then
+			v.BackgroundTransparency = 1
+		elseif v:IsA("UIStroke") then
+			v.Transparency = 1
+		end
+	end
+
+	local m = game.Players.LocalPlayer:GetMouse()
+	m.Move:Connect(function()
+		window.Position = UDim2.new(0,m.X,0,m.Y+81)
+	end)
+
+	window.Visible = false
+	local hovering = false
+	local hoverId = 0
+
+	obj.MouseEnter:Connect(function()
+		hovering = true
+		hoverId += 1
+		local id = hoverId
+
+		task.spawn(function()
+			task.wait(.1)
+
+			if not hovering or id ~= hoverId then
+				return
+			end
+
+			window.Visible = true
+
+			for i,v in pairs(window:GetDescendants()) do
+				if not elements[v] then continue end
+
+				if v:IsA("TextLabel") then
+					game.TweenService:Create(v,TweenInfo.new(.2),{TextTransparency = elements[v]}):Play()
+				elseif v:IsA("Frame") then
+					game.TweenService:Create(v,TweenInfo.new(.2),{BackgroundTransparency = elements[v]}):Play()
+				elseif v:IsA("UIStroke") then
+					v.Transparency = elements[v]
+				end
+			end
+
+			game.TweenService:Create(window,TweenInfo.new(.2),{BackgroundTransparency = 0}):Play()
+		end)
+	end)
+
+	obj.MouseLeave:Connect(function()
+		hovering = false
+		hoverId += 1
+
+		for i,v in pairs(window:GetDescendants()) do
+			if v:IsA("UIStroke") then
+				v.Transparency = 1
+				continue
+			end
+
+			pcall(function()
+				game.TweenService:Create(v,TweenInfo.new(.2),{BackgroundTransparency = 1}):Play()
+				game.TweenService:Create(v,TweenInfo.new(.2),{TextTransparency = 1}):Play()
+			end)
+		end
+
+		local id = hoverId
+		local t = game.TweenService:Create(window,TweenInfo.new(.2),{BackgroundTransparency = 1})
+		t:Play()
+		t.Completed:Wait()
+
+		if id == hoverId and not hovering then
+			window.Visible = false
+		end
+	end)
+end
+
+function lib:Button(parent,text,settings)
+	settings = clean(settings or {})
+
+	if not settings.nocheck then
+		if check(parent,text) then
+			return
+		end
+	end
+
+	local nospace = settings.nospace or false
+	local alignX = settings.alignmentX or Enum.TextXAlignment.Left
+	local alignY = settings.alignmentY or Enum.TextYAlignment.Center
+
+	local frame = Instance.new("Frame")
+	frame.Size = UDim2.new(1,0,0,settings.elementS)
+	frame.BackgroundTransparency = 1
+	frame.Parent = parent
+
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(1,0,0,settings.objectS)
+	btn.BackgroundColor3 = settings.button1
+	btn.AutoButtonColor = false
+	btn.Position = UDim2.new(0,0,.5,-btn.Size.Y.Offset / 2)
+	btn.Font = settings.font0
+	btn.TextSize = settings.textS
+	btn.TextScaled = settings.textscaled and true or false
+	btn.TextXAlignment = alignX
+	btn.TextYAlignment = alignY
+	btn.Text = alignX == Enum.TextXAlignment.Left and not nospace and "  " .. text or alignX == Enum.TextXAlignment.Right and not nospace and text .. "  " or text
+	btn.TextColor3 = settings.text1
+	btn.Parent = frame
+
+	btn:SetAttribute("Inactive",settings.inactive and true or false) -- 1.5.4
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0,4)
+	corner.Parent = btn
+
+	if settings.hoverLabel then
+		hoverLabel(parent, btn, "About "..text, settings.hoverLabel, settings)
+	end
+
+	outline(btn,.5,.5,true)
+
+	local hovering = false
+
+	btn.MouseEnter:Connect(function()
+		if btn:GetAttribute("Inactive") then return end
+		hovering = true
+		btn.BackgroundColor3 = settings.button1hover
+	end)
+
+	btn.MouseLeave:Connect(function()
+		if btn:GetAttribute("Inactive") then return end
+		hovering = false
+		btn.BackgroundColor3 = settings.button1
+	end)
+
+	btn.MouseButton1Down:Connect(function()
+		if btn:GetAttribute("Inactive") then return end
+		btn.BackgroundColor3 = settings.button1active
+		TS:Create(btn,TweenInfo.new(.08),{Size = UDim2.new(1,0,0,settings.objectS - 2)}):Play()
+	end)
+
+	btn.MouseButton1Up:Connect(function()
+		if btn:GetAttribute("Inactive") then return end
+		btn.BackgroundColor3 = hovering and settings.button1hover or settings.button1
+		local t1 = TS:Create(btn,TweenInfo.new(.12,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{Size = UDim2.new(1,0,0,settings.objectS + 2)})
+		local t2 = TS:Create(btn,TweenInfo.new(.08,Enum.EasingStyle.Quad),{Size = UDim2.new(1,0,0,settings.objectS)})
+		t1:Play()
+		t1.Completed:Connect(function()
+			t2:Play()
+		end)
+	end)
+
+	btn.MouseButton1Click:Connect(function()
+		if btn:GetAttribute("Inactive") then return end
+		if settings.callback then settings.callback() end
+	end)
+
+	track(parent,frame)
+
+	return btn
+end
+
+function lib:Toggle(parent,text,settings)
+	settings = clean(settings or {})
+
+	if not settings.nocheck then
+		if check(parent,text) then
+			return
+		end
+	end
+
+	local shape = settings.shape or "smooth"
+	local animation = settings.animation or "fade"
+
+	local value = settings.state or false
+	local size = 18
+
+	local row = Instance.new("Frame")
+	row.Size = UDim2.new(1,0,0,settings.elementS)
+	row.BackgroundTransparency = 1
+	row.Parent = parent
+
+	if settings.hoverLabel then
+		hoverLabel(parent, row, "About "..text, settings.hoverLabel, settings)
+	end
+
+	local label = Instance.new("TextLabel")
+	label.BackgroundTransparency = 1
+	label.Size = UDim2.new(1,-30,1,0)
+	label.Position = UDim2.new(0,0,0,0)
+	label.Font = settings.font0
+	label.TextSize = settings.textS
+	label.TextXAlignment = Enum.TextXAlignment.Left
+	label.Text = "  " .. text
+	label.TextColor3 = settings.text1
+	label.Parent = row
+
+	if settings.hoverLabel then
+		hoverLabel(parent, label, "About "..text, settings.hoverLabel, settings)
+	end
+
+	local box = Instance.new("TextButton")
+	box.Size = UDim2.new(0,size,0,size)
+	box.Position = UDim2.new(1,-size - 2,.5,-size/2)
+	box.BackgroundColor3 = settings.checkbox
+	box.AutoButtonColor = false
+	box.Text = ""
+	box.Parent = row
+
+	if settings.hoverLabel then
+		hoverLabel(parent, box, "About "..text, settings.hoverLabel, settings)
+	end
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0,(shape == "round" or shape == "roundX") and 999 or (shape == "smooth" or shape == "smoothX") and 5 or (shape == "square" or shape == "squareX") and 0 or 0)
+	corner.Parent = box
+
+	outline(box,0,0,true)
+
+	if settings.settings then -- 1.5.5
+		local sttg
+		local opened = false
+		local window, content
+
+		sttg = box:Clone()
+		sttg.TextColor3 = settings.text1
+		sttg.TextSize = 16
+		sttg.Text = "="
+		sttg.Parent = row
+
+		sttg.MouseButton1Click:Connect(function()
+			if window and window.Parent then
+				if opened then opened = false end
+				window:Destroy()
+				return
+			end
+
+			opened = true
+
+			local gui = parent:FindFirstAncestorWhichIsA("ScreenGui")
+			window,content = lib:Window(gui,text.." Settings",UDim2.new(0,260,0,0),{noscroll = true,symbol = settings.information,position = UDim2.new(0,sttg.AbsolutePosition.X,0,sttg.AbsolutePosition.Y)})
+
+			window:SetAttribute("Floating",true)
+
+			settings.settings(content)
+
+			window.Size += UDim2.fromOffset(0,(#content:GetChildren() * settings.elementS) + settings.headerS - 10)
+			window.Position = UDim2.new(0,sttg.AbsolutePosition.X + 22,0,sttg.AbsolutePosition.Y - #content:GetChildren() * 12)
+
+			parent.Parent:GetPropertyChangedSignal("AbsolutePosition"):Connect(function()
+				window.Position = UDim2.new(0,sttg.AbsolutePosition.X + 22,0,sttg.AbsolutePosition.Y - #content:GetChildren() * 12)
+			end)
+			parent.Parent:GetPropertyChangedSignal("AbsoluteRotation"):Connect(function()
+				window.Position = UDim2.new(0,sttg.AbsolutePosition.X + 22,0,sttg.AbsolutePosition.Y - #content:GetChildren() * 12)
+			end)
+			parent.Parent:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+				window.Position = UDim2.new(0,sttg.AbsolutePosition.X + 22,0,sttg.AbsolutePosition.Y - #content:GetChildren() * 12)
+			end)
+
+			zindexthingy(window,dropdownamount + 2)
+		end)
+
+		box.Position = box.Position - UDim2.fromOffset(settings.elementS,0)
+	end
+
+	local check = Instance.new("TextLabel")
+	check.BackgroundTransparency = 1
+	check.Size = UDim2.fromScale(1,1)
+	check.Text = "X"
+	check.Font = settings.font2
+	check.TextSize = 14
+	check.TextColor3 = settings.checkboxfill
+	check.Visible = shape:find("X") and value or false
+	check.Parent = box
+
+	local fill = Instance.new("Frame")
+	fill.Visible = value
+	fill.AnchorPoint = Vector2.new(.5,.5)
+	fill.Position = UDim2.fromScale(.5,.5)
+	fill.Size = value and UDim2.fromScale(1,1) or UDim2.fromScale(0,0)
+	fill.BackgroundColor3 = settings.checkboxfill
+	if shape:find("X") or animation == "fade" then
+		fill.Visible = false
+	else
+		fill.Visible = value
+	end
+	fill.Parent = box
+
+	local fillCorner = corner:Clone()
+	fillCorner.Parent = fill
+
+	check.TextTransparency = value and 0 or 1
+	check.TextSize = 14
+
+	local function refresh()
+		if animation == "fill" then
+			if shape:find("X") then
+				check.Visible = true
+
+				if value then
+					TS:Create(check,TweenInfo.new(.15),{TextTransparency = 0,TextSize = 14}):Play()
+				else
+					local t = TS:Create(check,TweenInfo.new(.15),{TextTransparency = 1,TextSize = 6})
+					t:Play()
+					t.Completed:Connect(function() check.Visible = false end)
+				end
+			else
+				fill.Visible = true
+
+				if value then
+					TS:Create(fill,TweenInfo.new(.15),{Size = UDim2.fromScale(1,1)}):Play()
+				else
+					local t = TS:Create(fill,TweenInfo.new(.15),{Size = UDim2.fromScale(0,0)})
+					t:Play()
+					t.Completed:Connect(function() fill.Visible = false end)
+				end
+			end
+		elseif animation == "fade" then
+			local t = nil
+			if shape:find("X") then
+				t = TS:Create(check,TweenInfo.new(.15),{TextTransparency = value and 0 or 1})
+			else
+				t = TS:Create(box,TweenInfo.new(.15),{BackgroundColor3 = value and settings.checkboxfill or settings.checkbox})
+			end
+			t:Play()
+			if not shape:find("X") then
+				for i,v in pairs(box:GetChildren()) do
+					if v:IsA("UIStroke") then
+						v.Transparency = value and 1 or 0
+					end
+				end
+			end
+			if not value then t.Completed:Wait() end
+			if shape:find("X") then check.Visible = value end
+		else
+			local t = nil
+			if shape:find("X") then
+				t = TS:Create(check,TweenInfo.new(.15),{TextTransparency = value and 0 or 1})
+			else
+				t = TS:Create(box,TweenInfo.new(.15),{BackgroundColor3 = value and settings.checkboxfill or settings.checkbox})
+			end
+			t:Play()
+			if not shape:find("X") then
+				for i,v in pairs(box:GetChildren()) do
+					if v:IsA("UIStroke") then
+						v.Transparency = value and 1 or 0
+					end
+				end
+			end
+			if not value then t.Completed:Wait() end
+			check.Visible = value
+		end
+	end
+
+	refresh()
+
+	if settings.callback and not settings.nocall then settings.callback(value) end
+
+	box.MouseButton1Click:Connect(function()
+		value = not value
+		refresh()
+		if settings.callback then settings.callback(value) end
+	end)
+
+	track(parent,row)
+
+	return row,{
+		get = function() return value end,
+		set = function(v)
+			value = v and true or false
+			refresh()
+			if settings.callback then settings.callback(v) end
+		end,
+	}
+end
+
+function lib:Label(parent,text,settings)
+	settings = clean(settings or {})
+
+	if not settings.nocheck then
+		if check(parent,text) then
+			return
+		end
+	end
+
+	local nospace = settings.nospace or false
+	local alignX = settings.alignmentX or Enum.TextXAlignment.Left
+
+	local label = Instance.new("TextLabel")
+	label.BackgroundTransparency = 1
+	label.Size = settings.size or UDim2.new(1,0,0,settings.elementS)
+	label.TextScaled = settings.textscaled or false
+	label.Position = UDim2.new(0,0,0,0)
+	label.TextWrapped = settings.wrapped ~= false
+	label.Font = settings.font0
+	label.TextSize = settings.textS
+	label.TextXAlignment = alignX
+	label.TextYAlignment = settings.alignmentY or Enum.TextYAlignment.Center
+	label.Text = alignX == Enum.TextXAlignment.Left and not nospace and "  " .. text or alignX == Enum.TextXAlignment.Right and not nospace and text .. "  " or text
+	label.TextColor3 = settings.text1
+	label.Parent = parent
+
+	if settings.hoverLabel then
+		hoverLabel(parent, label, "About "..text, settings.hoverLabel, settings)
+	end
+
+	track(parent,label)
+
+	return label
+end
+
+function lib:Separator(parent,settings)
+	settings = clean(settings or {})
+
+	if not settings.nocheck then 
+		if check(parent) then
+			return
+		end
+	end
+
+	local text = settings.text or ""
+
+	local row = Instance.new("Frame")
+	row.Size = UDim2.new(1,0,0,settings.objectS)
+	row.BackgroundTransparency = 1
+	row.Parent = parent
+
+	if settings.hoverLabel then
+		hoverLabel(parent, row, "About "..text, settings.hoverLabel, settings)
+	end
+
+	local labelSize = 0
+
+	if settings.mode == "none" then
+
+	else
+		local bar = Instance.new("Frame")
+		bar.BorderSizePixel = 0
+		bar.BackgroundColor3 = settings.separator
+		bar.AnchorPoint = Vector2.new(0,.5)
+		bar.Position = UDim2.new(0,0,.5,0)
+		bar.Size = UDim2.new(1,0,0,1)
+		bar.Parent = row
+
+		if settings.hoverLabel then
+			hoverLabel(parent, bar, "About "..text, settings.hoverLabel, settings)
+		end
+
+		if text and text ~= "" then
+			local label = Instance.new("TextLabel")
+			label.BorderSizePixel = 0
+			label.BackgroundColor3 = settings.background
+			label.Position = UDim2.new(0,8,0,0)
+			label.AutomaticSize = Enum.AutomaticSize.X
+			label.Size = UDim2.new(0,0,1,0)
+			label.Font = settings.font0
+			label.Text = "  "..text.."  "
+			label.TextSize = settings.textS
+			label.TextColor3 = settings.text1
+			label.Parent = bar
+
+			if settings.hoverLabel then
+				hoverLabel(parent, label, "About "..text, settings.hoverLabel, settings)
+			end
+
+			task.defer(function()
+				labelSize = label.TextBounds.X + 16
+			end)
+		end
+	end
+
+	track(parent,row)
+
+	return row
+end
+
+function lib:Holder(parent,padding,settings)
+	settings = clean(settings or {})
+
+	if not settings.nocheck then
+		if check(parent,padding) then
+			return
+		end
+	end
+
+	local holder = Instance.new("Frame")
+	holder.BackgroundTransparency = 1
+	holder.Size = UDim2.new(1,0,0,0)
+	holder.AutomaticSize = Enum.AutomaticSize.Y
+	holder.Parent = parent
+
+	local layout = Instance.new("UIListLayout")
+	layout.FillDirection = Enum.FillDirection.Horizontal
+	layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+	layout.SortOrder = Enum.SortOrder.LayoutOrder
+	layout.Padding = UDim.new(0,padding)
+	layout.Parent = holder
+
+	track(parent,holder)
+
+	return holder
+end
+
+function lib:Column(parent,width,align,settings)
+	settings = clean(settings or {})
+
+	if not settings.nocheck then
+		if check(parent,width,align) then
+			return
+		end
+	end
+
+	local column = Instance.new("Frame")
+	column.Name = "Column"
+	column.BackgroundTransparency = 1
+	column.Size = typeof(width) == "number" and UDim2.new(width,0,0,0) or UDim2.new(width.Width.Scale,width.Width.Offset - (parent.UIListLayout.Padding.Offset / 2),0,0)
+	column.AutomaticSize = Enum.AutomaticSize.Y
+	column.Parent = parent
+
+	local layout = Instance.new("UIListLayout")
+	layout.SortOrder = Enum.SortOrder.Name
+	layout.Padding = UDim.new(0,4)
+	layout.Parent = column
+	layout.HorizontalAlignment = align
+
+	return column
+end
+
+function lib:Slider(parent,text,def,min,max,settings)
+	settings = clean(settings or {})
+
+	if not settings.nocheck then
+		if check(parent,text,def,min,max) then
+			return
+		end
+	end
+
+	if max < min then
+		warn(err,"Argument #4 (maximum) must be greater than Argument #5 (minimum)")
+		return
+	end
+
+	if def < min or def > max then
+		warn(err,"Argument #3 (default) must be between or equal to Argument #4 (minimum) and Argument #5 (maximum)")
+		return
+	end
+
+	local speed = settings.speed or 1
+	if speed <= 0 then
+		warn(err,"Slider speed setting cannot be set to 0 or lower. Speed has been set to 1.")
+		speed = 1
+	end
+	
+	local barStyle = settings.barstyle or "smooth"
+	local cursorStyle = settings.cursorstyle or "round"
+
+	local value = def
+	def = (def - min) / (max - min)
+
+	local row = Instance.new("Frame")
+	row.Size = UDim2.new(1,0,0,settings.elementS)
+	row.BackgroundTransparency = 1
+	row.Parent = parent
+
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.new(.35,0,1,0)
+	label.BackgroundTransparency = 1
+	label.Font = settings.font0
+	label.TextSize = 13
+	label.TextXAlignment = Enum.TextXAlignment.Left
+	label.TextColor3 = settings.text1
+	label.Text = "  " .. text
+	label.Parent = row
+
+	local valueDisplay = nil
+	if not settings.nodisplay then
+		valueDisplay = Instance.new("TextBox")
+		valueDisplay.Size = UDim2.new(0,32,0,20)
+		valueDisplay.Position = UDim2.new(.5,-28,0,3)
+		valueDisplay.BackgroundColor3 = settings.colorpickerbox
+		valueDisplay.Font = settings.font0
+		valueDisplay.TextSize = 12
+		valueDisplay.PlaceholderText = min.." - "..max
+		valueDisplay.Text = value
+		valueDisplay.TextColor3 = settings.text1
+		valueDisplay.ClearTextOnFocus = false
+		valueDisplay.Parent = row
+
+		local corner = Instance.new("UICorner")
+		corner.CornerRadius = UDim.new(0,4)
+		corner.Parent = valueDisplay
+
+		outline(valueDisplay,.5,.5,true)
+
+		if settings.hoverLabel then
+			hoverLabel(parent, valueDisplay, "About "..text, settings.hoverLabel, settings)
+		end
+
+		local cur
+		valueDisplay.Focused:Connect(function()
+			cur = valueDisplay.Text
+		end)
+
+		valueDisplay.FocusLost:Connect(function()
+			local new = tonumber(valueDisplay.Text)
+			if not new then
+				valueDisplay.Text = cur
+			elseif new <= max and new >= min then
+				if settings.callback then settings.callback(tonumber(new)) end
+			elseif new > max then
+				if settings.callback then settings.callback(tonumber(max)) end
+				valueDisplay.Text = max
+			elseif new < min then
+				if settings.callback then settings.callback(tonumber(min)) end
+				valueDisplay.Text = min
+			else
+				valueDisplay.Text = cur
+			end
+		end)
+	end
+
+	local bar = Instance.new("Frame")
+	bar.Size = UDim2.new(.43,0,0,4)
+	bar.Position = UDim2.new(.55,0,.5,-2)
+	bar.BackgroundColor3 = settings.slider
+	bar.Parent = row
+
+	outline(bar,.5,.5,true)
+
+	local fill = Instance.new("Frame")
+	fill.Size = UDim2.fromScale(def,1)
+	fill.BackgroundColor3 = settings.sliderfill
+	fill.Parent = bar
+
+	if barStyle == "smooth" then
+		local barCorner = Instance.new("UICorner")
+		barCorner.CornerRadius = UDim.new(0,4)
+		barCorner.Parent = bar
+
+		local fillCorner = barCorner:Clone()
+		fillCorner.Parent = fill
+	end
+
+	local cursor = Instance.new("ImageLabel")
+	cursor.AnchorPoint = Vector2.new(.5,.5)
+	cursor.Position = UDim2.fromScale(def,cursorStyle == "spike" and -.5 or .5)
+	cursor.BackgroundColor3 = settings.slidercursor
+	cursor.ImageTransparency = 1
+	cursor.Parent = bar
+
+	if settings.hoverLabel then
+		hoverLabel(parent, row, "About "..text, settings.hoverLabel, settings)
+		hoverLabel(parent, label, "About "..text, settings.hoverLabel, settings)
+		hoverLabel(parent, bar, "About "..text, settings.hoverLabel, settings)
+		hoverLabel(parent, fill, "About "..text, settings.hoverLabel, settings)
+		hoverLabel(parent, cursor, "About "..text, settings.hoverLabel, settings)
+	end
+
+	if cursorStyle == "round" then
+		cursor.Size = UDim2.new(0,10,0,10)
+		local c = Instance.new("UICorner")
+		c.CornerRadius = UDim.new(1,0)
+		c.Parent = cursor
+		--outline(cursor,.5,.5,true)
+	elseif cursorStyle == "square" then
+		cursor.Size = UDim2.new(0,8,0,8)
+		--outline(cursor,.5,.5,true)
+	elseif cursorStyle == "bar" then
+		cursor.Size = UDim2.new(0,4,0,14)
+		--outline(cursor,.5,.5,true)
+	elseif cursorStyle == "spike" then
+		cursor.Size = UDim2.new(0,14,0,14)
+		cursor.BackgroundTransparency = 1
+		cursor.ImageTransparency = 0
+		cursor.Rotation = 135
+		cursor.Image = "rbxassetid://140571460844683"
+	end
+
+	local dragging = false
+	local last = 0
+
+	local function snap(v)
+		return math.floor(v / speed + .5) * speed
+	end
+
+	local function setFromX(x)
+		value = string.format("%.2f",math.clamp(snap(min + (max - min) * math.clamp(x / bar.AbsoluteSize.X,0,1)),min,max))
+		local snappedAlpha = (value - min) / (max - min)
+		if valueDisplay then valueDisplay.Text = value % 1 ~= 0 and value or math.floor(value) end
+		TS:Create(fill,TweenInfo.new(.1),{Size = UDim2.fromScale(snappedAlpha,1)}):Play()
+		TS:Create(cursor,TweenInfo.new(.1),{Position = UDim2.fromScale(snappedAlpha,cursorStyle == "spike" and -.5 or .5)}):Play()
+		if last ~= value and settings.callback then settings.callback(tonumber(value)) end
+		last = value
+	end
+
+	bar.InputBegan:Connect(function(i)
+		if i.UserInputType == Enum.UserInputType.MouseButton1 then
+			dragging = true
+			setFromX(i.Position.X - bar.AbsolutePosition.X)
+		end
+	end)
+
+	UIS.InputEnded:Connect(function(i)
+		if i.UserInputType == Enum.UserInputType.MouseButton1 then
+			dragging = false
+		end
+	end)
+
+	UIS.InputChanged:Connect(function(i)
+		if dragging and i.UserInputType == Enum.UserInputType.MouseMovement then
+			setFromX(i.Position.X - bar.AbsolutePosition.X)
+		end
+	end)
+
+	if settings.callback and not settings.nocall then settings.callback(tonumber(value)) end
+
+	track(parent,row)
+
+	return row,{
+		get = function() return value end,
+		set = function(v)
+			value = math.clamp(snap(v),min,max)
+			local alpha = (value - min) / (max - min)
+			valueDisplay.Text = tostring(value)
+			fill.Size = UDim2.fromScale(alpha,1)
+			cursor.Position = UDim2.fromScale(alpha,.5)
+			if settings.callback then settings.callback(tonumber(value)) end
+		end
+	}
+end
+
+function lib:ColorPicker(parent,text,color,settings)
+	settings = clean(settings or {})
+
+	if not settings.nocheck then
+		if check(parent,text,color) then
+			return
+		end
+	end
+
+	local callback = settings.callback
+
+	local row = Instance.new("Frame")
+	row.Size = UDim2.new(1,0,0,settings.elementS)
+	row.BackgroundTransparency = 1
+	row.Parent = parent
+
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.new(.42,0,1,0)
+	label.BackgroundTransparency = 1
+	label.Font = settings.font0
+	label.TextSize = 13
+	label.TextXAlignment = Enum.TextXAlignment.Left
+	label.TextColor3 = settings.text1
+	label.Text = "  "..text
+	label.Parent = row
+
+	local preview = Instance.new("TextButton")
+	preview.Size = UDim2.new(0,20,0,20)
+	preview.Position = UDim2.new(1,-135,.5,-9)
+	preview.BackgroundColor3 = color
+	preview.Text = ""
+	preview.AutoButtonColor = false
+	preview.Parent = row
+
+	local previewCorner = Instance.new("UICorner")
+	previewCorner.CornerRadius = UDim.new(0,4)
+	previewCorner.Parent = preview
+
+	if settings.hoverLabel then
+		hoverLabel(parent, row, "About "..text, settings.hoverLabel, settings)
+		hoverLabel(parent, label, "About "..text, settings.hoverLabel, settings)
+		hoverLabel(parent, preview, "About "..text, settings.hoverLabel, settings)
+	end
+
+	outline(preview,0,.5,true)
+
+	local function makeBox(letter,x,value)
+		local box = Instance.new("TextBox")
+		box.Size = UDim2.new(0,32,0,20)
+		box.Position = UDim2.new(1,x,.5,-9)
+		box.BackgroundColor3 = settings.colorpickerbox
+		box.Font = settings.font0
+		box.TextSize = 12
+		box.PlaceholderText = letter
+		box.Text = tostring(value)
+		box.TextColor3 = settings.text1
+		box.ClearTextOnFocus = false
+		box.Parent = row
+
+		local corner = Instance.new("UICorner")
+		corner.CornerRadius = UDim.new(0,4)
+		corner.Parent = box
+
+		outline(box,.5,.5,true)
+
+		box.FocusLost:Connect(function()
+			local r = math.clamp(tonumber(rBox.Text) or 255,0,255)
+			local g = math.clamp(tonumber(gBox.Text) or 255,0,255)
+			local b = math.clamp(tonumber(bBox.Text) or 255,0,255)
+			color = Color3.fromRGB(r,g,b)
+			preview.BackgroundColor3 = color
+			if callback then callback(color) end
+		end)
+
+		return box
+	end
+
+	local rBox = makeBox("R",-108,math.floor(color.R*255))
+	local gBox = makeBox("G",-70,math.floor(color.G*255))
+	local bBox = makeBox("B",-32,math.floor(color.B*255))
+
+	local pickerWindow
+	local pickerContent
+	local opened = false
+
+	preview.MouseButton1Click:Connect(function()
+		if pickerWindow and pickerWindow.Parent then
+			if opened then opened = false end
+			pickerWindow:Destroy()
+			return
+		end
+
+		opened = true
+
+		local gui = parent:FindFirstAncestorWhichIsA("ScreenGui")
+		pickerWindow,pickerContent = lib:Window(gui,"Color Picker",UDim2.new(0,260,0,220),{noscroll = true,symbol = settings.palette,position = UDim2.new(0,preview.AbsolutePosition.X + 22,0,preview.AbsolutePosition.Y - 143)})
+
+		pickerWindow:SetAttribute("Floating",true)
+
+		local palette = Instance.new("ImageLabel")
+		palette.Size = UDim2.new(1,0,1,-52)
+		palette.Image = "rbxassetid://6523286724"
+		palette.ScaleType = Enum.ScaleType.Stretch
+		palette.BackgroundColor3 = Color3.fromHSV(0,1,1)
+		palette.ImageRectOffset = Vector2.new(500,0)
+		palette.ImageRectSize = Vector2.new(-500,500)
+		palette.Parent = pickerContent
+
+		track(pickerContent,palette)
+
+		local paletteCorner = Instance.new("UICorner")
+		paletteCorner.CornerRadius = UDim.new(0,4)
+		paletteCorner.Parent = palette
+
+		local dragging = false
+
+		local hue = 0
+		local sat = 1
+		local val = 1
+
+		local function refresh()
+			color = Color3.fromHSV(hue,sat,val)
+
+			rBox.Text = math.floor(color.R*255)
+			gBox.Text = math.floor(color.G*255)
+			bBox.Text = math.floor(color.B*255)
+
+			preview.BackgroundColor3 = color
+		end
+
+		local brightness = lib:Slider(pickerContent,"Brightness",1,0,1,{nocall = true,speed = .01,color = settings.sliderfill,cursorstyle = "round",
+			callback = function(v)
+				val = v
+				refresh()
+			end
+		})
+
+		local ok = lib:Button(pickerContent,"OK",{alignmentX = Enum.TextXAlignment.Center,
+			callback = function()
+				opened = false
+				pickerWindow:Destroy()
+				if callback then callback(color) end
+			end
+		})
+
+		local okCorner = Instance.new("UICorner")
+		okCorner.CornerRadius = UDim.new(0,4)
+		okCorner.Parent = ok
+
+		palette.InputBegan:Connect(function(i)
+			if i.UserInputType == Enum.UserInputType.MouseButton1 then
+				dragging = true
+			end
+		end)
+
+		UIS.InputEnded:Connect(function(i)
+			if i.UserInputType == Enum.UserInputType.MouseButton1 then
+				dragging = false
+			end
+		end)
+
+		UIS.InputChanged:Connect(function(i)
+			if dragging and i.UserInputType == Enum.UserInputType.MouseMovement then
+				local x = math.clamp(i.Position.X - palette.AbsolutePosition.X,0,palette.AbsoluteSize.X)
+				local y = math.clamp(i.Position.Y - palette.AbsolutePosition.Y,0,palette.AbsoluteSize.Y)
+
+				hue = x / palette.AbsoluteSize.X
+				sat = 1 - (y / palette.AbsoluteSize.Y)
+
+				refresh()
+			end
+		end)
+
+		parent.Parent:GetPropertyChangedSignal("AbsolutePosition"):Connect(function()
+			pickerWindow.Position = UDim2.new(0,preview.AbsolutePosition.X + 22,0,preview.AbsolutePosition.Y - 143)
+		end)
+		parent.Parent:GetPropertyChangedSignal("AbsoluteRotation"):Connect(function()
+			pickerWindow.Position = UDim2.new(0,preview.AbsolutePosition.X + 22,0,preview.AbsolutePosition.Y - 143)
+		end)
+		parent.Parent:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+			pickerWindow.Position = UDim2.new(0,preview.AbsolutePosition.X + 22,0,preview.AbsolutePosition.Y - 143)
+		end)
+
+		zindexthingy(pickerWindow,dropdownamount + 2)
+	end)
+
+	if callback and not settings.nocall then callback(color) end
+
+	track(parent,row)
+
+	return row,{
+		get = function() return color end,
+		set = function(c)
+			color = c
+			rBox.Text = math.floor(c.R*255)
+			gBox.Text = math.floor(c.G*255)
+			bBox.Text = math.floor(c.B*255)
+			preview.BackgroundColor3 = c
+			if settings.callback then settings.callback(c) end
+		end
+	}
+end
+
+function lib:Dropdown(parent,text,content,settings)
+	settings = clean(settings or {})
+
+	if not settings.nocheck then
+		if check(parent,text,content) then
+			return
+		end
+	end
+	
+	local tableOfContent = {}
+	local current
+	local open = false
+	local height = 0
+
+	local holder = lib:Holder(parent,6)
+	local column1 = lib:Column(holder,0.49,Enum.HorizontalAlignment.Left)
+	local column2 = lib:Column(holder,0.49,Enum.HorizontalAlignment.Right)
+	local label = lib:Label(column1,text,{wrapped = false})
+
+	local element = Instance.new("Frame",column2)
+	element.Size = UDim2.new(1,0,0,settings.elementS)
+	element.BackgroundTransparency = 1
+	
+	local frame = Instance.new("Frame",parent:FindFirstAncestorOfClass("ScreenGui"))
+	frame.Size = UDim2.new(0,0,0,16)
+	frame.Name = "Dropdown"
+	frame.Position = settings.position or UDim2.new(0,0,0,0)
+	frame.BackgroundColor3 = settings.dropdown
+	frame.ClipsDescendants = true
+	frame.BorderSizePixel = 0
+	frame.Visible = false
+	
+	frame:SetAttribute("FloatingV",true)
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0,6)
+	corner.Parent = frame
+
+	outline(frame,.5,.5,true)
+
+	local stuff = Instance.new("ScrollingFrame",frame)
+	stuff.Name = "Content"
+	stuff.ScrollBarThickness = 0
+	stuff.ScrollBarImageColor3 = settings.scrollbar
+	stuff.BorderSizePixel = 0
+	stuff.BackgroundTransparency = 1
+	stuff.Position = UDim2.new(0,8,0,8)
+	stuff.Size = UDim2.new(1,-16,1,-16)
+	
+	local list = Instance.new("UIListLayout")
+	list.SortOrder = Enum.SortOrder.Name
+	list.Parent = stuff
+	
+	list:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+		stuff.CanvasSize = UDim2.new(0,0,0,list.AbsoluteContentSize.Y)
+	end)
+
+	local expand = Instance.new("ImageLabel")
+	expand.Size = UDim2.new(0,16,0,16)
+	expand.Position = UDim2.new(1,-20,0,2)
+	expand.BackgroundTransparency = 1
+	expand.Image = settings.plus
+	
+	local function collapse(v)
+		open = not v
+		frame.Visible = not v
+		expand.Image = v and settings.plus or settings.minimize
+	end
+	
+	local head = lib:Button(element,"...",{inactive = true})
+	head.MouseButton1Click:Connect(function()
+		collapse(open)
+	end)
+	
+	local function updateSize()
+		frame.Size = UDim2.new(0,head.AbsoluteSize.X,0,height < 100 and height or 100)
+	end
+	
+	head:GetPropertyChangedSignal("AbsolutePosition"):Connect(function()
+		updateSize()
+		frame.Position = UDim2.new(0,head.AbsolutePosition.X,0,head.AbsolutePosition.Y + 78)
+	end)
+	head:GetPropertyChangedSignal("AbsoluteRotation"):Connect(function()
+		updateSize()
+		frame.Position = UDim2.new(0,head.AbsolutePosition.X,0,head.AbsolutePosition.Y + 78)
+	end)
+	head:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+		updateSize()
+		frame.Position = UDim2.new(0,head.AbsolutePosition.X,0,head.AbsolutePosition.Y + 78)
+	end)
+	
+	expand.Parent = head
+	
+	if settings.hoverLabel then
+		hoverLabel(parent, holder, "About "..text, settings.hoverLabel, settings)
+		hoverLabel(parent, column1, "About "..text, settings.hoverLabel, settings)
+		hoverLabel(parent, column2, "About "..text, settings.hoverLabel, settings)
+		hoverLabel(parent, label, "About "..text, settings.hoverLabel, settings)
+		hoverLabel(parent, frame, "About "..text, settings.hoverLabel, settings)
+		hoverLabel(parent, stuff, "About "..text, settings.hoverLabel, settings)
+	end
+	
+	local function addBtn(v)
+		height += 26
+		updateSize()
+		local btn = lib:Button(stuff,v,{
+			callback = function()
+				head.Text = "  "..v
+				collapse(true)
+				if settings.callback then settings.callback(v) end
+			end
+		})
+		tableOfContent[v] = btn
+		zindexthingy(frame,dropdownI)
+	end
+
+	for _,v in pairs(content) do
+		addBtn(v)
+	end
+
+	if settings.callback and not settings.nocall then
+		local found = false
+		for _,v in pairs(content) do
+			if v == settings.default then
+				settings.callback(v)
+				found = true
+				current = v
+				break
+			end
+		end
+	end
+
+	track(parent,frame)
+
+	dropdownI -= 1
+
+	return frame, {
+		add = function(v)
+			addBtn(v)
+		end,
+		sub = function(v)
+			local found = false
+			for i,btn in pairs(tableOfContent) do
+				if i == v then
+					btn.Parent:Destroy()
+					found = true
+					break
+				end
+			end
+			if found then
+				height -= 26
+				updateSize()
+				if current == v then
+					current = nil
+					head.Text = "  ..."
+				end
+				tableOfContent[v] = nil
+			end
+		end,
+		set = function(v)
+			head.Text = "  "..v
+			collapse(true)
+			if settings.callback then settings.callback(v) end
+		end
+	}
+end
+
+--[[
+function lib:Dropdown(parent,text,content,settings)
+	settings = clean(settings or {})
+
+	if not settings.nocheck then
+		if check(parent,text,content) then
+			return
+		end
+	end
+
+	local tableOfContent = {}
+	local current
+
+	local holder = lib:Holder(parent,6)
+	local column1 = lib:Column(holder,0.49,Enum.HorizontalAlignment.Left)
+	local column2 = lib:Column(holder,0.49,Enum.HorizontalAlignment.Right)
+	local label = lib:Label(column1,text,{wrapped = false})
+
+	local frame = Instance.new("Frame")
+	frame.Size = UDim2.new(1,0,0,settings.elementS)
+	frame.BackgroundTransparency = 1
+	frame.Parent = column2
+
+	local height = {value = UDim2.new(1,0,0,26)}
+	local list,stuff,api = lib:Window(frame,settings.default or "...",UDim2.new(0,324,0,26),{nocheck = true,objectS = 26,background = settings.dropdown,position = UDim2.new(0,0,0,3),collapsed = true,collapsable = true,isdropdown = true,size = height})
+
+	if settings.hoverLabel then
+		hoverLabel(parent, holder, "About "..text, settings.hoverLabel, settings)
+		hoverLabel(parent, column1, "About "..text, settings.hoverLabel, settings)
+		hoverLabel(parent, column2, "About "..text, settings.hoverLabel, settings)
+		hoverLabel(parent, label, "About "..text, settings.hoverLabel, settings)
+		hoverLabel(parent, frame, "About "..text, settings.hoverLabel, settings)
+		hoverLabel(parent, list, "About "..text, settings.hoverLabel, settings)
+	end
+
+	local function addBtn(v)
+		if settings.maxScale then
+			if list.Size.Y.Scale < settings.maxScale then
+				height.value += UDim2.new(0,0,0,26)
+			end
+		else
+			height.value += UDim2.new(0,0,0,26)
+		end
+		local btn = lib:Button(stuff,v,{
+			callback = function()
+				api.set(v)
+				api.collapse(true)
+				if settings.callback then settings.callback(v) end
+			end
+		})
+		tableOfContent[v] = btn
+		zindexthingy(list,dropdownI)
+	end
+
+	for _,v in pairs(content) do
+		addBtn(v)
+	end
+
+	if settings.callback and not settings.nocall then
+		local found = false
+		for _,v in pairs(content) do
+			if v == settings.default then
+				settings.callback(v)
+				found = true
+				current = v
+				break
+			end
+		end
+	end
+
+	track(parent,frame)
+
+	dropdownI -= 1
+
+	return frame, {
+		add = function(v)
+			addBtn(v)
+		end,
+		sub = function(v)
+			local found = false
+			for i,btn in pairs(tableOfContent) do
+				if i == v then
+					btn.Parent:Destroy()
+					found = true
+					break
+				end
+			end
+			if found then
+				height.value -= UDim2.new(0,0,0,26)
+				if current == v then
+					current = nil
+					api.set("...")
+				end
+				tableOfContent[v] = nil
+			end
+		end,
+		set = function(v)
+			api.set(v)
+			api.collapse(true)
+			if settings.callback then settings.callback(v) end
+		end
+	}
+end
+]]--
+
+function lib:KeyPicker(parent,text,settings)
+	settings = clean(settings or {})
+
+	if not settings.nocheck then
+		if check(parent,text) then
+			return
+		end
+	end
+
+	local holder = lib:Holder(parent,6)
+	local column1 = lib:Column(holder,UDim2.new(1,-130,0,0),Enum.HorizontalAlignment.Left)
+	local column2 = lib:Column(holder,UDim2.new(0,130,0,0),Enum.HorizontalAlignment.Right) -- biggest KeyCode is MouseMiddleButton, who fits perfectly within 130
+	local label = lib:Label(column1,text,{wrapped = false})
+
+	local button
+	button = lib:Button(column2,"None",{alignmentX = Enum.TextXAlignment.Center,
+		callback = function()
+			local save = button.Text
+			button.Text = "Press a key..."
+			
+			local key
+			local connection = game:GetService("UserInputService").InputBegan:Connect(function(input)
+				key = input.UserInputType ~= Enum.UserInputType.Keyboard and input.UserInputType or input.KeyCode
+			end)
+			repeat wait() until key
+
+			connection:Disconnect()
+
+			if settings.exitkey and key == settings.exitkey or key == Enum.KeyCode.Escape or key == Enum.UserInputType.Keyboard then
+				button.Text = save
+			elseif settings.deletekey and key == settings.deletekey then
+				if settings.callback then settings.callback(Enum.KeyCode.None) end
+				button.Text = "None"
+			else
+				if settings.callback then settings.callback(key) end
+				button.Text = key.Name
+			end
+		end
+	})
+
+	if settings.hoverLabel then
+		hoverLabel(parent, holder, "About "..text, settings.hoverLabel, settings)
+		hoverLabel(parent, column1, "About "..text, settings.hoverLabel, settings)
+		hoverLabel(parent, column2, "About "..text, settings.hoverLabel, settings)
+		hoverLabel(parent, label, "About "..text, settings.hoverLabel, settings)
+		hoverLabel(parent, button, "About "..text, settings.hoverLabel, settings)
+	end
+
+	button.Text = settings.key and settings.key.Name or "None"
+
+	return button,{
+		set = function(key)
+			button.Text = key.Name
+			if settings.callback then settings.callback(key) end
+		end
+	}
+end
+
+function lib:TextBox(parent,text,settings)
+	settings = clean(settings or {})
+
+	if not settings.nocheck then
+		if check(parent,text) then
+			return
+		end
+	end
+
+	local ptext = settings.text or "  "
+	local nospace = settings.nospace or false
+
+	if settings.label then
+		local holder = lib:Holder(parent,6)
+		local column1 = lib:Column(holder,0.49,Enum.HorizontalAlignment.Left)
+		local column2 = lib:Column(holder,0.49,Enum.HorizontalAlignment.Right)
+		local label = lib:Label(column1,settings.label)
+		parent = column2
+		if settings.hoverLabel then
+			hoverLabel(parent, label, "About "..text, settings.hoverLabel, settings)
+		end
+	end
+
+	local row = Instance.new("Frame")
+	row.Size = UDim2.new(1,0,0,settings.elementS)
+	row.BackgroundColor3 = settings.textbox
+	row.Parent = parent
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0,4)
+	corner.Parent = row
+
+	outline(row,.5,.5,true)
+
+	local textbox = Instance.new("TextBox")
+	textbox.Size = UDim2.new(0.93,0,1,0)
+	textbox.Position = UDim2.new(0,8,0,0)
+	textbox.BackgroundTransparency = 1
+	textbox.Font = settings.font0
+	textbox.TextSize = settings.textS
+	textbox.TextWrapped = true
+	textbox.TextScaled = settings.textscaled or false
+	textbox.TextXAlignment = settings.alignmentX or Enum.TextXAlignment.Left
+	textbox.TextYAlignment = settings.alignmentY or Enum.TextYAlignment.Center
+	textbox.PlaceholderText = ptext
+	textbox.Text = text
+	textbox.TextColor3 = settings.text1
+	textbox.ClearTextOnFocus = false
+	textbox.Parent = row
+
+	if settings.hoverLabel then
+		hoverLabel(parent, row, "About "..text, settings.hoverLabel, settings)
+		hoverLabel(parent, textbox, "About "..text, settings.hoverLabel, settings)
+	end
+
+	textbox.FocusLost:Connect(function()
+		if settings.callback then settings.callback(textbox.Text) end
+	end)
+
+	track(parent,row)
+
+	return textbox
+end
+
+function layoutNotifications(X, SPACING)
+	local order = {}
+
+	for i,v in pairs(notifications) do
+		if v and v.window then
+			table.insert(order,{index = i,data = v})
+		end
+	end
+
+	table.sort(order,function(a,b)
+		return a.index > b.index
+	end)
+
+	for slot,v in ipairs(order) do
+		local target = UDim2.new(1,-(X + 10),1,-(slot * SPACING))
+
+		if v.data.tween then
+			v.data.tween:Cancel()
+		end
+
+		v.data.tween = TS:Create(
+			v.data.window,
+			TweenInfo.new(.5,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),
+			{Position = target}
+		)
+
+		v.data.tween:Play()
+	end
+end
+
+function lib:Notify(parent,length,settings)
+	settings = clean(settings or {})
+
+	if not settings.nocheck then
+		if check(parent,length) then
+			return
+		end
+	end
+
+	local alignX = settings.alignmentX or Enum.TextXAlignment.Left
+	local alignY = settings.alignmentY or Enum.TextYAlignment.Center
+	local scaled = settings.textscaled and true or false
+	local btntype = settings.btntype or 0
+	local title = settings.title or "Notification"
+	local text = settings.text or ""
+	local X = settings.X or 300
+	local Y = settings.Y or 100
+
+	local api = {current = 0,total = length}
+	local SPACING = Y + 10
+
+	notificationIndex += 1
+	local index = notificationIndex
+
+	local window,content = lib:Window(parent,title,UDim2.new(0,X,0,Y),{symbol = settings.notification,color = Color3.fromRGB(30,30,30),position = UDim2.new(1,0,1,-SPACING),collapsable = false,closeable = true,noscroll = true})
+	local label = btntype ~= 5 and lib:Label(content,text,{size = UDim2.new(1,0,0,Y - settings.headerS - settings.elementS - 13),nospace = true,textscaled = scaled,alignmentX = alignX,alignmentY = alignY}) or nil
+
+	local function btn(parent,text,result)
+		lib:Button(parent,text,{alignmentX = Enum.TextXAlignment.Center,
+			callback = function()
+				api.current = api.total
+
+				if settings.callback then
+					settings.callback(result,text)
+				end
+			end,
+		})
+	end
+
+	if btntype == 0 then
+		label.Size = UDim2.new(1,0,1,0)
+		label.TextScaled = true
+	else
+		if btntype == 1 then
+			btn(content,"OK",1)
+		else
+			local cols1 = lib:Holder(content,6)
+
+			if btntype == 2 or btntype == 3 then
+				local left = lib:Column(cols1,.49,Enum.HorizontalAlignment.Left)
+				local right = lib:Column(cols1,.49,Enum.HorizontalAlignment.Right)
+
+				btn(left,btntype == 2 and "OK" or "YES",1)
+				btn(right,btntype == 2 and "CANCEL" or "NO",2)
+			elseif btntype == 4 then
+				local left = lib:Column(cols1,.32,Enum.HorizontalAlignment.Left)
+				local center = lib:Column(cols1,.32,Enum.HorizontalAlignment.Center)
+				local right = lib:Column(cols1,.32,Enum.HorizontalAlignment.Right)
+
+				btn(left,"YES",1)
+				btn(center,"NO",2)
+				btn(right,"CANCEL",3)
+			end
+		end
+	end
+
+	notifications[index] = {window = window,height = SPACING,tween = nil}
+
+	zindexthingy(window,dropdownamount + 3)
+
+	layoutNotifications(X,SPACING)
+
+	task.spawn(function()
+		while api.current < api.total do
+			task.wait(.1)
+			api.current += .1
+		end
+
+		local notif = notifications[index]
+
+		if notif and notif.tween then
+			notif.tween:Cancel()
+		end
+
+		local t = TS:Create(window, TweenInfo.new(.5,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Position = UDim2.new(1,0,1,window.Position.Y.Offset)})
+
+		t:Play()
+
+		notifications[index] = nil
+
+		layoutNotifications(X,SPACING)
+
+		t.Completed:Wait()
+		window:Destroy()
+	end)
+
+	return window,content,api
+end
+
+function lib:Tab(parent,title,settings)
+	settings = clean(settings or {})
+
+	if not settings.nocheck then
+		if check(parent,title) then
+			return
+		end
+	end
+
+	local content = parent.Content
+
+	local tabs = parent:FindFirstChild("Tabs")
+	if not tabs then
+		tabs = Instance.new("Frame")
+		tabs.Name = "Tabs"
+		tabs.BorderSizePixel = 0
+		tabs.Size = UDim2.new(1,0,0,settings.tabS)
+		tabs.Position = UDim2.new(0,0,0,parent:FindFirstChild("Header") and parent.Header.Size.Y.Offset or 0)
+		tabs.BackgroundColor3 = parent:FindFirstChild("Header") and settings.header or settings.background
+		tabs.Parent = parent
+
+		content.Size -= UDim2.new(0,0,0,tabs.Size.Y.Offset)
+		content.Position += UDim2.new(0,0,0,tabs.Size.Y.Offset)
+	end
+
+	local tabsContents = parent:FindFirstChild("TabsContents")
+	if not tabsContents then
+		tabsContents = Instance.new("Frame")
+		tabsContents.Name = "TabsContents"
+		tabsContents.Size = content.Size
+		tabsContents.BorderSizePixel = 0
+		tabsContents.Position = content.Position
+		tabsContents.BackgroundTransparency = 1
+		tabsContents.Parent = parent
+		content.Visible = false
+	end
+
+	local tabContent = settings.noscroll and Instance.new("Frame") or Instance.new("ScrollingFrame")
+	local list = content.UIListLayout:Clone()
+	list.Parent = tabContent
+	tabContent.BorderSizePixel = 0
+	tabContent.ScrollBarThickness = 0
+	tabContent.ScrollBarImageColor3 = settings.scrollbar
+	tabContent.Size = UDim2.new(1,0,1,0)
+	tabContent.BackgroundTransparency = 1
+	tabContent.Parent = tabsContents
+	tabContent.Visible = false
+
+	if not settings.noscroll then
+		list:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+			tabContent.CanvasSize = UDim2.new(0,0,0,list.AbsoluteContentSize.Y)
+		end)
+	end
+
+	if not settings.nobar and not settings.noscroll then
+		local hovered = false
+
+		tabContent.MouseEnter:Connect(function()
+			hovered = true
+			local t = TS:Create(tabContent,TweenInfo.new(.1),{ScrollBarThickness = 4})
+			t:Play()
+			t.Completed:Wait()
+			if not hovered then
+				tabContent.ScrollBarThickness = 4
+			end
+		end)
+
+		tabContent.MouseLeave:Connect(function()
+			hovered = false
+			local t = TS:Create(tabContent,TweenInfo.new(.1),{ScrollBarThickness = 0})
+			t:Play()
+			t.Completed:Wait()
+			if hovered then
+				tabContent.ScrollBarThickness = 4
+			end
+		end)
+	end
+
+	local tab
+
+	local function setTab()
+		for _,v in pairs(tabs:GetChildren()) do
+			if v.TextButton:FindFirstChild("Content") then
+				v.TextButton.Content.Value.Visible = false -- was :GetAttribute("Content"):Get() before 1.5.4.1
+			end
+
+			for _,v in pairs(v.TextButton:GetChildren()) do
+				if v:IsA("UIStroke") then
+					v.Transparency = .5
+				end
+			end
+			v.TextButton.BackgroundColor3 = settings.button1
+			v.TextButton:SetAttribute("Inactive",false)
+		end
+
+		tabContent.Visible = true
+		tab:SetAttribute("Inactive",true)
+		tab.BackgroundColor3 = settings.header
+
+		for _,v in pairs(tab:GetChildren()) do
+			if v:IsA("UIStroke") then
+				v.Transparency = 1
+			end
+		end
+
+		for _,v in pairs(parent.Parent:GetChildren()) do
+			if v:GetAttribute("Floating") then
+				v:Destroy()
+			elseif v:GetAttribute("FloatingV") then
+				v.Visible = false
+			end
+		end
+	end
+
+	tab = lib:Button(tabs,title,{alignmentX = Enum.TextXAlignment.Center,callback = setTab})
+	local ct = Instance.new("ObjectValue",tab)
+	ct.Value = tabContent
+	ct.Name = "Content"
+	tab:SetAttribute("Inactive",false)
+
+	local result = 1 / #tabs:GetChildren()
+	local val = 0
+
+	for _,v in pairs(tabs:GetChildren()) do
+		v.Size = UDim2.new(result,0,1,0)
+		v.Position = UDim2.new(val,0,0,0)
+		val += result
+	end
+
+	return tab,tabContent,{setTab = setTab}
+end
+
+function lib:Demo()
+	local custom_cfg = {enabled = false}
+	local theme_cfg = lib:Theme(Color3.fromRGB(138,43,226),0)
+
+	for i,v in pairs(custom_cfg) do
+		theme_cfg[i] = v
+	end
+
+	local container = lib:Begin(game.Players.LocalPlayer.PlayerGui,"random",theme_cfg)
+
+	local notification, content, api = lib:Notify(container,3,{text = "Hello World !",btntype = 0,title = "This notification said:",notification = ""})
+	lib:Notify(container,7,{text = "Thank you for using Skira's Library, enjoy the demo !",btntype = 0})
+	lib:Notify(container,5,{text = "The notification below takes seven seconds to go away.",btntype = 2})
+
+	local win1,content1,api1 = lib:Window(container,"SkiraLib Demo - Main",UDim2.new(0,250,0,495),{iconcolor = Color3.fromRGB(255,255,255),symbol = config.star,position = UDim2.new(1,-260,0,92),collapsable = true,closable = true,Xresizable = true,Yresizable = true,draggable = true})
+
+	local Tab,content1,TabAPI = lib:Tab(win1,"Main Tab") -- 1.5.4
+	lib:Tab(win1,"Empty Tab")
+	TabAPI.setTab()
+
+	api1.symbol.Image = "rbxassetid://94911923878147"
+	api1.symbol.ScaleType = Enum.ScaleType.Crop
+	api1.symbol.ImageRectSize = Vector2.new(128, 128)
+	api1.symbol.ImageRectOffset = Vector2.new(0, 0)
+
+	task.spawn(function()
+		local CX = 0
+		local CY = 0
+		while true do
+			if CX == 5 - 1 then
+				CX = 0
+				CY = CY + 1
+				if CY == 5 then
+					CY = 0
+				end
+			else
+				CX = CX + 1
+			end
+
+			api1.symbol.ImageRectOffset = Vector2.new(CX == 0 and 0 or 128 * CX, CY == 0 and 0 or 128 * CY)
+			task.wait(0.8 / 9)
+		end
+	end)
+
+	lib:Separator(content1,{text = "Main"})
+
+	local btn = lib:Button(content1,"Click me",{
+		callback = function()
+			print("Clicked")
+		end
+	})
+
+	lib:Toggle(content1,"Square Fill",{state = true,color = Color3.fromRGB(0,170,255),shape = "square",animation = "fill",
+		callback = function(v)
+			print("Set to",v)
+		end
+	})
+	lib:Toggle(content1,"Square Check Fill",{state = true,color = Color3.fromRGB(0,170,255),shape = "squareX",animation = "fill",
+		callback = function(v)
+			print("Set to",v)
+		end
+	})
+
+	lib:Toggle(content1,"Smooth Fade",{state = true,color = Color3.fromRGB(255,80,80),shape = "smooth",animation = "fade",
+		callback = function(v)
+			print("Set to",v)
+		end
+	})
+	lib:Toggle(content1,"Smooth Check Fade",{state = false,color = Color3.fromRGB(255,80,80),shape = "smoothX",animation = "fade",
+		callback = function(v)
+			print("Set to",v)
+		end
+	})
+
+	lib:Toggle(content1,"Round Fill",{state = true,color = Color3.fromRGB(255,80,80),shape = "round",animation = "fill",
+		callback = function(v)
+			print("Set to",v)
+		end
+	})
+	lib:Toggle(content1,"Round Check Fill",{state = false,color = Color3.fromRGB(255,80,80),shape = "roundX",animation = "fill",
+		callback = function(v)
+			print("Set to",v)
+		end
+	})
+
+	lib:Slider(content1,"Square",0,0,100,{speed = 1,color = Color3.fromRGB(255,80,80),cursorstyle = "square",sliderstyle = "sharp",
+		callback = function(v)
+			print("Set to",v)
+		end
+	})
+	lib:Slider(content1,"Round",0,0,50,{speed = 1,cursorstyle = "round",sliderstyle = "smooth",
+		callback = function(v)
+			print("Set to",v)
+		end
+	})
+	lib:Slider(content1,"Spike",0,0,10,{speed = 1,cursorstyle = "spike",sliderstyle = "smooth",
+		callback = function(v)
+			print("Set to",v)
+		end
+	})
+	lib:Slider(content1,"Bar",0,0,1,{speed = .1,cursorstyle = "bar",sliderstyle = "sharp",
+		callback = function(v)
+			print("Set to",v)
+		end
+	})
+
+	lib:Separator(content1,{text = "Columns"})
+
+	local cols1 = lib:Holder(content1,6)
+	local left = lib:Column(cols1,.49,Enum.HorizontalAlignment.Left)
+	local right = lib:Column(cols1,.49,Enum.HorizontalAlignment.Right)
+
+	lib:Label(left,"Example text",{})
+	lib:Button(right,"Send Notification",{callback = function()
+		lib:Notify(container,3,{text = "This is a example notification",btntype = 0,title = "Example Notification",notification = ""})
+	end,})
+
+	local cols2 = lib:Holder(content1,6)
+	local a = lib:Column(cols2,.32,Enum.HorizontalAlignment.Left)
+	local b = lib:Column(cols2,.32,Enum.HorizontalAlignment.Center)
+	local c = lib:Column(cols2,.32,Enum.HorizontalAlignment.Right)
+
+	lib:Button(a,"Left",{alignmentX = Enum.TextXAlignment.Left})
+	lib:Button(b,"Center",{alignmentX = Enum.TextXAlignment.Center})
+	lib:Button(c,"Right",{alignmentX = Enum.TextXAlignment.Right})
+
+	lib:Separator(content1,{text = "Bomboclat"})
+
+	lib:Dropdown(content1,"A",{"A","B","C"},{
+		callback = function(v)
+			print("Selected",v)
+		end
+	})
+
+	lib:Dropdown(content1,"D",{"D","E","F","G","H","I"},{
+		callback = function(v)
+			print("Selected",v)
+		end
+	})
+
+	lib:Separator(content1,{text = "Color Stuff"})
+
+	lib:ColorPicker(content1,"Theme Color",Color3.fromRGB(0,170,255),{
+		callback = function(color)
+			print(color)
+		end
+	})
+
+	lib:Separator(content1,{text = "v1.5"})
+
+	lib:KeyPicker(content1, "Pick a key", {key = Enum.KeyCode.Escape})
+	lib:TextBox(content1, "Example Text", {text = "placeholder text example"})
+
+	local win2,content2 = lib:Window(container,"SkiraLib Demo - Info",UDim2.new(0,250,0,72),{position = UDim2.new(1,-260,0,10)})
+
+	local cols3 = lib:Holder(content2,6)
+	local a2 = lib:Column(cols3,.32,"Left")
+	local b2 = lib:Column(cols3,.32,"Center")
+	local c2 = lib:Column(cols3,.32,"Right")
+
+	local plr = lib:Label(a2,"PLAYERS: "..#game.Players:GetPlayers(),{color = config.text1})
+	local ping = lib:Label(b2,"PING: "..math.floor(game.Players.LocalPlayer:GetNetworkPing() * 1000),{color = config.text1})
+	local fps = lib:Label(c2,"FPS: nil",{color = config.text1})
+
+	local f = 0
+	game:GetService("RunService").RenderStepped:Connect(function()
+		f += 1
+	end)
+	task.spawn(function()
+		while true do
+			task.wait(1)
+
+			local p = math.floor(game.Players.LocalPlayer:GetNetworkPing() * 1000)
+
+			fps.Text = "  FPS: "..f
+			ping.Text = "  PING: "..p.."ms"
+			plr.Text = "  PLAYERS: "..#game.Players:GetPlayers()
+
+			if f <= 15 then
+				fps.TextColor3 = Color3.fromRGB(200,0,0)
+			elseif f <= 59 then
+				fps.TextColor3 = Color3.fromRGB(200,200,0)
+			elseif f >= 60 then
+				fps.TextColor3 = Color3.fromRGB(0,200,0)
+			end
+
+			if p <= 30 then
+				ping.TextColor3 = Color3.fromRGB(0,200,0)
+			elseif p > 100 then
+				ping.TextColor3 = Color3.fromRGB(200,0,0)
+			elseif p > 30 then
+				ping.TextColor3 = Color3.fromRGB(200,200,0)
+			end
+
+			f = 0
+		end
+	end)
+
+	local win3,content3 = lib:Window(container,"SkiraLib Demo - Credits",UDim2.new(0,250,0,214),{symbol = config.cube,position = UDim2.new(0,10,1,-224)})
+
+	lib:Label(content3,"Skira's Library",{alignmentX = Enum.TextXAlignment.Center,text1 = Color3.fromRGB(255, 0, 0),font0 = Enum.Font.LuckiestGuy,textS = 24})
+	lib:Label(content3,"Writing a new script everytime\n i need a UI was too much,\nso I made this library !",{size = UDim2.new(1,0,0,92),alignmentX = Enum.TextXAlignment.Center,textS = 16,font0 = Enum.Font.GothamMedium})
+
+	local cols4 = lib:Holder(content3,6)
+	local left2 = lib:Column(cols4,.49,"Left")
+	local right2 = lib:Column(cols4,.49,"Right")
+
+	lib:Button(left2,"Version: 1.5",{inactive = true, alignmentX = Enum.TextXAlignment.Center,
+		callback = function()
+			print("latest version at: https://skira.me/lua/SkiraLibrary/latest")
+		end
+	})
+
+	local b1 = nil
+	local f1 = nil
+	local c1
+
+	b1 = lib:Button(right2,"License (README)",{alignmentX = Enum.TextXAlignment.Center,
+		callback = function()
+			if f1 then
+				f1:Destroy()
+				f1 = nil
+			else
+				f1,c1 = lib:Window(container,"Skira's Library License",UDim2.new(0,310,0,320),{position = UDim2.new(0,270,1,-330),noscroll = true})
+
+				lib:Label(c1,[[
+Copyright (c) 2026 CaptainSkira
+
+Permission is granted to use this Lua UI library in personal and commercial Roblox projects as long as you give visible credit to CaptainSkira.
+
+You may NOT:
+- Reupload or redistribute this library.
+- Sell this library.
+- Claim this library as your own.
+- Publish modified versions of this library.
+- Remove this license or copyright notice.
+
+This library is provided "AS IS", without warranty of any kind.
+				]],{size = UDim2.new(1,0,1,0), textscaled = true, nospace = true}
+				)
+
+				--[[ old version before allowing multiline labels
+				lib:Label(c1,'Copyright (c) 2026 CaptainSkira')
+				lib:Separator(c1,{text = nil,mode = "none"})
+				lib:Label(c1,'Permission is granted to use this Lua UI library')
+				lib:Label(c1,'in personal and commercial Roblox projects as')
+				lib:Label(c1,'long as you give visible credit to CaptainSkira.')
+				lib:Separator(c1,{text = nil,mode = "none"})
+				lib:Label(c1,'You may NOT:')
+				lib:Label(c1,'- Publish modified versions of this library.')
+				lib:Label(c1,'- Remove this license or copyright notice.')
+				lib:Label(c1,'- Reupload or redistribute this library.')
+				lib:Label(c1,'- Claim this library as your own.')
+				lib:Label(c1,'- Sell this library.')
+				lib:Separator(c1,{text = nil,mode = "none"})
+				lib:Label(c1,'This library is provided "AS IS",')
+				lib:Label(c1,'without warranty of any kind.')
+				]]--
+
+				print("Licence (always up to date): https://skira.me/lua/SkiraLibrary/license")
+			end
+		end
+	})
+
+	local cols5 = lib:Holder(content3,6)
+	local left3 = lib:Column(cols5,.49,"Left")
+	local right3 = lib:Column(cols5,.49,"Right")
+
+	lib:Button(left3,"Documentation",{alignmentX = Enum.TextXAlignment.Center,
+		callback = function()
+			print("Documentation: https://skira.me/lua/SkiraLibrary")
+			lib:Notify(container,3,{text = "https://skira.me/lua/SkiraLibrary"})
+		end
+	})
+	lib:Button(right3,"Support me",{alignmentX = Enum.TextXAlignment.Center,
+		callback = function()
+			print("Patreon: https://www.patreon.com/c/CaptainSkira")
+			lib:Notify(container,3,{text = "https://www.patreon.com/c/CaptainSkira"})
+		end
+	})
+	container.Enabled = true
+end
+
+return lib

@@ -1,6 +1,6 @@
 --[[
 
-SkiraLib / v1.5
+SkiraLib / v1.6
 
 Made by Skira for personnal use.
 Originally uploaded at https://skira.me
@@ -87,6 +87,16 @@ DD/MM/2026 - 1.1: Added close callback to window.
 ├ - Rewrote Dropdown entirely so it's list can go outside of the gui.
 ├ - Added exitkey and deletekey settings to KeyPicker, exitkey does the same thing as Escape (no key change) and deletekey sets the KeyPicker to None.
 └ - Added a nil argument check to the check function.
+
+20/09/2026 - 1.5.9:
+├ - Changed dropdown max height to 200 and fixed the size calculation to fit it's content correctly.
+├ - Fixed hover labels, dropdowns and colorpicker windows from showing up very low when gui had IgnoreGuiSet set to false.
+└ - Removed the lib:Begin() requirement
+
+20/09/2026 - 1.6:
+├ - Added CodeBox with over 50+ different formatting color styles
+├ - Added requireEnter setting to Textbox and Codebox for the callback calls
+└ - Updated Textboxes width and position to fit better
   
   ┌
   ├
@@ -116,6 +126,7 @@ local syntaxes = {
 	ColorPicker = {"Content","string","Color3"},
 	KeyPicker = {"Content","string"},
 	TextBox = {"Content","string"},
+	CodeBox = {"Content","string"},
 	Tab = {"Frame","string"}, -- Tab requires Window's window, not content
 }
 
@@ -181,11 +192,96 @@ local config = {
 	font3 = Enum.Font.GothamBlack,
 }
 
+-- codebox stuff
+
+local cb_configs = {
+	default = {["Background"]="#1E1E1E",["Inner"]="#565656",["Outer"]="#121212",["Keyword"]="#FF79C6",["Builtin"]="#8BE9FD",["Function"]="#50FA7B",["Type"]="#8BE9FD",["Number"]="#BD93F9",["String"]="#F1FA8C",["Comment"]="#6272A4",["Default"]="#FFFFFF",["Operator"]="#FFFFFF",["Interpolation"]="#FF79C6"},
+	studio = {["Background"]="#202227",["Inner"]="#58595D",["Outer"]="#131417",["Keyword"]="#EB795B",["Builtin"]="#8FB4FF",["Function"]="#FAE4AA",["Type"]="#326BFF",["Number"]="#F2A328",["String"]="#6CE9A0",["Comment"]="#6A6F81",["Default"]="#BCBEC8",["Operator"]="#BCBEC8",["Interpolation"]="#FF79C6"},
+	vscode_light = {["Background"]="#FFFFFF",["Inner"]="#FFFFFF",["Outer"]="#999999",["Keyword"]="#0000FF",["Builtin"]="#267F99",["Function"]="#795E26",["Type"]="#267F99",["Number"]="#098658",["String"]="#A31515",["Comment"]="#008000",["Default"]="#000000",["Operator"]="#000000",["Interpolation"]="#000000"},
+	vscode_dark = {["Background"]="#1E1E1E",["Inner"]="#565656",["Outer"]="#121212",["Keyword"]="#569CD6",["Builtin"]="#4EC9B0",["Function"]="#DCDCAA",["Type"]="#4EC9B0",["Number"]="#B5CEA8",["String"]="#CE9178",["Comment"]="#6A9955",["Default"]="#D4D4D4",["Operator"]="#D4D4D4",["Interpolation"]="#569CD6"},
+	github_light = {["Background"]="#FFFFFF",["Inner"]="#FFFFFF",["Outer"]="#999999",["Keyword"]="#CF222E",["Builtin"]="#8250DF",["Function"]="#8250DF",["Type"]="#953800",["Number"]="#0550AE",["String"]="#0A3069",["Comment"]="#6E7781",["Default"]="#1F2328",["Operator"]="#1F2328",["Interpolation"]="#0A3069"},
+	github_dark = {["Background"]="#0D1117",["Inner"]="#4A4C51",["Outer"]="#080A0E",["Keyword"]="#FF7B72",["Builtin"]="#D2A8FF",["Function"]="#D2A8FF",["Type"]="#FFA657",["Number"]="#79C0FF",["String"]="#A5D6FF",["Comment"]="#8B949E",["Default"]="#E6EDF3",["Operator"]="#E6EDF3",["Interpolation"]="#A5D6FF"},
+	github_dimmed = {["Background"]="#22272E",["Inner"]="#595D62",["Outer"]="#14171C",["Keyword"]="#F47067",["Builtin"]="#DCBDFB",["Function"]="#6BCBFF",["Type"]="#8DDB8C",["Number"]="#6CB6FF",["String"]="#96D0FF",["Comment"]="#768390",["Default"]="#ADBAC7",["Operator"]="#ADBAC7",["Interpolation"]="#F47067"},
+	monaco_dark = {["Background"]="#1E1E1E",["Inner"]="#565656",["Outer"]="#121212",["Keyword"]="#C586C0",["Builtin"]="#4EC9B0",["Function"]="#DCDCAA",["Type"]="#4EC9B0",["Number"]="#B5CEA8",["String"]="#CE9178",["Comment"]="#6A9955",["Default"]="#D4D4D4",["Operator"]="#D4D4D4",["Interpolation"]="#569CD6"},
+	monaco_light = {["Background"]="#FFFFFF",["Inner"]="#FFFFFF",["Outer"]="#999999",["Keyword"]="#AF00DB",["Builtin"]="#267F99",["Function"]="#795E26",["Type"]="#267F99",["Number"]="#098658",["String"]="#A31515",["Comment"]="#008000",["Default"]="#000000",["Operator"]="#000000",["Interpolation"]="#001080"},
+	visual_studio_dark = {["Background"]="#1E1E1E",["Inner"]="#565656",["Outer"]="#121212",["Keyword"]="#569CD6",["Builtin"]="#4EC9B0",["Function"]="#DCDCAA",["Type"]="#4EC9B0",["Number"]="#B5CEA8",["String"]="#CE9178",["Comment"]="#6A9955",["Default"]="#D4D4D4",["Operator"]="#D4D4D4",["Interpolation"]="#C586C0"},
+	visual_studio_light = {["Background"]="#FFFFFF",["Inner"]="#FFFFFF",["Outer"]="#999999",["Keyword"]="#0000FF",["Builtin"]="#267F99",["Function"]="#795E26",["Type"]="#267F99",["Number"]="#098658",["String"]="#A31515",["Comment"]="#008000",["Default"]="#000000",["Operator"]="#000000",["Interpolation"]="#AF00DB"},
+	jetbrains_dark = {["Background"]="#2B2B2B",["Inner"]="#606060",["Outer"]="#1A1A1A",["Keyword"]="#CC7832",["Builtin"]="#9876AA",["Function"]="#FFC66D",["Type"]="#A9B7C6",["Number"]="#6897BB",["String"]="#6A8759",["Comment"]="#808080",["Default"]="#A9B7C6",["Operator"]="#A9B7C6",["Interpolation"]="#CC7832"},
+	jetbrains_light = {["Background"]="#FFFFFF",["Inner"]="#FFFFFF",["Outer"]="#999999",["Keyword"]="#000080",["Builtin"]="#660E7A",["Function"]="#795E26",["Type"]="#267F99",["Number"]="#0000FF",["String"]="#008000",["Comment"]="#808080",["Default"]="#000000",["Operator"]="#000000",["Interpolation"]="#000080"},
+	darcula = {["Background"]="#2B2B2B",["Inner"]="#606060",["Outer"]="#1A1A1A",["Keyword"]="#CC7832",["Builtin"]="#9876AA",["Function"]="#FFC66D",["Type"]="#A9B7C6",["Number"]="#6897BB",["String"]="#6A8759",["Comment"]="#808080",["Default"]="#A9B7C6",["Operator"]="#A9B7C6",["Interpolation"]="#CC7832"},
+	one_dark = {["Background"]="#282C34",["Inner"]="#5E6167",["Outer"]="#181A1F",["Keyword"]="#C678DD",["Builtin"]="#56B6C2",["Function"]="#61AFEF",["Type"]="#E5C07B",["Number"]="#D19A66",["String"]="#98C379",["Comment"]="#5C6370",["Default"]="#ABB2BF",["Operator"]="#ABB2BF",["Interpolation"]="#C678DD"},
+	one_light = {["Background"]="#FAFAFA",["Inner"]="#FBFBFB",["Outer"]="#969696",["Keyword"]="#A626A4",["Builtin"]="#0184BC",["Function"]="#4078F2",["Type"]="#C18401",["Number"]="#986801",["String"]="#50A14F",["Comment"]="#A0A1A7",["Default"]="#383A42",["Operator"]="#383A42",["Interpolation"]="#A626A4"},
+	dracula = {["Background"]="#282A36",["Inner"]="#5E5F68",["Outer"]="#181920",["Keyword"]="#FF79C6",["Builtin"]="#8BE9FD",["Function"]="#50FA7B",["Type"]="#8BE9FD",["Number"]="#BD93F9",["String"]="#F1FA8C",["Comment"]="#6272A4",["Default"]="#F8F8F2",["Operator"]="#FF79C6",["Interpolation"]="#FF79C6"},
+	monokai = {["Background"]="#272822",["Inner"]="#5D5E59",["Outer"]="#171814",["Keyword"]="#F92672",["Builtin"]="#66D9EF",["Function"]="#A6E22E",["Type"]="#66D9EF",["Number"]="#AE81FF",["String"]="#E6DB74",["Comment"]="#75715E",["Default"]="#F8F8F2",["Operator"]="#F92672",["Interpolation"]="#F92672"},
+	nord = {["Background"]="#2E3440",["Inner"]="#626770",["Outer"]="#1C1F26",["Keyword"]="#81A1C1",["Builtin"]="#88C0D0",["Function"]="#88C0D0",["Type"]="#8FBCBB",["Number"]="#B48EAD",["String"]="#A3BE8C",["Comment"]="#616E88",["Default"]="#D8DEE9",["Operator"]="#81A1C1",["Interpolation"]="#81A1C1"},
+	gruvbox_dark = {["Background"]="#282828",["Inner"]="#5E5E5E",["Outer"]="#181818",["Keyword"]="#FB4934",["Builtin"]="#83A598",["Function"]="#B8BB26",["Type"]="#8EC07C",["Number"]="#D3869B",["String"]="#B8BB26",["Comment"]="#928374",["Default"]="#EBDBB2",["Operator"]="#FE8019",["Interpolation"]="#FB4934"},
+	gruvbox_light = {["Background"]="#FBF1C7",["Inner"]="#FCF4D5",["Outer"]="#979177",["Keyword"]="#9D0006",["Builtin"]="#076678",["Function"]="#79740E",["Type"]="#427B58",["Number"]="#8F3F71",["String"]="#79740E",["Comment"]="#928374",["Default"]="#3C3836",["Operator"]="#AF3A03",["Interpolation"]="#9D0006"},
+	solarized_dark = {["Background"]="#002B36",["Inner"]="#406068",["Outer"]="#001A20",["Keyword"]="#859900",["Builtin"]="#2AA198",["Function"]="#268BD2",["Type"]="#B58900",["Number"]="#D33682",["String"]="#2AA198",["Comment"]="#586E75",["Default"]="#839496",["Operator"]="#93A1A1",["Interpolation"]="#859900"},
+	solarized_light = {["Background"]="#FDF6E3",["Inner"]="#FEF8EA",["Outer"]="#989488",["Keyword"]="#859900",["Builtin"]="#2AA198",["Function"]="#268BD2",["Type"]="#B58900",["Number"]="#D33682",["String"]="#2AA198",["Comment"]="#93A1A1",["Default"]="#657B83",["Operator"]="#586E75",["Interpolation"]="#859900"},
+	tokyo_night = {["Background"]="#1A1B26",["Inner"]="#53545C",["Outer"]="#101017",["Keyword"]="#BB9AF7",["Builtin"]="#7DCFFF",["Function"]="#7AA2F7",["Type"]="#2AC3DE",["Number"]="#FF9E64",["String"]="#9ECE6A",["Comment"]="#565F89",["Default"]="#A9B1D6",["Operator"]="#89DDFF",["Interpolation"]="#BB9AF7"},
+	tokyo_night_light = {["Background"]="#D5D6DB",["Inner"]="#E0E0E4",["Outer"]="#808083",["Keyword"]="#9854F1",["Builtin"]="#007197",["Function"]="#34548A",["Type"]="#33635C",["Number"]="#965027",["String"]="#485E30",["Comment"]="#848CB5",["Default"]="#3760BF",["Operator"]="#006C86",["Interpolation"]="#9854F1"},
+	catppuccin_mocha = {["Background"]="#1E1E2E",["Inner"]="#565662",["Outer"]="#12121C",["Keyword"]="#CBA6F7",["Builtin"]="#89DCEB",["Function"]="#89B4FA",["Type"]="#F9E2AF",["Number"]="#FAB387",["String"]="#A6E3A1",["Comment"]="#6C7086",["Default"]="#CDD6F4",["Operator"]="#89DCEB",["Interpolation"]="#F5C2E7"},
+	catppuccin_latte = {["Background"]="#EFF1F5",["Inner"]="#F3F4F8",["Outer"]="#8F9193",["Keyword"]="#8839EF",["Builtin"]="#04A5E5",["Function"]="#1E66F5",["Type"]="#DF8E1D",["Number"]="#FE640B",["String"]="#40A02B",["Comment"]="#9CA0B0",["Default"]="#4C4F69",["Operator"]="#179299",["Interpolation"]="#EA76CB"},
+	ayu_dark = {["Background"]="#0B0E14",["Inner"]="#484A4F",["Outer"]="#07080C",["Keyword"]="#FF8F40",["Builtin"]="#59C2FF",["Function"]="#FFB454",["Type"]="#59C2FF",["Number"]="#D2A6FF",["String"]="#AAD94C",["Comment"]="#626A73",["Default"]="#BFBDB6",["Operator"]="#F29668",["Interpolation"]="#FF8F40"},
+	ayu_light = {["Background"]="#FAFAFA",["Inner"]="#FBFBFB",["Outer"]="#969696",["Keyword"]="#FA8D3E",["Builtin"]="#55B4D4",["Function"]="#F2AE49",["Type"]="#399EE6",["Number"]="#A37ACC",["String"]="#86B300",["Comment"]="#ABB0B6",["Default"]="#575F66",["Operator"]="#ED9366",["Interpolation"]="#F07171"},
+	ayu_mirage = {["Background"]="#1F2430",["Inner"]="#575B64",["Outer"]="#13161D",["Keyword"]="#FFAD66",["Builtin"]="#5CCFE6",["Function"]="#FFD580",["Type"]="#5CCFE6",["Number"]="#D4BFFF",["String"]="#BAE67E",["Comment"]="#707A8C",["Default"]="#CCCAC2",["Operator"]="#F29E74",["Interpolation"]="#FFAD66"},
+	night_owl = {["Background"]="#011627",["Inner"]="#40505D",["Outer"]="#010D17",["Keyword"]="#C792EA",["Builtin"]="#82AAFF",["Function"]="#82AAFF",["Type"]="#FFCB8B",["Number"]="#F78C6C",["String"]="#ADDb67",["Comment"]="#637777",["Default"]="#D6DEEB",["Operator"]="#7FDBCA",["Interpolation"]="#C792EA"},
+	palenight = {["Background"]="#292D3E",["Inner"]="#5E626E",["Outer"]="#191B25",["Keyword"]="#C792EA",["Builtin"]="#89DDFF",["Function"]="#82AAFF",["Type"]="#FFCB6B",["Number"]="#F78C6C",["String"]="#C3E88D",["Comment"]="#676E95",["Default"]="#A6ACCD",["Operator"]="#89DDFF",["Interpolation"]="#C792EA"},
+	rose_pine = {["Background"]="#191724",["Inner"]="#52515B",["Outer"]="#0F0E16",["Keyword"]="#C4A7E7",["Builtin"]="#9CCFD8",["Function"]="#EBBCBA",["Type"]="#F6C177",["Number"]="#C4A7E7",["String"]="#9CCFD8",["Comment"]="#6E6A86",["Default"]="#E0DEF4",["Operator"]="#908CAA",["Interpolation"]="#C4A7E7"},
+	kanagawa = {["Background"]="#1F1F28",["Inner"]="#57575E",["Outer"]="#131318",["Keyword"]="#957FB8",["Builtin"]="#7E9CD8",["Function"]="#E6C384",["Type"]="#7FB4CA",["Number"]="#D27E99",["String"]="#98BB6C",["Comment"]="#727169",["Default"]="#DCD7BA",["Operator"]="#C0A36E",["Interpolation"]="#957FB8"},
+	synthwave = {["Background"]="#241B2F",["Inner"]="#5B5463",["Outer"]="#16101C",["Keyword"]="#FF7EDB",["Builtin"]="#36F9F6",["Function"]="#72F1B8",["Type"]="#36F9F6",["Number"]="#F97E72",["String"]="#FDFDFD",["Comment"]="#848484",["Default"]="#F4F4F4",["Operator"]="#FF7EDB",["Interpolation"]="#FF7EDB"},
+	cyberpunk = {["Background"]="#0A0A12",["Inner"]="#47474D",["Outer"]="#06060B",["Keyword"]="#FF2A6D",["Builtin"]="#05D9E8",["Function"]="#01FFC3",["Type"]="#05D9E8",["Number"]="#F9F002",["String"]="#D1F7FF",["Comment"]="#4B5563",["Default"]="#D1F7FF",["Operator"]="#FF2A6D",["Interpolation"]="#FF2A6D"},
+	hacker = {["Background"]="#000000",["Inner"]="#404040",["Outer"]="#000000",["Keyword"]="#00FF41",["Builtin"]="#00CC33",["Function"]="#00FF41",["Type"]="#00CC33",["Number"]="#00FF41",["String"]="#00AA2A",["Comment"]="#006B1B",["Default"]="#00FF41",["Operator"]="#00CC33",["Interpolation"]="#00FF41"},
+	terminal_green = {["Background"]="#000000",["Inner"]="#404040",["Outer"]="#000000",["Keyword"]="#00FF00",["Builtin"]="#00CC00",["Function"]="#00FF00",["Type"]="#00CC00",["Number"]="#00FF00",["String"]="#00AA00",["Comment"]="#007700",["Default"]="#00FF00",["Operator"]="#00CC00",["Interpolation"]="#00FF00"},
+	terminal_amber = {["Background"]="#080600",["Inner"]="#464440",["Outer"]="#050400",["Keyword"]="#FFB000",["Builtin"]="#FFCC66",["Function"]="#FFD27F",["Type"]="#FFCC66",["Number"]="#FFAA00",["String"]="#FFE0A3",["Comment"]="#806000",["Default"]="#FFB000",["Operator"]="#FFCC66",["Interpolation"]="#FFB000"},
+	obsidian = {["Background"]="#111111",["Inner"]="#4C4C4C",["Outer"]="#0A0A0A",["Keyword"]="#C792EA",["Builtin"]="#82AAFF",["Function"]="#82AAFF",["Type"]="#89DDFF",["Number"]="#F78C6C",["String"]="#C3E88D",["Comment"]="#545454",["Default"]="#D8DEE9",["Operator"]="#89DDFF",["Interpolation"]="#C792EA"},
+	midnight = {["Background"]="#0B1020",["Inner"]="#484C58",["Outer"]="#070A13",["Keyword"]="#B48EAD",["Builtin"]="#81A1C1",["Function"]="#88C0D0",["Type"]="#8FBCBB",["Number"]="#D08770",["String"]="#A3BE8C",["Comment"]="#4C566A",["Default"]="#D8DEE9",["Operator"]="#81A1C1",["Interpolation"]="#B48EAD"},
+	ocean = {["Background"]="#071E26",["Inner"]="#45565C",["Outer"]="#041217",["Keyword"]="#C792EA",["Builtin"]="#89DDFF",["Function"]="#82AAFF",["Type"]="#2DE2E6",["Number"]="#F78C6C",["String"]="#C3E88D",["Comment"]="#49656B",["Default"]="#D6DEEB",["Operator"]="#89DDFF",["Interpolation"]="#C792EA"},
+	forest = {["Background"]="#101812",["Inner"]="#4C524D",["Outer"]="#0A0E0B",["Keyword"]="#C4D35A",["Builtin"]="#62D6A7",["Function"]="#A8D672",["Type"]="#62D6A7",["Number"]="#D9A441",["String"]="#9BE564",["Comment"]="#506054",["Default"]="#DCE8D8",["Operator"]="#62D6A7",["Interpolation"]="#C4D35A"},
+	coffee = {["Background"]="#211914",["Inner"]="#58524F",["Outer"]="#140F0C",["Keyword"]="#E8A87C",["Builtin"]="#82C0CC",["Function"]="#F2C078",["Type"]="#D9B08C",["Number"]="#C58B5C",["String"]="#C8E6A0",["Comment"]="#75645A",["Default"]="#E8DDD5",["Operator"]="#D9B08C",["Interpolation"]="#E8A87C"},
+	slate = {["Background"]="#20252B",["Inner"]="#585C60",["Outer"]="#13161A",["Keyword"]="#E06C75",["Builtin"]="#56B6C2",["Function"]="#61AFEF",["Type"]="#E5C07B",["Number"]="#D19A66",["String"]="#98C379",["Comment"]="#69727D",["Default"]="#ABB2BF",["Operator"]="#ABB2BF",["Interpolation"]="#C678DD"},
+	graphite = {["Background"]="#181818",["Inner"]="#525252",["Outer"]="#0E0E0E",["Keyword"]="#FF6B9D",["Builtin"]="#6CCFF6",["Function"]="#9BE564",["Type"]="#6CCFF6",["Number"]="#C8A2FF",["String"]="#F7E27E",["Comment"]="#666666",["Default"]="#E0E0E0",["Operator"]="#BDBDBD",["Interpolation"]="#FF6B9D"},
+	amethyst = {["Background"]="#17121F",["Inner"]="#514D57",["Outer"]="#0E0B13",["Keyword"]="#D580FF",["Builtin"]="#7FDBFF",["Function"]="#A6FFB5",["Type"]="#9B8CFF",["Number"]="#C8A2FF",["String"]="#FFE08A",["Comment"]="#685A78",["Default"]="#E8E0F0",["Operator"]="#D0B8E8",["Interpolation"]="#D580FF"},
+	emerald = {["Background"]="#0B1712",["Inner"]="#48514D",["Outer"]="#070E0B",["Keyword"]="#5EE6A8",["Builtin"]="#62D6E6",["Function"]="#A8E063",["Type"]="#62D6E6",["Number"]="#E6C35C",["String"]="#8FE388",["Comment"]="#506B5D",["Default"]="#D9EDE2",["Operator"]="#62D6E6",["Interpolation"]="#5EE6A8"},
+	ruby = {["Background"]="#180D10",["Inner"]="#524A4C",["Outer"]="#0E080A",["Keyword"]="#FF6680",["Builtin"]="#7DD3FC",["Function"]="#FF9F7F",["Type"]="#FF7A90",["Number"]="#C4A7FF",["String"]="#B6E3A8",["Comment"]="#73515A",["Default"]="#F0DDE1",["Operator"]="#FF9F7F",["Interpolation"]="#FF6680"},
+	azure = {["Background"]="#081522",["Inner"]="#465059",["Outer"]="#050D14",["Keyword"]="#7C83FF",["Builtin"]="#5CE1E6",["Function"]="#75BFFF",["Type"]="#5CE1E6",["Number"]="#B69CFF",["String"]="#9BE564",["Comment"]="#526B80",["Default"]="#DCEEFF",["Operator"]="#75BFFF",["Interpolation"]="#7C83FF"},
+	crimson = {["Background"]="#170B0B",["Inner"]="#514848",["Outer"]="#0E0707",["Keyword"]="#FF4D6D",["Builtin"]="#FF9F68",["Function"]="#FFCB6B",["Type"]="#FF758F",["Number"]="#C792EA",["String"]="#A8E063",["Comment"]="#6F4B52",["Default"]="#F5DFE2",["Operator"]="#FF9F68",["Interpolation"]="#FF4D6D"},
+	high_contrast_dark = {["Background"]="#000000",["Inner"]="#404040",["Outer"]="#000000",["Keyword"]="#FFFF00",["Builtin"]="#00FFFF",["Function"]="#00FF00",["Type"]="#00FFFF",["Number"]="#FFAA00",["String"]="#FFFFFF",["Comment"]="#AAAAAA",["Default"]="#FFFFFF",["Operator"]="#FFFFFF",["Interpolation"]="#FFFF00"},
+	high_contrast_light = {["Background"]="#FFFFFF",["Inner"]="#FFFFFF",["Outer"]="#999999",["Keyword"]="#0000FF",["Builtin"]="#008080",["Function"]="#008000",["Type"]="#008080",["Number"]="#800080",["String"]="#800000",["Comment"]="#666666",["Default"]="#000000",["Operator"]="#000000",["Interpolation"]="#0000FF"},
+	paper = {["Background"]="#F7F3E8",["Inner"]="#F9F6EE",["Outer"]="#94928B",["Keyword"]="#8B3A62",["Builtin"]="#2F6F7E",["Function"]="#6B5B3E",["Type"]="#3E756D",["Number"]="#A05A2C",["String"]="#5B6E3B",["Comment"]="#9A9485",["Default"]="#302E2A",["Operator"]="#514D45",["Interpolation"]="#8B3A62"},
+	blueprint = {["Background"]="#0A2342",["Inner"]="#475A71",["Outer"]="#061528",["Keyword"]="#FFD166",["Builtin"]="#5CE1E6",["Function"]="#7CFFCB",["Type"]="#5CE1E6",["Number"]="#FF9F68",["String"]="#C6F7FF",["Comment"]="#527A9E",["Default"]="#E4F4FF",["Operator"]="#A8D8FF",["Interpolation"]="#FFD166"},
+	neon = {["Background"]="#090014",["Inner"]="#46404F",["Outer"]="#05000C",["Keyword"]="#FF00A8",["Builtin"]="#00E5FF",["Function"]="#39FF14",["Type"]="#00E5FF",["Number"]="#B026FF",["String"]="#FFF01F",["Comment"]="#5D4A68",["Default"]="#F8F8FF",["Operator"]="#FF00A8",["Interpolation"]="#FF00A8"},
+	minimal_dark = {["Background"]="#181818",["Inner"]="#525252",["Outer"]="#0E0E0E",["Keyword"]="#C586C0",["Builtin"]="#56B6C2",["Function"]="#DCDCAA",["Type"]="#56B6C2",["Number"]="#D19A66",["String"]="#98C379",["Comment"]="#666666",["Default"]="#CCCCCC",["Operator"]="#AAAAAA",["Interpolation"]="#C586C0"},
+	minimal_light = {["Background"]="#FAFAFA",["Inner"]="#FBFBFB",["Outer"]="#969696",["Keyword"]="#8A2BE2",["Builtin"]="#008B8B",["Function"]="#795E26",["Type"]="#008080",["Number"]="#B35C00",["String"]="#008000",["Comment"]="#888888",["Default"]="#333333",["Operator"]="#555555",["Interpolation"]="#8A2BE2"},
+	terminal = {["Background"]="#101010",["Inner"]="#4C4C4C",["Outer"]="#0A0A0A",["Keyword"]="#FFFFFF",["Builtin"]="#00FFFF",["Function"]="#FFFFFF",["Type"]="#00FFFF",["Number"]="#FFFF00",["String"]="#00FF00",["Comment"]="#808080",["Default"]="#E0E0E0",["Operator"]="#FFFFFF",["Interpolation"]="#FFFFFF"},
+}
+
+local kw = {
+	["and"] = true, ["break"] = true, ["do"] = true, ["else"] = true, ["elseif"] = true, ["end"] = true, ["export"] = true,
+	["for"] = true, ["function"] = true, ["if"] = true, ["in"] = true, ["local"] = true, ["not"] = true, ["or"] = true,
+	["repeat"] = true, ["return"] = true, ["then"] = true, ["type"] = true, ["until"] = true, ["while"] = true,
+	["continue"] = true
+}
+
+local bi = {
+	["assert"] = true, ["collectgarbage"] = true, ["error"] = true, ["getmetatable"] = true, ["ipairs"] = true,
+	["loadstring"] = true, ["next"] = true, ["pairs"] = true, ["pcall"] = true, ["print"] = true, ["rawequal"] = true,
+	["rawget"] = true, ["rawlen"] = true, ["rawset"] = true, ["select"] = true, ["setmetatable"] = true,
+	["tonumber"] = true, ["tostring"] = true, ["type"] = true, ["unpack"] = true, ["xpcall"] = true, ["warn"] = true,
+	["require"] = true, ["typeof"] = true, ["task"] = true, ["game"] = true, ["workspace"] = true, ["script"] = true,
+	["Instance"] = true, ["Vector2"] = true, ["Vector3"] = true, ["Vector2int16"] = true, ["Vector3int16"] = true,
+	["CFrame"] = true, ["Color3"] = true, ["BrickColor"] = true, ["UDim"] = true, ["UDim2"] = true,
+	["Region3"] = true, ["Ray"] = true, ["Random"] = true, ["TweenInfo"] = true, ["Enum"] = true,
+	["PhysicalProperties"] = true, ["NumberRange"] = true, ["NumberSequence"] = true,
+	["ColorSequence"] = true, ["Rect"] = true, ["Faces"] = true, ["Axes"] = true, ["math"] = true,
+	["string"] = true, ["table"] = true, ["coroutine"] = true, ["os"] = true, ["utf8"] = true, ["debug"] = true
+}
+
 local notificationHeight = 0
 local notificationIndex = 0
 local dropdownamount = 2 -- amount of dropdowns, hopefully i'll be able to get rid of this.
 local dropdownI = dropdownamount + 2
-local began = false
+--local began = false -- removed in 1.5.9
 local err = "[ERROR]:"
 local inf = "[INFO]:"
 
@@ -200,10 +296,12 @@ function check(...)
 			break
 		end
 	end
-
+	
+	--[[ removed in 1.5.9
 	if not began and fn ~= "Begin" then
 		return warn(err, "Script must start with Library:Begin()")
 	end
+	]]
 
 	local expected = syntaxes[fn]
 	if not expected then warn("Skira is a dumbass, tell him about this error") return end
@@ -226,7 +324,7 @@ function check(...)
 			return true
 		end
 	end
-	
+
 	for i,v in pairs(expected) do
 		if args[i] == nil then
 			warn(err, "Missing argument #"..i.." to "..fn)
@@ -281,7 +379,9 @@ function clean(sttg)
 	return settings
 end
 
-function outline(obj,v1,v2,inner)
+function outline(obj,v1,v2,inner,settings)
+	local config = settings or config
+	
 	local stroke = Instance.new("UIStroke")
 	stroke.Color = config.outline0
 	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
@@ -376,7 +476,7 @@ function lib:Begin(parent,name,cfg) -- v0.0.0
 	if check(name) then return end
 
 	local enabled = (cfg and cfg.enabled) ~= false
-	local noguiset = cfg and cfg.noguiset or true
+	local noguiset = (cfg and cfg.noguiset) ~= false
 	local resetonspawn = cfg and cfg.resetonspawn or false
 
 	local window = Instance.new("ScreenGui")
@@ -397,7 +497,7 @@ function lib:Begin(parent,name,cfg) -- v0.0.0
 		end
 	end
 
-	began = true
+	--began = true -- removed in 1.5.9
 
 	return window, config
 end
@@ -438,7 +538,7 @@ function lib:Window(parent,title,size,settings) -- v0.0.1, creation; v0.0.3, ren
 		local corner = Instance.new("UICorner")
 		corner.CornerRadius = UDim.new(0,6)
 		corner.Parent = frame
-		
+
 		outline(frame,isdropdown and .5 or 0,isdropdown and .5 or 0,isdropdown and true or false)
 	end
 
@@ -776,7 +876,8 @@ function hoverLabel(parent, obj, text, text2, settings)
 
 	local m = game.Players.LocalPlayer:GetMouse()
 	m.Move:Connect(function()
-		window.Position = UDim2.new(0,m.X,0,m.Y+81)
+		local Y = m.Y+81 - (window.Parent.IgnoreGuiInset and 0 or 58)
+		window.Position = UDim2.new(0,m.X,0,Y)
 	end)
 
 	window.Visible = false
@@ -1315,7 +1416,7 @@ function lib:Slider(parent,text,def,min,max,settings)
 		warn(err,"Slider speed setting cannot be set to 0 or lower. Speed has been set to 1.")
 		speed = 1
 	end
-	
+
 	local barStyle = settings.barstyle or "smooth"
 	local cursorStyle = settings.cursorstyle or "round"
 
@@ -1666,16 +1767,15 @@ function lib:ColorPicker(parent,text,color,settings)
 				refresh()
 			end
 		end)
+		
+		local function update()
+			pickerWindow.Position = UDim2.new(0,preview.AbsolutePosition.X + 22,0,preview.AbsolutePosition.Y - 143 - (gui.IgnoreGuiInset and 0 or 58))
+		end
+		update()
 
-		parent.Parent:GetPropertyChangedSignal("AbsolutePosition"):Connect(function()
-			pickerWindow.Position = UDim2.new(0,preview.AbsolutePosition.X + 22,0,preview.AbsolutePosition.Y - 143)
-		end)
-		parent.Parent:GetPropertyChangedSignal("AbsoluteRotation"):Connect(function()
-			pickerWindow.Position = UDim2.new(0,preview.AbsolutePosition.X + 22,0,preview.AbsolutePosition.Y - 143)
-		end)
-		parent.Parent:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
-			pickerWindow.Position = UDim2.new(0,preview.AbsolutePosition.X + 22,0,preview.AbsolutePosition.Y - 143)
-		end)
+		parent.Parent:GetPropertyChangedSignal("AbsolutePosition"):Connect(update)
+		parent.Parent:GetPropertyChangedSignal("AbsoluteRotation"):Connect(update)
+		parent.Parent:GetPropertyChangedSignal("AbsoluteSize"):Connect(update)
 
 		zindexthingy(pickerWindow,dropdownamount + 2)
 	end)
@@ -1705,7 +1805,7 @@ function lib:Dropdown(parent,text,content,settings)
 			return
 		end
 	end
-	
+
 	local tableOfContent = {}
 	local current
 	local open = false
@@ -1719,7 +1819,7 @@ function lib:Dropdown(parent,text,content,settings)
 	local element = Instance.new("Frame",column2)
 	element.Size = UDim2.new(1,0,0,settings.elementS)
 	element.BackgroundTransparency = 1
-	
+
 	local frame = Instance.new("Frame",parent:FindFirstAncestorOfClass("ScreenGui"))
 	frame.Size = UDim2.new(0,0,0,16)
 	frame.Name = "Dropdown"
@@ -1728,7 +1828,7 @@ function lib:Dropdown(parent,text,content,settings)
 	frame.ClipsDescendants = true
 	frame.BorderSizePixel = 0
 	frame.Visible = false
-	
+
 	frame:SetAttribute("FloatingV",true)
 
 	local corner = Instance.new("UICorner")
@@ -1745,11 +1845,11 @@ function lib:Dropdown(parent,text,content,settings)
 	stuff.BackgroundTransparency = 1
 	stuff.Position = UDim2.new(0,8,0,8)
 	stuff.Size = UDim2.new(1,-16,1,-16)
-	
+
 	local list = Instance.new("UIListLayout")
 	list.SortOrder = Enum.SortOrder.Name
 	list.Parent = stuff
-	
+
 	list:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 		stuff.CanvasSize = UDim2.new(0,0,0,list.AbsoluteContentSize.Y)
 	end)
@@ -1759,37 +1859,30 @@ function lib:Dropdown(parent,text,content,settings)
 	expand.Position = UDim2.new(1,-20,0,2)
 	expand.BackgroundTransparency = 1
 	expand.Image = settings.plus
-	
+
 	local function collapse(v)
 		open = not v
 		frame.Visible = not v
 		expand.Image = v and settings.plus or settings.minimize
 	end
-	
+
 	local head = lib:Button(element,"...",{inactive = true})
 	head.MouseButton1Click:Connect(function()
 		collapse(open)
 	end)
-	
-	local function updateSize()
-		frame.Size = UDim2.new(0,head.AbsoluteSize.X,0,height < 100 and height or 100)
+
+	local function update()
+		frame.Size = UDim2.new(0,head.AbsoluteSize.X,0,height < 200 and height + 16 or 200)
+		frame.Position = UDim2.new(0,head.AbsolutePosition.X,0,head.AbsolutePosition.Y + 78 - (frame.Parent.IgnoreGuiInset and 0 or 58))
 	end
-	
-	head:GetPropertyChangedSignal("AbsolutePosition"):Connect(function()
-		updateSize()
-		frame.Position = UDim2.new(0,head.AbsolutePosition.X,0,head.AbsolutePosition.Y + 78)
-	end)
-	head:GetPropertyChangedSignal("AbsoluteRotation"):Connect(function()
-		updateSize()
-		frame.Position = UDim2.new(0,head.AbsolutePosition.X,0,head.AbsolutePosition.Y + 78)
-	end)
-	head:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
-		updateSize()
-		frame.Position = UDim2.new(0,head.AbsolutePosition.X,0,head.AbsolutePosition.Y + 78)
-	end)
-	
+	update()
+
+	head:GetPropertyChangedSignal("AbsolutePosition"):Connect(update)
+	head:GetPropertyChangedSignal("AbsoluteRotation"):Connect(update)
+	head:GetPropertyChangedSignal("AbsoluteSize"):Connect(update)
+
 	expand.Parent = head
-	
+
 	if settings.hoverLabel then
 		hoverLabel(parent, holder, "About "..text, settings.hoverLabel, settings)
 		hoverLabel(parent, column1, "About "..text, settings.hoverLabel, settings)
@@ -1798,10 +1891,10 @@ function lib:Dropdown(parent,text,content,settings)
 		hoverLabel(parent, frame, "About "..text, settings.hoverLabel, settings)
 		hoverLabel(parent, stuff, "About "..text, settings.hoverLabel, settings)
 	end
-	
+
 	local function addBtn(v)
 		height += 26
-		updateSize()
+		update()
 		local btn = lib:Button(stuff,v,{
 			callback = function()
 				head.Text = "  "..v
@@ -1829,7 +1922,7 @@ function lib:Dropdown(parent,text,content,settings)
 		end
 	end
 
-	track(parent,frame)
+	track(parent,head)
 
 	dropdownI -= 1
 
@@ -1848,7 +1941,7 @@ function lib:Dropdown(parent,text,content,settings)
 			end
 			if found then
 				height -= 26
-				updateSize()
+				update()
 				if current == v then
 					current = nil
 					head.Text = "  ..."
@@ -1988,7 +2081,7 @@ function lib:KeyPicker(parent,text,settings)
 		callback = function()
 			local save = button.Text
 			button.Text = "Press a key..."
-			
+
 			local key
 			local connection = game:GetService("UserInputService").InputBegan:Connect(function(input)
 				key = input.UserInputType ~= Enum.UserInputType.Keyboard and input.UserInputType or input.KeyCode
@@ -2059,11 +2152,9 @@ function lib:TextBox(parent,text,settings)
 	corner.CornerRadius = UDim.new(0,4)
 	corner.Parent = row
 
-	outline(row,.5,.5,true)
-
 	local textbox = Instance.new("TextBox")
-	textbox.Size = UDim2.new(0.93,0,1,0)
-	textbox.Position = UDim2.new(0,8,0,0)
+	textbox.Size = UDim2.new(0.98,0,1,0)
+	textbox.Position = UDim2.new(0,6,0,0)
 	textbox.BackgroundTransparency = 1
 	textbox.Font = settings.font0
 	textbox.TextSize = settings.textS
@@ -2074,7 +2165,7 @@ function lib:TextBox(parent,text,settings)
 	textbox.PlaceholderText = ptext
 	textbox.Text = text
 	textbox.TextColor3 = settings.text1
-	textbox.ClearTextOnFocus = false
+	textbox.ClearTextOnFocus = settings.clear or false
 	textbox.Parent = row
 
 	if settings.hoverLabel then
@@ -2082,10 +2173,214 @@ function lib:TextBox(parent,text,settings)
 		hoverLabel(parent, textbox, "About "..text, settings.hoverLabel, settings)
 	end
 
-	textbox.FocusLost:Connect(function()
+	textbox.FocusLost:Connect(function(bool)
+		if settings.requireEnter and not bool then return end
 		if settings.callback then settings.callback(textbox.Text) end
 	end)
 
+	outline(row,.5,.5,true,settings)
+	track(parent,row)
+
+	return textbox
+end
+
+function lib:CodeBox(parent,text,settings)
+	settings = clean(settings or {})
+
+	if not settings.nocheck then
+		if check(parent,text) then
+			return
+		end
+	end
+	
+	local cbc = settings.style and cb_configs[settings.style] or cb_configs.studio
+	local ptext = settings.text or ""
+
+	local row = Instance.new("ScrollingFrame")
+	row.Size = settings.size or UDim2.new(1,0,0,200)
+	row.BorderSizePixel = 0
+	
+	local bg = Color3.fromHex(cbc["Background"])
+	row.BackgroundColor3 = Color3.fromHex(cbc["Background"])
+	row.ScrollBarImageColor3 = Color3.fromRGB(math.min(bg.R * 255 + 54, 255),math.min(bg.G * 255 + 54, 255),math.min(bg.B * 255 + 54, 255)) -- I was too lazy to do it manually or with a python script
+	row.ScrollBarThickness = 0
+	row.Parent = parent
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0,4)
+	corner.Parent = row
+
+	local textbox = Instance.new("TextBox",row)
+	textbox.Size = UDim2.new(0.98,0,1,0)
+	textbox.Position = UDim2.new(0,6,0,0)
+	textbox.BackgroundTransparency = 1
+	textbox.Font = settings.font0
+	textbox.TextSize = settings.textS
+	textbox.TextWrapped = true
+	textbox.TextXAlignment = Enum.TextXAlignment.Left
+	textbox.TextYAlignment = Enum.TextYAlignment.Top
+	textbox.PlaceholderText = ptext
+	textbox.Font = Enum.Font.Code
+	textbox.MultiLine = true
+	textbox.Text = text
+	textbox.TextColor3 = settings.text1
+	textbox.ClearTextOnFocus = settings.clear or false
+	textbox.TextEditable = not (settings.display or false)
+	
+	local faketext = Instance.new("TextLabel",textbox)
+	faketext.Size = UDim2.new(1,0,1,0)
+	faketext.BackgroundTransparency = 1
+	faketext.Font = Enum.Font.Code
+	faketext.RichText = true
+	faketext.TextXAlignment = Enum.TextXAlignment.Left
+	faketext.TextYAlignment = Enum.TextYAlignment.Top
+	faketext.TextColor3 = settings.text0
+	faketext.TextSize = settings.textS
+	faketext.Text = text
+
+	local function update()
+		local t = textbox.Text
+		t = t:gsub("<font.->", ""):gsub("</font>", "")
+
+		local function e(s) return s:gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&gt;") end
+		local function c(s, col) return '<font color="' .. col .. '">' .. e(s) .. "</font>" end
+
+		local function highlight(source)
+			local out, i = {}, 1
+
+			while i <= #source do
+				local s = source:sub(i)
+
+				if s:sub(1, 2) == "--" then
+					local x
+
+					if s:sub(1, 4) == "--[[" then
+						local z = s:find("]]", 5, true)
+						x = z and s:sub(1, z + 1) or s
+					else
+						local a = s:find("\n", 1, true)
+						x = a and s:sub(1, a - 1) or s
+					end
+
+					out[#out + 1] = c(x, cbc["Comment"])
+					i += #x
+				elseif s:sub(1, 1) == '"' or s:sub(1, 1) == "'" then
+					local q, j = s:sub(1, 1), 2
+
+					while j <= #s do
+						if s:sub(j, j) == "\\" then
+							j += 2
+						elseif s:sub(j, j) == q then
+							j += 1
+							break
+						else
+							j += 1
+						end
+					end
+
+					local x = s:sub(1, j - 1)
+					out[#out + 1] = c(x, cbc["String"])
+					i += #x
+				elseif s:sub(1, 1) == "`" then
+					local j, x = 2, "`"
+
+					while j <= #s do
+						if s:sub(j, j) == "\\" then
+							x ..= s:sub(j, j + 1)
+							j += 2
+
+						elseif s:sub(j, j) == "`" then
+							x ..= "`"
+							j += 1
+							break
+
+						elseif s:sub(j, j) == "{" then
+							local start, depth = j, 1
+							j += 1
+
+							while j <= #s and depth > 0 do
+								if s:sub(j, j) == "{" then
+									depth += 1
+								elseif s:sub(j, j) == "}" then
+									depth -= 1
+								end
+								j += 1
+							end
+
+							local expr = s:sub(start, j - 1)
+							x ..= '<font color="' .. cbc["Interpolation"] .. '">{</font>' .. highlight(expr:sub(2, -2)) .. '<font color="' .. cbc["Interpolation"] .. '">}</font>'
+						else
+							x ..= e(s:sub(j, j))
+							j += 1
+						end
+					end
+
+					out[#out + 1] = '<font color="' .. cbc["String"] .. '">' .. x .. "</font>"
+					i += j - 1
+				elseif s:sub(1, 2) == "[[" then
+					local z = s:find("]]", 3, true)
+					local x = z and s:sub(1, z + 1) or s
+					out[#out + 1] = c(x, cbc["String"])
+					i += #x
+				elseif s:match("^%d") then
+					local x = s:match("^[%w%.]+")
+					out[#out + 1] = c(x, cbc["Number"])
+					i += #x
+				elseif s:match("^[%a_]") then
+					local x = s:match("^[%w_]+")
+					local before = source:sub(1, i - 1)
+					local rest = s:sub(#x + 1)
+					local col = before:match(":%s*$") and cbc["Type"] or kw[x] and cbc["Keyword"] or bi[x] and cbc["Builtin"] or rest:match("^%s*%(") and cbc["Function"]
+					out[#out + 1] = c(x, col or cbc["Default"])
+					i += #x
+				else
+					out[#out + 1] = c(s:sub(1, 1), cbc["Operator"])
+					i += 1
+				end
+			end
+
+			return table.concat(out)
+		end
+
+		faketext.Text = highlight(t)
+		row.CanvasSize = UDim2.new(0, 0, 0, textbox.TextBounds.Y + (settings.spacing or 60))
+	end
+
+	textbox:GetPropertyChangedSignal("Text"):Connect(update)
+	update()
+
+	textbox.FocusLost:Connect(function(bool)
+		if settings.requireEnter and not bool then return end
+		if settings.callback then settings.callback(textbox.Text) end
+	end)
+
+	textbox:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+		row.CanvasSize = UDim2.new(0, 0, 0, textbox.TextBounds.Y + 60)
+	end)
+
+	local hovered = false
+	row.MouseEnter:Connect(function()
+		hovered = true
+		local t = TS:Create(row,TweenInfo.new(.1),{ScrollBarThickness = 4})
+		t:Play()
+		t.Completed:Wait()
+		if not hovered then
+			row.ScrollBarThickness = 4
+		end
+	end)
+	row.MouseLeave:Connect(function()
+		hovered = false
+		local t = TS:Create(row,TweenInfo.new(.1),{ScrollBarThickness = 0})
+		t:Play()
+		t.Completed:Wait()
+		if hovered then
+			row.ScrollBarThickness = 4
+		end
+	end)
+	
+	settings.outline1 = Color3.fromHex(cbc["Inner"])
+	settings.outline0 = Color3.fromHex(cbc["Outer"])
+	outline(row,.5,.5,true,settings)
 	track(parent,row)
 
 	return textbox
@@ -2106,17 +2401,8 @@ function layoutNotifications(X, SPACING)
 
 	for slot,v in ipairs(order) do
 		local target = UDim2.new(1,-(X + 10),1,-(slot * SPACING))
-
-		if v.data.tween then
-			v.data.tween:Cancel()
-		end
-
-		v.data.tween = TS:Create(
-			v.data.window,
-			TweenInfo.new(.5,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),
-			{Position = target}
-		)
-
+		if v.data.tween then v.data.tween:Cancel() end
+		v.data.tween = TS:Create(v.data.window,TweenInfo.new(.5,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Position = target})
 		v.data.tween:Play()
 	end
 end

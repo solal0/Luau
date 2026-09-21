@@ -132,7 +132,7 @@ local column4 = lib:Column(holder,.12,Enum.HorizontalAlignment.Center)
 local path = lib:TextBox(column1,"",{text = "path.to.script"})
 lib:Button(column2,"Decompile",{alignmentX = Enum.TextXAlignment.Center,callback = function()
 	if path.Text ~= "" then
-        codebox.Text = codebox.Text.."\nLooking for the instance..."
+        codebox.Text = "Looking for the instance..."
 		local obj = getInstance(path.Text)
 		if obj then
             codebox.Text = codebox.Text.."\nGetting script bytecode..."

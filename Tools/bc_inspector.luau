@@ -1,9 +1,11 @@
 -- ByteCode Inspector v1.1
+-- https://github.com/solal0/Luau/
 -- I made this in case decompiling with dex doesn't work.
 
--- TODO:
--- DONE. Fix Skira's Library codebox text being off in some cases
--- DONE. handle workspace, game, :GetService, etc...
+-- Changelog
+-- fixed Skira's Library codebox text being off in some cases
+-- now handles workspace, game and :GetService
+-- now handles .LocalPlayer
 
 local httpRequest = request or http_request or (syn and syn.request)
 assert(httpRequest, "Your executor does not support http requests.")
@@ -48,8 +50,9 @@ function getInstance(path)
 	local c = id == "game" and game or id:find("GetService", 1, true) and game:GetService(id:match('"([^"]+)"')) or workspace
 
 	for i = 2, #parts do
-		c = c:FindFirstChild(parts[i])
+        c = parts[i] == "LocalPlayer" and c.LocalPlayer or c:FindFirstChild(parts[i])
 		if not c then
+            --print("Failed at",parts[i])
 			return nil
 		end
 	end
@@ -102,9 +105,9 @@ end
 function getName()
 	local result = ""
 	if instance then
-		result = instance.Name.."_"..instance.ClassName.."_"..game.PlaceId
+		result = instance:GetFullName().."_"..instance.ClassName.."_"..game.PlaceId
 	else
-		result = "Unknown_Unknown_"..game.PlaceId
+		result = "UnknownPath_Unknown_"..game.PlaceId
 	end
 	if decoded then
 		result = result.."_decompiled.lua"
@@ -129,23 +132,33 @@ local column4 = lib:Column(holder,.12,Enum.HorizontalAlignment.Center)
 local path = lib:TextBox(column1,"",{text = "path.to.script"})
 lib:Button(column2,"Decompile",{alignmentX = Enum.TextXAlignment.Center,callback = function()
 	if path.Text ~= "" then
+        codebox.Text = codebox.Text.."\nLooking for the instance..."
 		local obj = getInstance(path.Text)
 		if obj then
+            codebox.Text = codebox.Text.."\nGetting script bytecode..."
 			instance,bytecode,decoded = obj,getByteCode(obj),nil
 			if bytecode and type(bytecode) == "string" then
+                codebox.Text = codebox.Text.."\nDecompiling with "..service.."..."
+                local now = os.time()
 				--saveFile(getName(),bytecode)
 				decoded = decompile(bytecode)
 				if decoded then
+                    now = os.time() - now
+                    local h,m,s=math.floor(now/3600),math.floor(now%3600/60),now%60
+                    local p={}
+                    if h>0 then table.insert(p,h.."h") end
+                    if m>0 or h>0 then table.insert(p,m.."m") end
+                    if s>0 or #p==0 then table.insert(p,s.."s") end
 					--saveFile(getName(),decoded)
-					codebox.Text = decoded
+					codebox.Text = "-- File created using ByteCode Inspector (https://github.com/solal0/Luau/)\n-- ByteCode decompiled in "..table.concat(p," ").." with "..service.."\n-- If the script cuts off, click Save below to have the full script as a file.\n\n"..decoded
 				else
-					notify("Failed to decompile bytecode")
+                    codebox.Text = codebox.Text.."\nFailed to decompile bytecode with "..service
 				end
 			else
-				notify("Failed to get bytecode from "..obj.Name)
+                codebox.Text = codebox.Text.."\nFailed to get bytecode from "..obj.Name
 			end
 		else
-			notify("Invalid path: "..path.Text)
+            codebox.Text = "Invalid path: "..path.Text
 		end
 	end
 end})
@@ -155,9 +168,6 @@ lib:Button(column3,"Clear",{alignmentX = Enum.TextXAlignment.Center,callback = f
 end})
 lib:Button(column4,"Save",{alignmentX = Enum.TextXAlignment.Center,callback = function()
 	if codebox.Text ~= "" then
-		local name = instance and instance.Name or "Unknown"
-		local class = instance and instance.ClassName or "Unknown"
-
 		local success = saveFile(getName(),codebox.Text)
 		if success then
 			notify("Saved codebox content as "..getName())

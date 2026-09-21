@@ -1,4 +1,4 @@
--- ByteCode Inspector v1
+-- ByteCode Inspector v1.1
 -- I made this in case decompiling with dex doesn't work.
 
 -- TODO:

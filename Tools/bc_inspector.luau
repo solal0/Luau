@@ -2,13 +2,13 @@
 -- I made this in case decompiling with dex doesn't work.
 
 -- TODO:
--- Fix Skira's Library codebox text being off in some cases
--- handle workspace... and not just game...
+-- DONE. Fix Skira's Library codebox text being off in some cases
+-- DONE. handle workspace... and not just game...
 
 local httpRequest = request or http_request or (syn and syn.request)
 assert(httpRequest, "Your executor does not support http requests.")
 assert(getscriptbytecode, "Your executor does not support getscriptbytecode.")
-	
+
 local utils = loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/Utils.luau"))()
 local lib = loadstring(game:HttpGet("https://skira.me/lua/SkiraLibrary/source"))()
 local g = utils.services
@@ -43,21 +43,21 @@ function notify(v)
 end
 
 function getInstance(path)
-	local current = game
 	local parts = string.split(path, ".")
+	local c = parts[1] == "game" and game or workspace
 	for i = 2, #parts do
-		current = current:FindFirstChild(parts[i])
-		if not current then
+		c = c:FindFirstChild(parts[i])
+		if not c then
 			return nil
 		end
 	end
-	if current:IsA("ModuleScript") or current:IsA("Script") then
-		if current.ClassName == "Script" then
-			print("Scripts are impossible to save, said saveinstance. But i'll try.")
+	if c:IsA("ModuleScript") or c:IsA("Script") then
+		if c.ClassName == "Script" then
+			print("Scripts are impossible to save, said saveinstance. But i'll try.") -- nvm, they ARE impossible to save
 		end
-		return current
+		return c
 	else
-		notify(current.." is not a valid instance")
+		notify(c.." is not a valid instance")
 		return nil
 	end
 end

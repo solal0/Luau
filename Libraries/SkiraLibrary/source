@@ -100,9 +100,8 @@ DD/MM/2026 - 1.1: Added close callback to window.
 + - Updated Textboxes width and position to fit better
 
 21/09/2026 - 1.6.1:
-+ - Added more formatting colors
-+ - Fixed text mismatch for good
-+ - Added optimization but still not enough.
++ - Added more formatting colors, fixed text mismatch for good and I added optimization but still not enough.
++ - Tabs are now selected after creation automatically unless autoselect setting is false and their content is now correctly listed.
 
 ]]--
 
@@ -2308,7 +2307,7 @@ function lib:CodeBox(parent,text,settings)
 	faketext.TextEditable = false
 	faketext.Interactable = false
 	faketext.Parent = row
-	
+
 	local propertySet = {}
 	local objectSet = {}
 	local literalSet = {}
@@ -2712,8 +2711,10 @@ function lib:Tab(parent,title,settings)
 	local list = content.UIListLayout:Clone()
 	list.Parent = tabContent
 	tabContent.BorderSizePixel = 0
-	tabContent.ScrollBarThickness = 0
-	tabContent.ScrollBarImageColor3 = settings.scrollbar
+	if not settings.noscroll then
+		tabContent.ScrollBarThickness = 0
+		tabContent.ScrollBarImageColor3 = settings.scrollbar
+	end
 	tabContent.Size = UDim2.new(1,0,1,0)
 	tabContent.BackgroundTransparency = 1
 	tabContent.Parent = tabsContents
@@ -2790,6 +2791,8 @@ function lib:Tab(parent,title,settings)
 	ct.Value = tabContent
 	ct.Name = "Content"
 	tab:SetAttribute("Inactive",false)
+	
+	if settings.autoselect ~= false then setTab() end
 
 	local result = 1 / #tabs:GetChildren()
 	local val = 0
@@ -2799,6 +2802,8 @@ function lib:Tab(parent,title,settings)
 		v.Position = UDim2.new(val,0,0,0)
 		val += result
 	end
+	
+	tracker[tabContent] = {}
 
 	return tab,tabContent,{setTab = setTab}
 end

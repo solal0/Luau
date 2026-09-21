@@ -802,6 +802,7 @@ local tab, content, api = lib:Tab(
 	{
 		nobar = false, -- if true, the scrollbar will be hidden. ignored if noscroll is true
 		noscroll = false, -- if true, the tab's content will be a frame instead of a ScrollingFrame
+		autoselect = true, -- wether or not the tab should be selected after being created
 		callback = function() -- now idea what this could be for but it's there.
 			print("Tab selected")
 		end

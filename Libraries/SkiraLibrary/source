@@ -963,7 +963,7 @@ function lib:Button(parent,text,settings)
 	btn.Size = UDim2.new(1,0,0,settings.objectS)
 	btn.BackgroundColor3 = settings.button1
 	btn.AutoButtonColor = false
-	btn.Position = UDim2.new(0,0,.5,-btn.Size.Y.Offset / 2)
+	btn.Position = UDim2.new(0,0,.5,-settings.objectS / 2)
 	btn.Font = settings.font0
 	btn.TextSize = settings.textS
 	btn.TextScaled = settings.textscaled and true or false
@@ -1866,7 +1866,7 @@ function lib:Dropdown(parent,text,content,settings)
 		expand.Image = v and settings.plus or settings.minimize
 	end
 
-	local head = lib:Button(element,"...",{inactive = true})
+	local head = lib:Button(element,settings.default or "  ...",{inactive = true})
 	head.MouseButton1Click:Connect(function()
 		collapse(open)
 	end)
@@ -2142,17 +2142,22 @@ function lib:TextBox(parent,text,settings)
 			hoverLabel(parent, label, "About "..text, settings.hoverLabel, settings)
 		end
 	end
-
+	
 	local row = Instance.new("Frame")
 	row.Size = UDim2.new(1,0,0,settings.elementS)
-	row.BackgroundColor3 = settings.textbox
+	row.BackgroundTransparency = 1
 	row.Parent = parent
-
-	local corner = Instance.new("UICorner")
+	
+	local frame = Instance.new("Frame",row)
+	frame.Size = UDim2.new(1,0,0,settings.objectS)
+	frame.BackgroundColor3 = settings.textbox
+	frame.Position = UDim2.new(0,0,.5,-settings.objectS / 2)
+	frame.BorderSizePixel = 0
+	
+	local corner = Instance.new("UICorner",frame)
 	corner.CornerRadius = UDim.new(0,4)
-	corner.Parent = row
 
-	local textbox = Instance.new("TextBox")
+	local textbox = Instance.new("TextBox",frame)
 	textbox.Size = UDim2.new(0.98,0,1,0)
 	textbox.Position = UDim2.new(0,6,0,0)
 	textbox.BackgroundTransparency = 1
@@ -2166,7 +2171,6 @@ function lib:TextBox(parent,text,settings)
 	textbox.Text = text
 	textbox.TextColor3 = settings.text1
 	textbox.ClearTextOnFocus = settings.clear or false
-	textbox.Parent = row
 
 	if settings.hoverLabel then
 		hoverLabel(parent, row, "About "..text, settings.hoverLabel, settings)
@@ -2178,7 +2182,7 @@ function lib:TextBox(parent,text,settings)
 		if settings.callback then settings.callback(textbox.Text) end
 	end)
 
-	outline(row,.5,.5,true,settings)
+	outline(frame,.5,.5,true,settings)
 	track(parent,row)
 
 	return textbox

@@ -39,10 +39,10 @@ DD/MM/2026 - 1.1: Added close callback to window.
 11/06/2026 - 1.4: Added TextBox. Made Sliders label a textbox.
 
 15/06/2026 - 1.5:
-├ - made the set functions run the callback, added api to dropdown, added max height to dropdown
-├ - added wrapped setting to label, added textbox, working on making sliders label textboxes
-├ - fixed Windows being resizable when collapsed, changed notifications movement direction, added hover label setting on all options (setting is called hoverLabel), added information icon to the default config
-└ - made slider callback a value instead of a string, made slider value show a decimal only if being one
++ - made the set functions run the callback, added api to dropdown, added max height to dropdown
++ - added wrapped setting to label, added textbox, working on making sliders label textboxes
++ - fixed Windows being resizable when collapsed, changed notifications movement direction, added hover label setting on all options (setting is called hoverLabel), added information icon to the default config
++ - made slider callback a value instead of a string, made slider value show a decimal only if being one
 
 01/07/2026 - 1.5.1: Fixed Window set function returning nil
 
@@ -51,56 +51,57 @@ DD/MM/2026 - 1.1: Added close callback to window.
 01/09/2026 - 1.5.3: Added brightness variable to lib:Theme() and fixed notification's text size
 
 06/09/2026 - 1.5.4:
-├ - Added Tab function and tabS to the config
-├ - Added animated icon to the Demo
-├ - Updated Theme function to no longer have a hardcoded table of each element's color
-└ - Added Inactive attribute handling to buttons (setting a button to Inactive blocks the set button controls, e.g. hover color change, tween when clicked, callback, etc...)
++ - Added Tab function and tabS to the config
++ - Added animated icon to the Demo
++ - Updated Theme function to no longer have a hardcoded table of each element's color
++ - Added Inactive attribute handling to buttons (setting a button to Inactive blocks the set button controls, e.g. hover color change, tween when clicked, callback, etc...)
 
 06/09/2026 - 1.5.4.1: Changed tab's Content attribute to a value because some "environments" can't set an attribute to an instance.
 
 08/09/2026 - 1.5.5:
-├ - Added settings setting to Toggles.
-├ - Created Utils to load icons (it only has a gear icon for now).
-├ - KeyPicker button size is now as small as possible, just enough to fit MouseMiddleButton.
-└ - Columns can now handle Scale number and UDim2 (only the X axis will be used)
++ - Added settings setting to Toggles.
++ - Created Utils to load icons (it only has a gear icon for now).
++ - KeyPicker button size is now as small as possible, just enough to fit MouseMiddleButton.
++ - Columns can now handle Scale number and UDim2 (only the X axis will be used)
 
 08/09/2026 - 1.5.5.1:
-├ - Removed Utils because it was useless.
-├ - Added Floating attribute to ColorPickers and Toggle's setting window so when changing tab they get destroyed.
-└ - Fixed ColorPicker element tracking, in clear, OK button is finally at the bottom.
++ - Removed Utils because it was useless.
++ - Added Floating attribute to ColorPickers and Toggle's setting window so when changing tab they get destroyed.
++ - Fixed ColorPicker element tracking, in clear, OK button is finally at the bottom.
 
 09/09/2026 - 1.5.6:
-├ - Updated the check function to check argument's classes and typeof instead of counting the number of arguments.
-└ - Added nocheck setting to every element except Begin so elements like Dropdown and hoverLabel don't trigger errors when creating a Window.
++ - Updated the check function to check argument's classes and typeof instead of counting the number of arguments.
++ - Added nocheck setting to every element except Begin so elements like Dropdown and hoverLabel don't trigger errors when creating a Window.
 
 10/09/2026 - 1.5.6.1:
-├ - Fixed Toggle settings setting window collapsing when opened.
-├ - Fixed ColorPicker color preview changing to red when clicked.
-└ - Added a warn if Slider speed setting is set to 0 or lower.
++ - Fixed Toggle settings setting window collapsing when opened.
++ - Fixed ColorPicker color preview changing to red when clicked.
++ - Added a warn if Slider speed setting is set to 0 or lower.
 
 11/09/2026 - 1.5.7:
-├ - Added return if check function gives an error.
-├ - Inverted Slider's min and max arguments (updated Demo).
-└ - Updated Slider's textbox to look like ColorPicker textboxes and moved them slightly.
++ - Added return if check function gives an error.
++ - Inverted Slider's min and max arguments (updated Demo).
++ - Updated Slider's textbox to look like ColorPicker textboxes and moved them slightly.
 
 11/09/2026 - 1.5.8:
-├ - Rewrote Dropdown entirely so it's list can go outside of the gui.
-├ - Added exitkey and deletekey settings to KeyPicker, exitkey does the same thing as Escape (no key change) and deletekey sets the KeyPicker to None.
-└ - Added a nil argument check to the check function.
++ - Rewrote Dropdown entirely so it's list can go outside of the gui.
++ - Added exitkey and deletekey settings to KeyPicker, exitkey does the same thing as Escape (no key change) and deletekey sets the KeyPicker to None.
++ - Added a nil argument check to the check function.
 
 20/09/2026 - 1.5.9:
-├ - Changed dropdown max height to 200 and fixed the size calculation to fit it's content correctly.
-├ - Fixed hover labels, dropdowns and colorpicker windows from showing up very low when gui had IgnoreGuiSet set to false.
-└ - Removed the lib:Begin() requirement
++ - Changed dropdown max height to 200 and fixed the size calculation to fit it's content correctly.
++ - Fixed hover labels, dropdowns and colorpicker windows from showing up very low when gui had IgnoreGuiSet set to false.
++ - Removed the lib:Begin() requirement
 
 20/09/2026 - 1.6:
-├ - Added CodeBox with over 50+ different formatting color styles
-├ - Added requireEnter setting to Textbox and Codebox for the callback calls
-└ - Updated Textboxes width and position to fit better
++ - Added CodeBox with over 50+ different formatting color styles
++ - Added requireEnter setting to Textbox and Codebox for the callback calls
++ - Removed padding from required Holder variables and gave it a padding setting who needs to be a UDim.new()
++ - Updated Textboxes width and position to fit better
   
-  ┌
-  ├
-  └
+  +
+  +
+  +
   
 ]]--
 
@@ -116,7 +117,7 @@ local syntaxes = {
 	Label = {"Content","string"},
 	Button = {"Content","string"},
 	Toggle = {"Content","string"},
-	Holder = {"Content","number"},
+	Holder = {"Content"},
 	Column = {"Content","Scale","EnumItem"},
 	Notify = {"ScreenGui","number"},
 	Window = {"ScreenGui","string","UDim2"},
@@ -1091,7 +1092,7 @@ function lib:Toggle(parent,text,settings)
 		sttg = box:Clone()
 		sttg.TextColor3 = settings.text1
 		sttg.TextSize = 16
-		sttg.Text = "≡"
+		sttg.Text = "="
 		sttg.Parent = row
 
 		sttg.MouseButton1Click:Connect(function()
@@ -1340,11 +1341,11 @@ function lib:Separator(parent,settings)
 	return row
 end
 
-function lib:Holder(parent,padding,settings)
+function lib:Holder(parent,settings)
 	settings = clean(settings or {})
 
 	if not settings.nocheck then
-		if check(parent,padding) then
+		if check(parent) then
 			return
 		end
 	end
@@ -1359,7 +1360,7 @@ function lib:Holder(parent,padding,settings)
 	layout.FillDirection = Enum.FillDirection.Horizontal
 	layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 	layout.SortOrder = Enum.SortOrder.LayoutOrder
-	layout.Padding = UDim.new(0,padding)
+	layout.Padding = settings.padding or UDim.new(0,0)
 	layout.Parent = holder
 
 	track(parent,holder)
@@ -1811,9 +1812,9 @@ function lib:Dropdown(parent,text,content,settings)
 	local open = false
 	local height = 0
 
-	local holder = lib:Holder(parent,6)
-	local column1 = lib:Column(holder,0.49,Enum.HorizontalAlignment.Left)
-	local column2 = lib:Column(holder,0.49,Enum.HorizontalAlignment.Right)
+	local holder = lib:Holder(parent,{padding = UDim.new(0.002,0)})
+	local column1 = lib:Column(holder,0.5,Enum.HorizontalAlignment.Left)
+	local column2 = lib:Column(holder,0.5,Enum.HorizontalAlignment.Right)
 	local label = lib:Label(column1,text,{wrapped = false})
 
 	local element = Instance.new("Frame",column2)
@@ -2071,7 +2072,7 @@ function lib:KeyPicker(parent,text,settings)
 		end
 	end
 
-	local holder = lib:Holder(parent,6)
+	local holder = lib:Holder(parent{padding = UDim.new(0,6)})
 	local column1 = lib:Column(holder,UDim2.new(1,-130,0,0),Enum.HorizontalAlignment.Left)
 	local column2 = lib:Column(holder,UDim2.new(0,130,0,0),Enum.HorizontalAlignment.Right) -- biggest KeyCode is MouseMiddleButton, who fits perfectly within 130
 	local label = lib:Label(column1,text,{wrapped = false})
@@ -2133,9 +2134,9 @@ function lib:TextBox(parent,text,settings)
 	local nospace = settings.nospace or false
 
 	if settings.label then
-		local holder = lib:Holder(parent,6)
-		local column1 = lib:Column(holder,0.49,Enum.HorizontalAlignment.Left)
-		local column2 = lib:Column(holder,0.49,Enum.HorizontalAlignment.Right)
+		local holder = lib:Holder(parent,{padding = UDim.new(0.002,0)})
+		local column1 = lib:Column(holder,0.5,Enum.HorizontalAlignment.Left)
+		local column2 = lib:Column(holder,0.5,Enum.HorizontalAlignment.Right)
 		local label = lib:Label(column1,settings.label)
 		parent = column2
 		if settings.hoverLabel then
@@ -2250,12 +2251,38 @@ function lib:CodeBox(parent,text,settings)
 		local function c(s, col) return '<font color="' .. col .. '">' .. e(s) .. "</font>" end
 
 		local function highlight(source)
-			local out, i = {}, 1
+			local out = {}
+			local buffer = {}
+			local bufferColor
+
+			local function flush()
+				if #buffer == 0 then
+					return
+				end
+
+				local x = table.concat(buffer)
+				out[#out + 1] = '<font color="' .. bufferColor .. '">' .. e(x) .. "</font>"
+
+				table.clear(buffer)
+			end
+
+			local function add(x, color)
+				if bufferColor ~= color then
+					flush()
+					bufferColor = color
+				end
+
+				buffer[#buffer + 1] = x
+			end
+
+			local i = 1
 
 			while i <= #source do
 				local s = source:sub(i)
 
 				if s:sub(1, 2) == "--" then
+					flush()
+
 					local x
 
 					if s:sub(1, 4) == "--[[" then
@@ -2268,7 +2295,10 @@ function lib:CodeBox(parent,text,settings)
 
 					out[#out + 1] = c(x, cbc["Comment"])
 					i += #x
+
 				elseif s:sub(1, 1) == '"' or s:sub(1, 1) == "'" then
+					flush()
+
 					local q, j = s:sub(1, 1), 2
 
 					while j <= #s do
@@ -2285,7 +2315,10 @@ function lib:CodeBox(parent,text,settings)
 					local x = s:sub(1, j - 1)
 					out[#out + 1] = c(x, cbc["String"])
 					i += #x
+
 				elseif s:sub(1, 1) == "`" then
+					flush()
+
 					local j, x = 2, "`"
 
 					while j <= #s do
@@ -2308,11 +2341,16 @@ function lib:CodeBox(parent,text,settings)
 								elseif s:sub(j, j) == "}" then
 									depth -= 1
 								end
+
 								j += 1
 							end
 
 							local expr = s:sub(start, j - 1)
-							x ..= '<font color="' .. cbc["Interpolation"] .. '">{</font>' .. highlight(expr:sub(2, -2)) .. '<font color="' .. cbc["Interpolation"] .. '">}</font>'
+
+							x ..= '<font color="' .. cbc["Interpolation"] .. '">{</font>'
+							x ..= highlight(expr:sub(2, -2))
+							x ..= '<font color="' .. cbc["Interpolation"] .. '">}</font>'
+
 						else
 							x ..= e(s:sub(j, j))
 							j += 1
@@ -2321,36 +2359,61 @@ function lib:CodeBox(parent,text,settings)
 
 					out[#out + 1] = '<font color="' .. cbc["String"] .. '">' .. x .. "</font>"
 					i += j - 1
+
 				elseif s:sub(1, 2) == "[[" then
+					flush()
+
 					local z = s:find("]]", 3, true)
 					local x = z and s:sub(1, z + 1) or s
+
 					out[#out + 1] = c(x, cbc["String"])
 					i += #x
+
 				elseif s:match("^%d") then
+					flush()
+
 					local x = s:match("^[%w%.]+")
 					out[#out + 1] = c(x, cbc["Number"])
 					i += #x
+
 				elseif s:match("^[%a_]") then
 					local x = s:match("^[%w_]+")
 					local before = source:sub(1, i - 1)
 					local rest = s:sub(#x + 1)
-					local col = before:match(":%s*$") and cbc["Type"] or kw[x] and cbc["Keyword"] or bi[x] and cbc["Builtin"] or rest:match("^%s*%(") and cbc["Function"]
-					out[#out + 1] = c(x, col or cbc["Default"])
+
+					local col =
+						before:match(":%s*$") and cbc["Type"]
+						or kw[x] and cbc["Keyword"]
+						or bi[x] and cbc["Builtin"]
+						or rest:match("^%s*%(") and cbc["Function"]
+						or cbc["Default"]
+
+					add(x, col)
 					i += #x
+
 				else
-					out[#out + 1] = c(s:sub(1, 1), cbc["Operator"])
+					add(s:sub(1, 1), cbc["Operator"])
 					i += 1
 				end
 			end
 
+			flush()
+
 			return table.concat(out)
 		end
 
-		faketext.Text = highlight(t)
 		row.CanvasSize = UDim2.new(0, 0, 0, textbox.TextBounds.Y + (settings.spacing or 60))
+		local final = highlight(t)
+		if #final < 200000 then
+			faketext.Text = final
+		else
+			warn(err,"Code is too long. Formatting won't be applied.")
+		end
 	end
 
 	textbox:GetPropertyChangedSignal("Text"):Connect(update)
+	--textbox:GetPropertyChangedSignal("TextBounds"):Connect(update)
+	--textbox:GetPropertyChangedSignal("ContentText"):Connect(update)
 	update()
 
 	textbox.FocusLost:Connect(function(bool)
@@ -2359,7 +2422,7 @@ function lib:CodeBox(parent,text,settings)
 	end)
 
 	textbox:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
-		row.CanvasSize = UDim2.new(0, 0, 0, textbox.TextBounds.Y + 60)
+		row.CanvasSize = UDim2.new(0, 0, 0, textbox.TextBounds.Y + (settings.spacing or 60))
 	end)
 
 	local hovered = false
@@ -2457,7 +2520,7 @@ function lib:Notify(parent,length,settings)
 		if btntype == 1 then
 			btn(content,"OK",1)
 		else
-			local cols1 = lib:Holder(content,6)
+			local cols1 = lib:Holder(content,{padding = UDim.new(0,6)})
 
 			if btntype == 2 or btntype == 3 then
 				local left = lib:Column(cols1,.49,Enum.HorizontalAlignment.Left)
@@ -2750,7 +2813,7 @@ function lib:Demo()
 
 	lib:Separator(content1,{text = "Columns"})
 
-	local cols1 = lib:Holder(content1,6)
+	local cols1 = lib:Holder(content1,{padding = UDim.new(0,6)})
 	local left = lib:Column(cols1,.49,Enum.HorizontalAlignment.Left)
 	local right = lib:Column(cols1,.49,Enum.HorizontalAlignment.Right)
 
@@ -2759,7 +2822,7 @@ function lib:Demo()
 		lib:Notify(container,3,{text = "This is a example notification",btntype = 0,title = "Example Notification",notification = ""})
 	end,})
 
-	local cols2 = lib:Holder(content1,6)
+	local cols2 = lib:Holder(content1,{padding = UDim.new(0,6)})
 	local a = lib:Column(cols2,.32,Enum.HorizontalAlignment.Left)
 	local b = lib:Column(cols2,.32,Enum.HorizontalAlignment.Center)
 	local c = lib:Column(cols2,.32,Enum.HorizontalAlignment.Right)
@@ -2797,7 +2860,7 @@ function lib:Demo()
 
 	local win2,content2 = lib:Window(container,"SkiraLib Demo - Info",UDim2.new(0,250,0,72),{position = UDim2.new(1,-260,0,10)})
 
-	local cols3 = lib:Holder(content2,6)
+	local cols3 = lib:Holder(content2,{padding = UDim.new(0,6)})
 	local a2 = lib:Column(cols3,.32,"Left")
 	local b2 = lib:Column(cols3,.32,"Center")
 	local c2 = lib:Column(cols3,.32,"Right")
@@ -2845,7 +2908,7 @@ function lib:Demo()
 	lib:Label(content3,"Skira's Library",{alignmentX = Enum.TextXAlignment.Center,text1 = Color3.fromRGB(255, 0, 0),font0 = Enum.Font.LuckiestGuy,textS = 24})
 	lib:Label(content3,"Writing a new script everytime\n i need a UI was too much,\nso I made this library !",{size = UDim2.new(1,0,0,92),alignmentX = Enum.TextXAlignment.Center,textS = 16,font0 = Enum.Font.GothamMedium})
 
-	local cols4 = lib:Holder(content3,6)
+	local cols4 = lib:Holder(content3,{padding = UDim.new(0,6)})
 	local left2 = lib:Column(cols4,.49,"Left")
 	local right2 = lib:Column(cols4,.49,"Right")
 
@@ -2906,7 +2969,7 @@ This library is provided "AS IS", without warranty of any kind.
 		end
 	})
 
-	local cols5 = lib:Holder(content3,6)
+	local cols5 = lib:Holder(content3,{padding = UDim.new(0,6)})
 	local left3 = lib:Column(cols5,.49,"Left")
 	local right3 = lib:Column(cols5,.49,"Right")
 

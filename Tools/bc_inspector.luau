@@ -105,9 +105,9 @@ end
 function getName()
 	local result = ""
 	if instance then
-		result = instance:GetFullName().."_"..instance.ClassName.."_"..game.PlaceId
+		result = instance.Name.."_"..instance.ClassName.."_"..game.PlaceId
 	else
-		result = "UnknownPath_Unknown_"..game.PlaceId
+		result = "Unknown_Unknown_"..game.PlaceId
 	end
 	if decoded then
 		result = result.."_decompiled.lua"
@@ -150,7 +150,7 @@ lib:Button(column2,"Decompile",{alignmentX = Enum.TextXAlignment.Center,callback
                     if m>0 or h>0 then table.insert(p,m.."m") end
                     if s>0 or #p==0 then table.insert(p,s.."s") end
 					--saveFile(getName(),decoded)
-					codebox.Text = "-- File created using ByteCode Inspector (https://github.com/solal0/Luau/)\n-- ByteCode decompiled in "..table.concat(p," ").." with "..service.."\n-- If the script cuts off, click Save below to have the full script as a file.\n\n"..decoded
+					codebox.Text = "-- File created using ByteCode Inspector (https://github.com/solal0/Luau/)\n\n-- Decompiled in "..table.concat(p," ").." by "..service.."\n-- Path: "..instance:GetFullName().."\n-- Class: "..instance.ClassName.."\n\n-- If the script cuts off, click Save below to have the full script as a file.\n\n"..decoded
 				else
                     codebox.Text = codebox.Text.."\nFailed to decompile bytecode with "..service
 				end

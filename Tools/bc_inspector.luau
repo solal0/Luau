@@ -3,7 +3,7 @@
 
 -- TODO:
 -- DONE. Fix Skira's Library codebox text being off in some cases
--- handle workspace... and not just game...
+-- DONE. handle workspace, game, :GetService, etc...
 
 local httpRequest = request or http_request or (syn and syn.request)
 assert(httpRequest, "Your executor does not support http requests.")
@@ -44,7 +44,9 @@ end
 
 function getInstance(path)
 	local parts = string.split(path, ".")
-	local c = parts[1] == "game" and game or workspace
+	local id = parts[1]
+	local c = id == "game" and game or id:find("GetService", 1, true) and game:GetService(id:match('"([^"]+)"')) or workspace
+
 	for i = 2, #parts do
 		c = c:FindFirstChild(parts[i])
 		if not c then

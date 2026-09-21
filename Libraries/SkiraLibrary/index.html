@@ -627,9 +627,10 @@ local _, content = lib:Window(container,"Demo",UDim2.new(0,250,0,250),{position 
 --             |             .---| The api who provides functions to interact with the element. Usage demo at the bottom of the script.
 local dropdown, api = lib:Dropdown(
 	content, -- parent of the slider.
-	"Minimum", -- the default selected option.
+	"Dropdown", -- text of the label next to the dropdown.
 	{"Minimum","Medium","Maximum"}, -- options in the dropdown. The default option selected must be in here too and won't be duplicated.
 	{
+		selected = "Minimum", -- the default selected option.
 		callback = function(v) -- v is the option that was selected.
 			if v == "Minimum" then
 				print("Minimum settings or something.")

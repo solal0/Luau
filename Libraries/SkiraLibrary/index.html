@@ -736,27 +736,47 @@ local keypicker = lib:TextBox(
                 description: "A textbox is a box the user can write text in.",
                 exampleCode: `local lib = require(game.ReplicatedStorage.SkiraLib) -- don't mind this, it's there so the script makes sense.
 local container = lib:Begin(game.Players.LocalPlayer.PlayerGui,"",{enabled = true}) -- don't mind this, it's there so the script makes sense.
-local _, content = lib:Window(container,"Demo",UDim2.new(0,250,0,250),{position = UDim2.new(1,-260,0,92),}) -- don't mind this, it's there so the script makes sense.
+local _, content = lib:Window(container,"Demo",UDim2.new(0,600,0,400),{position = UDim2.new(1,-610,0,92),noscroll = true}) -- don't mind this, it's there so the script makes sense.
 
 local codebox = lib:CodeBox(
 	content, -- the parent
-	[[
-	-- Example code
+[[
+-- This is a comment
+local a,b,c = nil,true,false
+local n,s,h = tonumber("123"),1.5,0xFF
+local t = {"w","o","r","l","d","!"}
 
-	local function greet(name: string): string
-	    return \`Hello, {name}!\`
+function test(x:string):number
+	if x then return #x else return 0 end
+end
+
+n += s - h
+h = ""
+
+for i,v in pairs(t) do
+	h = h .. v
+	if i ~= #t then
+		h = h .. " "
 	end
+end
 
-	print(greet("World"))
+if not a and b then
+	a = Instance.new("Part",workspace)
+	a.Name = "Test"
+	a.Position = Vector3.new(1,2,3)
+	a.Color = Color3.fromRGB(255,0,0)
+	a.Material = Enum.Material.Plastic
 
-	local numbers = {1, 2, 3, 4, 5}
-	local sum = 0
-	for _, n in numbers do
-	    sum += n
+	if a:FindFirstChild("x") then
+		a:SetAttribute("example", true)
 	end
-	print("Sum:", sum)
-	]], -- the codebox content, can be a single line as well as multiline
+end
+
+warn("xyz " .. test(h), tostring(s))
+print(`Hello {game.Players.LocalPlayer.Name} {math.floor(n)}`)
+]], -- the codebox content, can be a single line as well as multiline
 	{
+		size = UDim2.new(1, 0, 1, 0), -- custom size
 		style = "studio", -- codebox style, can also be set to: "default", "vscode_light", "vscode_dark", "github_light", "github_dark", "github_dimmed", "monaco_dark", "monaco_light", "visual_studio_dark", "visual_studio_light", "jetbrains_dark", "jetbrains_light", "darcula", "one_dark", "one_light", "dracula", "monokai", "nord", "gruvbox_dark", "gruvbox_light", "solarized_dark", "solarized_light", "tokyo_night", "tokyo_night_light", "catppuccin_mocha", "catppuccin_latte", "ayu_dark", "ayu_light", "ayu_mirage", "night_owl", "palenight", "rose_pine", "kanagawa", "synthwave", "cyberpunk", "hacker", "terminal_green", "terminal_amber", "obsidian", "midnight", "ocean", "forest", "coffee", "slate", "graphite", "amethyst", "emerald", "ruby", "azure", "crimson", "high_contrast_dark", "high_contrast_light", "paper", "blueprint", "neon", "minimal_dark", "minimal_light" and "terminal"
 		display = false, -- if true, the code won't be editable
 		spacing = 60, -- amount of pixels at the bottom of the script. If set to 0 the code won't be able to expand lower

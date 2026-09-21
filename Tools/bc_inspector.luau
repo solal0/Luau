@@ -3,7 +3,7 @@
 
 -- TODO:
 -- DONE. Fix Skira's Library codebox text being off in some cases
--- DONE. handle workspace... and not just game...
+-- handle workspace... and not just game...
 
 local httpRequest = request or http_request or (syn and syn.request)
 assert(httpRequest, "Your executor does not support http requests.")
@@ -131,10 +131,10 @@ lib:Button(column2,"Decompile",{alignmentX = Enum.TextXAlignment.Center,callback
 		if obj then
 			instance,bytecode,decoded = obj,getByteCode(obj),nil
 			if bytecode and type(bytecode) == "string" then
-				saveFile(getName(),bytecode)
+				--saveFile(getName(),bytecode)
 				decoded = decompile(bytecode)
 				if decoded then
-					saveFile(getName(),decoded)
+					--saveFile(getName(),decoded)
 					codebox.Text = decoded
 				else
 					notify("Failed to decompile bytecode")

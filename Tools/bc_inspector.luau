@@ -16,6 +16,7 @@ local lib = loadstring(game:HttpGet("https://skira.me/lua/SkiraLibrary/source"))
 local g = utils.services
 
 local instance,bytecode,decoded = nil,nil,nil
+local decompileTime = ""
 local service = "luacid"
 
 local gui = utils.getSafeGui()
@@ -149,10 +150,11 @@ lib:Button(column2,"Decompile",{alignmentX = Enum.TextXAlignment.Center,callback
                     if h>0 then table.insert(p,h.."h") end
                     if m>0 or h>0 then table.insert(p,m.."m") end
                     if s>0 or #p==0 then table.insert(p,s.."s") end
+                    decompileTime = table.concat(p," ")
 					--saveFile(getName(),decoded)
-					codebox.Text = "-- File created using ByteCode Inspector (https://github.com/solal0/Luau/)\n\n-- Decompiled in "..table.concat(p," ").." by "..service.."\n-- Path: "..instance:GetFullName().."\n-- Class: "..instance.ClassName.."\n\n-- If the script cuts off, click Save below to have the full script as a file.\n\n"..decoded
+					codebox.Text = decoded
 				else
-                    codebox.Text = codebox.Text.."\nFailed to decompile bytecode with "..service
+                    codebox.Text = codebox.Text.."\nFailed to decompile bytecode using "..service
 				end
 			else
                 codebox.Text = codebox.Text.."\nFailed to get bytecode from "..obj.Name
@@ -168,14 +170,14 @@ lib:Button(column3,"Clear",{alignmentX = Enum.TextXAlignment.Center,callback = f
 end})
 lib:Button(column4,"Save",{alignmentX = Enum.TextXAlignment.Center,callback = function()
 	if codebox.Text ~= "" then
-		local success = saveFile(getName(),codebox.Text)
+		local success = saveFile(getName(),"-- File created using ByteCode Inspector (https://github.com/solal0/Luau/)\n\n-- Decompiled in "..decompileTime.." by "..service.."\n-- Path: "..instance:GetFullName().."\n-- Class: "..instance.ClassName.."\n\n-- If the script cuts off, click Save below to have the full script as a file.\n\n"..codebox.Text)
 		if success then
-			notify("Saved codebox content as "..getName())
+			notify("Saved content as "..getName())
 		else
-			notify("Failed to save codebox content")
+			notify("Failed to save content")
 		end
 	else
-		notify("Nothing to save from the codebox (it's empty)")
+		notify("Nothing to save (it's empty)")
 	end
 end})
 lib:Dropdown(content,"Decompiler",{"Luacid", "LunaUX"},{default = "Luacid",callback = function(v) service = string.lower(v) end})

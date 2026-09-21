@@ -39,10 +39,10 @@ DD/MM/2026 - 1.1: Added close callback to window.
 11/06/2026 - 1.4: Added TextBox. Made Sliders label a textbox.
 
 15/06/2026 - 1.5:
-├ - made the set functions run the callback, added api to dropdown, added max height to dropdown
-├ - added wrapped setting to label, added textbox, working on making sliders label textboxes
-├ - fixed Windows being resizable when collapsed, changed notifications movement direction, added hover label setting on all options (setting is called hoverLabel), added information icon to the default config
-└ - made slider callback a value instead of a string, made slider value show a decimal only if being one
++ - made the set functions run the callback, added api to dropdown, added max height to dropdown
++ - added wrapped setting to label, added textbox, working on making sliders label textboxes
++ - fixed Windows being resizable when collapsed, changed notifications movement direction, added hover label setting on all options (setting is called hoverLabel), added information icon to the default config
++ - made slider callback a value instead of a string, made slider value show a decimal only if being one
 
 01/07/2026 - 1.5.1: Fixed Window set function returning nil
 
@@ -51,58 +51,59 @@ DD/MM/2026 - 1.1: Added close callback to window.
 01/09/2026 - 1.5.3: Added brightness variable to lib:Theme() and fixed notification's text size
 
 06/09/2026 - 1.5.4:
-├ - Added Tab function and tabS to the config
-├ - Added animated icon to the Demo
-├ - Updated Theme function to no longer have a hardcoded table of each element's color
-└ - Added Inactive attribute handling to buttons (setting a button to Inactive blocks the set button controls, e.g. hover color change, tween when clicked, callback, etc...)
++ - Added Tab function and tabS to the config
++ - Added animated icon to the Demo
++ - Updated Theme function to no longer have a hardcoded table of each element's color
++ - Added Inactive attribute handling to buttons (setting a button to Inactive blocks the set button controls, e.g. hover color change, tween when clicked, callback, etc...)
 
 06/09/2026 - 1.5.4.1: Changed tab's Content attribute to a value because some "environments" can't set an attribute to an instance.
 
 08/09/2026 - 1.5.5:
-├ - Added settings setting to Toggles.
-├ - Created Utils to load icons (it only has a gear icon for now).
-├ - KeyPicker button size is now as small as possible, just enough to fit MouseMiddleButton.
-└ - Columns can now handle Scale number and UDim2 (only the X axis will be used)
++ - Added settings setting to Toggles.
++ - Created Utils to load icons (it only has a gear icon for now).
++ - KeyPicker button size is now as small as possible, just enough to fit MouseMiddleButton.
++ - Columns can now handle Scale number and UDim2 (only the X axis will be used)
 
 08/09/2026 - 1.5.5.1:
-├ - Removed Utils because it was useless.
-├ - Added Floating attribute to ColorPickers and Toggle's setting window so when changing tab they get destroyed.
-└ - Fixed ColorPicker element tracking, in clear, OK button is finally at the bottom.
++ - Removed Utils because it was useless.
++ - Added Floating attribute to ColorPickers and Toggle's setting window so when changing tab they get destroyed.
++ - Fixed ColorPicker element tracking, in clear, OK button is finally at the bottom.
 
 09/09/2026 - 1.5.6:
-├ - Updated the check function to check argument's classes and typeof instead of counting the number of arguments.
-└ - Added nocheck setting to every element except Begin so elements like Dropdown and hoverLabel don't trigger errors when creating a Window.
++ - Updated the check function to check argument's classes and typeof instead of counting the number of arguments.
++ - Added nocheck setting to every element except Begin so elements like Dropdown and hoverLabel don't trigger errors when creating a Window.
 
 10/09/2026 - 1.5.6.1:
-├ - Fixed Toggle settings setting window collapsing when opened.
-├ - Fixed ColorPicker color preview changing to red when clicked.
-└ - Added a warn if Slider speed setting is set to 0 or lower.
++ - Fixed Toggle settings setting window collapsing when opened.
++ - Fixed ColorPicker color preview changing to red when clicked.
++ - Added a warn if Slider speed setting is set to 0 or lower.
 
 11/09/2026 - 1.5.7:
-├ - Added return if check function gives an error.
-├ - Inverted Slider's min and max arguments (updated Demo).
-└ - Updated Slider's textbox to look like ColorPicker textboxes and moved them slightly.
++ - Added return if check function gives an error.
++ - Inverted Slider's min and max arguments (updated Demo).
++ - Updated Slider's textbox to look like ColorPicker textboxes and moved them slightly.
 
 11/09/2026 - 1.5.8:
-├ - Rewrote Dropdown entirely so it's list can go outside of the gui.
-├ - Added exitkey and deletekey settings to KeyPicker, exitkey does the same thing as Escape (no key change) and deletekey sets the KeyPicker to None.
-└ - Added a nil argument check to the check function.
++ - Rewrote Dropdown entirely so it's list can go outside of the gui.
++ - Added exitkey and deletekey settings to KeyPicker, exitkey does the same thing as Escape (no key change) and deletekey sets the KeyPicker to None.
++ - Added a nil argument check to the check function.
 
 20/09/2026 - 1.5.9:
-├ - Changed dropdown max height to 200 and fixed the size calculation to fit it's content correctly.
-├ - Fixed hover labels, dropdowns and colorpicker windows from showing up very low when gui had IgnoreGuiSet set to false.
-└ - Removed the lib:Begin() requirement
++ - Changed dropdown max height to 200 and fixed the size calculation to fit it's content correctly.
++ - Fixed hover labels, dropdowns and colorpicker windows from showing up very low when gui had IgnoreGuiSet set to false.
++ - Removed the lib:Begin() requirement
 
 20/09/2026 - 1.6:
-├ - Added CodeBox with over 50+ different formatting color styles
-├ - Added requireEnter setting to Textbox and Codebox for the callback calls
-├ - Removed padding from required Holder variables and gave it a padding setting who needs to be a UDim.new()
-└ - Updated Textboxes width and position to fit better
-  
-  ┌
-  ├
-  └
-  
++ - Added CodeBox with over 50+ different formatting color styles
++ - Added requireEnter setting to Textbox and Codebox for the callback calls
++ - Removed padding from required Holder variables and gave it a padding setting who needs to be a UDim.new()
++ - Updated Textboxes width and position to fit better
+
+21/09/2026 - 1.6.1:
++ - Added more formatting colors
++ - Fixed text mismatch for good
++ - Added optimization but still not enough.
+
 ]]--
 
 local UIS = game:GetService("UserInputService")
@@ -196,72 +197,72 @@ local config = {
 -- codebox stuff
 
 local cb_configs = {
-	default = {["Background"]="#1E1E1E",["Inner"]="#565656",["Outer"]="#121212",["Keyword"]="#FF79C6",["Builtin"]="#8BE9FD",["Function"]="#50FA7B",["Type"]="#8BE9FD",["Number"]="#BD93F9",["String"]="#F1FA8C",["Comment"]="#6272A4",["Default"]="#FFFFFF",["Operator"]="#FFFFFF",["Interpolation"]="#FF79C6"},
-	studio = {["Background"]="#202227",["Inner"]="#58595D",["Outer"]="#131417",["Keyword"]="#EB795B",["Builtin"]="#8FB4FF",["Function"]="#FAE4AA",["Type"]="#326BFF",["Number"]="#F2A328",["String"]="#6CE9A0",["Comment"]="#6A6F81",["Default"]="#BCBEC8",["Operator"]="#BCBEC8",["Interpolation"]="#FF79C6"},
-	vscode_light = {["Background"]="#FFFFFF",["Inner"]="#FFFFFF",["Outer"]="#999999",["Keyword"]="#0000FF",["Builtin"]="#267F99",["Function"]="#795E26",["Type"]="#267F99",["Number"]="#098658",["String"]="#A31515",["Comment"]="#008000",["Default"]="#000000",["Operator"]="#000000",["Interpolation"]="#000000"},
-	vscode_dark = {["Background"]="#1E1E1E",["Inner"]="#565656",["Outer"]="#121212",["Keyword"]="#569CD6",["Builtin"]="#4EC9B0",["Function"]="#DCDCAA",["Type"]="#4EC9B0",["Number"]="#B5CEA8",["String"]="#CE9178",["Comment"]="#6A9955",["Default"]="#D4D4D4",["Operator"]="#D4D4D4",["Interpolation"]="#569CD6"},
-	github_light = {["Background"]="#FFFFFF",["Inner"]="#FFFFFF",["Outer"]="#999999",["Keyword"]="#CF222E",["Builtin"]="#8250DF",["Function"]="#8250DF",["Type"]="#953800",["Number"]="#0550AE",["String"]="#0A3069",["Comment"]="#6E7781",["Default"]="#1F2328",["Operator"]="#1F2328",["Interpolation"]="#0A3069"},
-	github_dark = {["Background"]="#0D1117",["Inner"]="#4A4C51",["Outer"]="#080A0E",["Keyword"]="#FF7B72",["Builtin"]="#D2A8FF",["Function"]="#D2A8FF",["Type"]="#FFA657",["Number"]="#79C0FF",["String"]="#A5D6FF",["Comment"]="#8B949E",["Default"]="#E6EDF3",["Operator"]="#E6EDF3",["Interpolation"]="#A5D6FF"},
-	github_dimmed = {["Background"]="#22272E",["Inner"]="#595D62",["Outer"]="#14171C",["Keyword"]="#F47067",["Builtin"]="#DCBDFB",["Function"]="#6BCBFF",["Type"]="#8DDB8C",["Number"]="#6CB6FF",["String"]="#96D0FF",["Comment"]="#768390",["Default"]="#ADBAC7",["Operator"]="#ADBAC7",["Interpolation"]="#F47067"},
-	monaco_dark = {["Background"]="#1E1E1E",["Inner"]="#565656",["Outer"]="#121212",["Keyword"]="#C586C0",["Builtin"]="#4EC9B0",["Function"]="#DCDCAA",["Type"]="#4EC9B0",["Number"]="#B5CEA8",["String"]="#CE9178",["Comment"]="#6A9955",["Default"]="#D4D4D4",["Operator"]="#D4D4D4",["Interpolation"]="#569CD6"},
-	monaco_light = {["Background"]="#FFFFFF",["Inner"]="#FFFFFF",["Outer"]="#999999",["Keyword"]="#AF00DB",["Builtin"]="#267F99",["Function"]="#795E26",["Type"]="#267F99",["Number"]="#098658",["String"]="#A31515",["Comment"]="#008000",["Default"]="#000000",["Operator"]="#000000",["Interpolation"]="#001080"},
-	visual_studio_dark = {["Background"]="#1E1E1E",["Inner"]="#565656",["Outer"]="#121212",["Keyword"]="#569CD6",["Builtin"]="#4EC9B0",["Function"]="#DCDCAA",["Type"]="#4EC9B0",["Number"]="#B5CEA8",["String"]="#CE9178",["Comment"]="#6A9955",["Default"]="#D4D4D4",["Operator"]="#D4D4D4",["Interpolation"]="#C586C0"},
-	visual_studio_light = {["Background"]="#FFFFFF",["Inner"]="#FFFFFF",["Outer"]="#999999",["Keyword"]="#0000FF",["Builtin"]="#267F99",["Function"]="#795E26",["Type"]="#267F99",["Number"]="#098658",["String"]="#A31515",["Comment"]="#008000",["Default"]="#000000",["Operator"]="#000000",["Interpolation"]="#AF00DB"},
-	jetbrains_dark = {["Background"]="#2B2B2B",["Inner"]="#606060",["Outer"]="#1A1A1A",["Keyword"]="#CC7832",["Builtin"]="#9876AA",["Function"]="#FFC66D",["Type"]="#A9B7C6",["Number"]="#6897BB",["String"]="#6A8759",["Comment"]="#808080",["Default"]="#A9B7C6",["Operator"]="#A9B7C6",["Interpolation"]="#CC7832"},
-	jetbrains_light = {["Background"]="#FFFFFF",["Inner"]="#FFFFFF",["Outer"]="#999999",["Keyword"]="#000080",["Builtin"]="#660E7A",["Function"]="#795E26",["Type"]="#267F99",["Number"]="#0000FF",["String"]="#008000",["Comment"]="#808080",["Default"]="#000000",["Operator"]="#000000",["Interpolation"]="#000080"},
-	darcula = {["Background"]="#2B2B2B",["Inner"]="#606060",["Outer"]="#1A1A1A",["Keyword"]="#CC7832",["Builtin"]="#9876AA",["Function"]="#FFC66D",["Type"]="#A9B7C6",["Number"]="#6897BB",["String"]="#6A8759",["Comment"]="#808080",["Default"]="#A9B7C6",["Operator"]="#A9B7C6",["Interpolation"]="#CC7832"},
-	one_dark = {["Background"]="#282C34",["Inner"]="#5E6167",["Outer"]="#181A1F",["Keyword"]="#C678DD",["Builtin"]="#56B6C2",["Function"]="#61AFEF",["Type"]="#E5C07B",["Number"]="#D19A66",["String"]="#98C379",["Comment"]="#5C6370",["Default"]="#ABB2BF",["Operator"]="#ABB2BF",["Interpolation"]="#C678DD"},
-	one_light = {["Background"]="#FAFAFA",["Inner"]="#FBFBFB",["Outer"]="#969696",["Keyword"]="#A626A4",["Builtin"]="#0184BC",["Function"]="#4078F2",["Type"]="#C18401",["Number"]="#986801",["String"]="#50A14F",["Comment"]="#A0A1A7",["Default"]="#383A42",["Operator"]="#383A42",["Interpolation"]="#A626A4"},
-	dracula = {["Background"]="#282A36",["Inner"]="#5E5F68",["Outer"]="#181920",["Keyword"]="#FF79C6",["Builtin"]="#8BE9FD",["Function"]="#50FA7B",["Type"]="#8BE9FD",["Number"]="#BD93F9",["String"]="#F1FA8C",["Comment"]="#6272A4",["Default"]="#F8F8F2",["Operator"]="#FF79C6",["Interpolation"]="#FF79C6"},
-	monokai = {["Background"]="#272822",["Inner"]="#5D5E59",["Outer"]="#171814",["Keyword"]="#F92672",["Builtin"]="#66D9EF",["Function"]="#A6E22E",["Type"]="#66D9EF",["Number"]="#AE81FF",["String"]="#E6DB74",["Comment"]="#75715E",["Default"]="#F8F8F2",["Operator"]="#F92672",["Interpolation"]="#F92672"},
-	nord = {["Background"]="#2E3440",["Inner"]="#626770",["Outer"]="#1C1F26",["Keyword"]="#81A1C1",["Builtin"]="#88C0D0",["Function"]="#88C0D0",["Type"]="#8FBCBB",["Number"]="#B48EAD",["String"]="#A3BE8C",["Comment"]="#616E88",["Default"]="#D8DEE9",["Operator"]="#81A1C1",["Interpolation"]="#81A1C1"},
-	gruvbox_dark = {["Background"]="#282828",["Inner"]="#5E5E5E",["Outer"]="#181818",["Keyword"]="#FB4934",["Builtin"]="#83A598",["Function"]="#B8BB26",["Type"]="#8EC07C",["Number"]="#D3869B",["String"]="#B8BB26",["Comment"]="#928374",["Default"]="#EBDBB2",["Operator"]="#FE8019",["Interpolation"]="#FB4934"},
-	gruvbox_light = {["Background"]="#FBF1C7",["Inner"]="#FCF4D5",["Outer"]="#979177",["Keyword"]="#9D0006",["Builtin"]="#076678",["Function"]="#79740E",["Type"]="#427B58",["Number"]="#8F3F71",["String"]="#79740E",["Comment"]="#928374",["Default"]="#3C3836",["Operator"]="#AF3A03",["Interpolation"]="#9D0006"},
-	solarized_dark = {["Background"]="#002B36",["Inner"]="#406068",["Outer"]="#001A20",["Keyword"]="#859900",["Builtin"]="#2AA198",["Function"]="#268BD2",["Type"]="#B58900",["Number"]="#D33682",["String"]="#2AA198",["Comment"]="#586E75",["Default"]="#839496",["Operator"]="#93A1A1",["Interpolation"]="#859900"},
-	solarized_light = {["Background"]="#FDF6E3",["Inner"]="#FEF8EA",["Outer"]="#989488",["Keyword"]="#859900",["Builtin"]="#2AA198",["Function"]="#268BD2",["Type"]="#B58900",["Number"]="#D33682",["String"]="#2AA198",["Comment"]="#93A1A1",["Default"]="#657B83",["Operator"]="#586E75",["Interpolation"]="#859900"},
-	tokyo_night = {["Background"]="#1A1B26",["Inner"]="#53545C",["Outer"]="#101017",["Keyword"]="#BB9AF7",["Builtin"]="#7DCFFF",["Function"]="#7AA2F7",["Type"]="#2AC3DE",["Number"]="#FF9E64",["String"]="#9ECE6A",["Comment"]="#565F89",["Default"]="#A9B1D6",["Operator"]="#89DDFF",["Interpolation"]="#BB9AF7"},
-	tokyo_night_light = {["Background"]="#D5D6DB",["Inner"]="#E0E0E4",["Outer"]="#808083",["Keyword"]="#9854F1",["Builtin"]="#007197",["Function"]="#34548A",["Type"]="#33635C",["Number"]="#965027",["String"]="#485E30",["Comment"]="#848CB5",["Default"]="#3760BF",["Operator"]="#006C86",["Interpolation"]="#9854F1"},
-	catppuccin_mocha = {["Background"]="#1E1E2E",["Inner"]="#565662",["Outer"]="#12121C",["Keyword"]="#CBA6F7",["Builtin"]="#89DCEB",["Function"]="#89B4FA",["Type"]="#F9E2AF",["Number"]="#FAB387",["String"]="#A6E3A1",["Comment"]="#6C7086",["Default"]="#CDD6F4",["Operator"]="#89DCEB",["Interpolation"]="#F5C2E7"},
-	catppuccin_latte = {["Background"]="#EFF1F5",["Inner"]="#F3F4F8",["Outer"]="#8F9193",["Keyword"]="#8839EF",["Builtin"]="#04A5E5",["Function"]="#1E66F5",["Type"]="#DF8E1D",["Number"]="#FE640B",["String"]="#40A02B",["Comment"]="#9CA0B0",["Default"]="#4C4F69",["Operator"]="#179299",["Interpolation"]="#EA76CB"},
-	ayu_dark = {["Background"]="#0B0E14",["Inner"]="#484A4F",["Outer"]="#07080C",["Keyword"]="#FF8F40",["Builtin"]="#59C2FF",["Function"]="#FFB454",["Type"]="#59C2FF",["Number"]="#D2A6FF",["String"]="#AAD94C",["Comment"]="#626A73",["Default"]="#BFBDB6",["Operator"]="#F29668",["Interpolation"]="#FF8F40"},
-	ayu_light = {["Background"]="#FAFAFA",["Inner"]="#FBFBFB",["Outer"]="#969696",["Keyword"]="#FA8D3E",["Builtin"]="#55B4D4",["Function"]="#F2AE49",["Type"]="#399EE6",["Number"]="#A37ACC",["String"]="#86B300",["Comment"]="#ABB0B6",["Default"]="#575F66",["Operator"]="#ED9366",["Interpolation"]="#F07171"},
-	ayu_mirage = {["Background"]="#1F2430",["Inner"]="#575B64",["Outer"]="#13161D",["Keyword"]="#FFAD66",["Builtin"]="#5CCFE6",["Function"]="#FFD580",["Type"]="#5CCFE6",["Number"]="#D4BFFF",["String"]="#BAE67E",["Comment"]="#707A8C",["Default"]="#CCCAC2",["Operator"]="#F29E74",["Interpolation"]="#FFAD66"},
-	night_owl = {["Background"]="#011627",["Inner"]="#40505D",["Outer"]="#010D17",["Keyword"]="#C792EA",["Builtin"]="#82AAFF",["Function"]="#82AAFF",["Type"]="#FFCB8B",["Number"]="#F78C6C",["String"]="#ADDb67",["Comment"]="#637777",["Default"]="#D6DEEB",["Operator"]="#7FDBCA",["Interpolation"]="#C792EA"},
-	palenight = {["Background"]="#292D3E",["Inner"]="#5E626E",["Outer"]="#191B25",["Keyword"]="#C792EA",["Builtin"]="#89DDFF",["Function"]="#82AAFF",["Type"]="#FFCB6B",["Number"]="#F78C6C",["String"]="#C3E88D",["Comment"]="#676E95",["Default"]="#A6ACCD",["Operator"]="#89DDFF",["Interpolation"]="#C792EA"},
-	rose_pine = {["Background"]="#191724",["Inner"]="#52515B",["Outer"]="#0F0E16",["Keyword"]="#C4A7E7",["Builtin"]="#9CCFD8",["Function"]="#EBBCBA",["Type"]="#F6C177",["Number"]="#C4A7E7",["String"]="#9CCFD8",["Comment"]="#6E6A86",["Default"]="#E0DEF4",["Operator"]="#908CAA",["Interpolation"]="#C4A7E7"},
-	kanagawa = {["Background"]="#1F1F28",["Inner"]="#57575E",["Outer"]="#131318",["Keyword"]="#957FB8",["Builtin"]="#7E9CD8",["Function"]="#E6C384",["Type"]="#7FB4CA",["Number"]="#D27E99",["String"]="#98BB6C",["Comment"]="#727169",["Default"]="#DCD7BA",["Operator"]="#C0A36E",["Interpolation"]="#957FB8"},
-	synthwave = {["Background"]="#241B2F",["Inner"]="#5B5463",["Outer"]="#16101C",["Keyword"]="#FF7EDB",["Builtin"]="#36F9F6",["Function"]="#72F1B8",["Type"]="#36F9F6",["Number"]="#F97E72",["String"]="#FDFDFD",["Comment"]="#848484",["Default"]="#F4F4F4",["Operator"]="#FF7EDB",["Interpolation"]="#FF7EDB"},
-	cyberpunk = {["Background"]="#0A0A12",["Inner"]="#47474D",["Outer"]="#06060B",["Keyword"]="#FF2A6D",["Builtin"]="#05D9E8",["Function"]="#01FFC3",["Type"]="#05D9E8",["Number"]="#F9F002",["String"]="#D1F7FF",["Comment"]="#4B5563",["Default"]="#D1F7FF",["Operator"]="#FF2A6D",["Interpolation"]="#FF2A6D"},
-	hacker = {["Background"]="#000000",["Inner"]="#404040",["Outer"]="#000000",["Keyword"]="#00FF41",["Builtin"]="#00CC33",["Function"]="#00FF41",["Type"]="#00CC33",["Number"]="#00FF41",["String"]="#00AA2A",["Comment"]="#006B1B",["Default"]="#00FF41",["Operator"]="#00CC33",["Interpolation"]="#00FF41"},
-	terminal_green = {["Background"]="#000000",["Inner"]="#404040",["Outer"]="#000000",["Keyword"]="#00FF00",["Builtin"]="#00CC00",["Function"]="#00FF00",["Type"]="#00CC00",["Number"]="#00FF00",["String"]="#00AA00",["Comment"]="#007700",["Default"]="#00FF00",["Operator"]="#00CC00",["Interpolation"]="#00FF00"},
-	terminal_amber = {["Background"]="#080600",["Inner"]="#464440",["Outer"]="#050400",["Keyword"]="#FFB000",["Builtin"]="#FFCC66",["Function"]="#FFD27F",["Type"]="#FFCC66",["Number"]="#FFAA00",["String"]="#FFE0A3",["Comment"]="#806000",["Default"]="#FFB000",["Operator"]="#FFCC66",["Interpolation"]="#FFB000"},
-	obsidian = {["Background"]="#111111",["Inner"]="#4C4C4C",["Outer"]="#0A0A0A",["Keyword"]="#C792EA",["Builtin"]="#82AAFF",["Function"]="#82AAFF",["Type"]="#89DDFF",["Number"]="#F78C6C",["String"]="#C3E88D",["Comment"]="#545454",["Default"]="#D8DEE9",["Operator"]="#89DDFF",["Interpolation"]="#C792EA"},
-	midnight = {["Background"]="#0B1020",["Inner"]="#484C58",["Outer"]="#070A13",["Keyword"]="#B48EAD",["Builtin"]="#81A1C1",["Function"]="#88C0D0",["Type"]="#8FBCBB",["Number"]="#D08770",["String"]="#A3BE8C",["Comment"]="#4C566A",["Default"]="#D8DEE9",["Operator"]="#81A1C1",["Interpolation"]="#B48EAD"},
-	ocean = {["Background"]="#071E26",["Inner"]="#45565C",["Outer"]="#041217",["Keyword"]="#C792EA",["Builtin"]="#89DDFF",["Function"]="#82AAFF",["Type"]="#2DE2E6",["Number"]="#F78C6C",["String"]="#C3E88D",["Comment"]="#49656B",["Default"]="#D6DEEB",["Operator"]="#89DDFF",["Interpolation"]="#C792EA"},
-	forest = {["Background"]="#101812",["Inner"]="#4C524D",["Outer"]="#0A0E0B",["Keyword"]="#C4D35A",["Builtin"]="#62D6A7",["Function"]="#A8D672",["Type"]="#62D6A7",["Number"]="#D9A441",["String"]="#9BE564",["Comment"]="#506054",["Default"]="#DCE8D8",["Operator"]="#62D6A7",["Interpolation"]="#C4D35A"},
-	coffee = {["Background"]="#211914",["Inner"]="#58524F",["Outer"]="#140F0C",["Keyword"]="#E8A87C",["Builtin"]="#82C0CC",["Function"]="#F2C078",["Type"]="#D9B08C",["Number"]="#C58B5C",["String"]="#C8E6A0",["Comment"]="#75645A",["Default"]="#E8DDD5",["Operator"]="#D9B08C",["Interpolation"]="#E8A87C"},
-	slate = {["Background"]="#20252B",["Inner"]="#585C60",["Outer"]="#13161A",["Keyword"]="#E06C75",["Builtin"]="#56B6C2",["Function"]="#61AFEF",["Type"]="#E5C07B",["Number"]="#D19A66",["String"]="#98C379",["Comment"]="#69727D",["Default"]="#ABB2BF",["Operator"]="#ABB2BF",["Interpolation"]="#C678DD"},
-	graphite = {["Background"]="#181818",["Inner"]="#525252",["Outer"]="#0E0E0E",["Keyword"]="#FF6B9D",["Builtin"]="#6CCFF6",["Function"]="#9BE564",["Type"]="#6CCFF6",["Number"]="#C8A2FF",["String"]="#F7E27E",["Comment"]="#666666",["Default"]="#E0E0E0",["Operator"]="#BDBDBD",["Interpolation"]="#FF6B9D"},
-	amethyst = {["Background"]="#17121F",["Inner"]="#514D57",["Outer"]="#0E0B13",["Keyword"]="#D580FF",["Builtin"]="#7FDBFF",["Function"]="#A6FFB5",["Type"]="#9B8CFF",["Number"]="#C8A2FF",["String"]="#FFE08A",["Comment"]="#685A78",["Default"]="#E8E0F0",["Operator"]="#D0B8E8",["Interpolation"]="#D580FF"},
-	emerald = {["Background"]="#0B1712",["Inner"]="#48514D",["Outer"]="#070E0B",["Keyword"]="#5EE6A8",["Builtin"]="#62D6E6",["Function"]="#A8E063",["Type"]="#62D6E6",["Number"]="#E6C35C",["String"]="#8FE388",["Comment"]="#506B5D",["Default"]="#D9EDE2",["Operator"]="#62D6E6",["Interpolation"]="#5EE6A8"},
-	ruby = {["Background"]="#180D10",["Inner"]="#524A4C",["Outer"]="#0E080A",["Keyword"]="#FF6680",["Builtin"]="#7DD3FC",["Function"]="#FF9F7F",["Type"]="#FF7A90",["Number"]="#C4A7FF",["String"]="#B6E3A8",["Comment"]="#73515A",["Default"]="#F0DDE1",["Operator"]="#FF9F7F",["Interpolation"]="#FF6680"},
-	azure = {["Background"]="#081522",["Inner"]="#465059",["Outer"]="#050D14",["Keyword"]="#7C83FF",["Builtin"]="#5CE1E6",["Function"]="#75BFFF",["Type"]="#5CE1E6",["Number"]="#B69CFF",["String"]="#9BE564",["Comment"]="#526B80",["Default"]="#DCEEFF",["Operator"]="#75BFFF",["Interpolation"]="#7C83FF"},
-	crimson = {["Background"]="#170B0B",["Inner"]="#514848",["Outer"]="#0E0707",["Keyword"]="#FF4D6D",["Builtin"]="#FF9F68",["Function"]="#FFCB6B",["Type"]="#FF758F",["Number"]="#C792EA",["String"]="#A8E063",["Comment"]="#6F4B52",["Default"]="#F5DFE2",["Operator"]="#FF9F68",["Interpolation"]="#FF4D6D"},
-	high_contrast_dark = {["Background"]="#000000",["Inner"]="#404040",["Outer"]="#000000",["Keyword"]="#FFFF00",["Builtin"]="#00FFFF",["Function"]="#00FF00",["Type"]="#00FFFF",["Number"]="#FFAA00",["String"]="#FFFFFF",["Comment"]="#AAAAAA",["Default"]="#FFFFFF",["Operator"]="#FFFFFF",["Interpolation"]="#FFFF00"},
-	high_contrast_light = {["Background"]="#FFFFFF",["Inner"]="#FFFFFF",["Outer"]="#999999",["Keyword"]="#0000FF",["Builtin"]="#008080",["Function"]="#008000",["Type"]="#008080",["Number"]="#800080",["String"]="#800000",["Comment"]="#666666",["Default"]="#000000",["Operator"]="#000000",["Interpolation"]="#0000FF"},
-	paper = {["Background"]="#F7F3E8",["Inner"]="#F9F6EE",["Outer"]="#94928B",["Keyword"]="#8B3A62",["Builtin"]="#2F6F7E",["Function"]="#6B5B3E",["Type"]="#3E756D",["Number"]="#A05A2C",["String"]="#5B6E3B",["Comment"]="#9A9485",["Default"]="#302E2A",["Operator"]="#514D45",["Interpolation"]="#8B3A62"},
-	blueprint = {["Background"]="#0A2342",["Inner"]="#475A71",["Outer"]="#061528",["Keyword"]="#FFD166",["Builtin"]="#5CE1E6",["Function"]="#7CFFCB",["Type"]="#5CE1E6",["Number"]="#FF9F68",["String"]="#C6F7FF",["Comment"]="#527A9E",["Default"]="#E4F4FF",["Operator"]="#A8D8FF",["Interpolation"]="#FFD166"},
-	neon = {["Background"]="#090014",["Inner"]="#46404F",["Outer"]="#05000C",["Keyword"]="#FF00A8",["Builtin"]="#00E5FF",["Function"]="#39FF14",["Type"]="#00E5FF",["Number"]="#B026FF",["String"]="#FFF01F",["Comment"]="#5D4A68",["Default"]="#F8F8FF",["Operator"]="#FF00A8",["Interpolation"]="#FF00A8"},
-	minimal_dark = {["Background"]="#181818",["Inner"]="#525252",["Outer"]="#0E0E0E",["Keyword"]="#C586C0",["Builtin"]="#56B6C2",["Function"]="#DCDCAA",["Type"]="#56B6C2",["Number"]="#D19A66",["String"]="#98C379",["Comment"]="#666666",["Default"]="#CCCCCC",["Operator"]="#AAAAAA",["Interpolation"]="#C586C0"},
-	minimal_light = {["Background"]="#FAFAFA",["Inner"]="#FBFBFB",["Outer"]="#969696",["Keyword"]="#8A2BE2",["Builtin"]="#008B8B",["Function"]="#795E26",["Type"]="#008080",["Number"]="#B35C00",["String"]="#008000",["Comment"]="#888888",["Default"]="#333333",["Operator"]="#555555",["Interpolation"]="#8A2BE2"},
-	terminal = {["Background"]="#101010",["Inner"]="#4C4C4C",["Outer"]="#0A0A0A",["Keyword"]="#FFFFFF",["Builtin"]="#00FFFF",["Function"]="#FFFFFF",["Type"]="#00FFFF",["Number"]="#FFFF00",["String"]="#00FF00",["Comment"]="#808080",["Default"]="#E0E0E0",["Operator"]="#FFFFFF",["Interpolation"]="#FFFFFF"},
+	default = {["Background"]="#1E1E1E",["Inner"]="#565656",["Outer"]="#121212",["Keyword"]="#FF79C6",["Builtin"]="#8BE9FD",["Function"]="#50FA7B",["Type"]="#8BE9FD",["Number"]="#BD93F9",["String"]="#F1FA8C",["Comment"]="#6272A4",["Default"]="#FFFFFF",["Operator"]="#FFFFFF",["Interpolation"]="#FF79C6",["Property"]="#6CB6FF",["Object"]="#4EC9B0",["Literal"]="#569CD6",["BuiltinProperty"]="#DCDCAA"},
+	studio = {["Background"]="#202227",["Inner"]="#58595D",["Outer"]="#131417",["Keyword"]="#EB795B",["Builtin"]="#8FB4FF",["Function"]="#FAE4AA",["Type"]="#326BFF",["Number"]="#F2A328",["String"]="#6CE9A0",["Comment"]="#6A6F81",["Default"]="#BCBEC8",["Operator"]="#BCBEC8",["Interpolation"]="#FF79C6",["Property"]="#3D65DE",["Object"]="#3D65DE",["Literal"]="#F2BA2E",["BuiltinProperty"]="#8FB4FF"},
+	vscode_light = {["Background"]="#FFFFFF",["Inner"]="#FFFFFF",["Outer"]="#999999",["Keyword"]="#0000FF",["Builtin"]="#267F99",["Function"]="#795E26",["Type"]="#267F99",["Number"]="#098658",["String"]="#A31515",["Comment"]="#008000",["Default"]="#000000",["Operator"]="#000000",["Interpolation"]="#000000",["Property"]="#001080",["Object"]="#267F99",["Literal"]="#AF00DB",["BuiltinProperty"]="#795E26"},
+	vscode_dark = {["Background"]="#1E1E1E",["Inner"]="#565656",["Outer"]="#121212",["Keyword"]="#569CD6",["Builtin"]="#4EC9B0",["Function"]="#DCDCAA",["Type"]="#4EC9B0",["Number"]="#B5CEA8",["String"]="#CE9178",["Comment"]="#6A9955",["Default"]="#D4D4D4",["Operator"]="#D4D4D4",["Interpolation"]="#569CD6",["Property"]="#9CDCFE",["Object"]="#4EC9B0",["Literal"]="#569CD6",["BuiltinProperty"]="#DCDCAA"},
+	github_light = {["Background"]="#FFFFFF",["Inner"]="#FFFFFF",["Outer"]="#999999",["Keyword"]="#CF222E",["Builtin"]="#8250DF",["Function"]="#8250DF",["Type"]="#953800",["Number"]="#0550AE",["String"]="#0A3069",["Comment"]="#6E7781",["Default"]="#1F2328",["Operator"]="#1F2328",["Interpolation"]="#0A3069",["Property"]="#0550AE",["Object"]="#953800",["Literal"]="#8250DF",["BuiltinProperty"]="#8250DF"},
+	github_dark = {["Background"]="#0D1117",["Inner"]="#4A4C51",["Outer"]="#080A0E",["Keyword"]="#FF7B72",["Builtin"]="#D2A8FF",["Function"]="#D2A8FF",["Type"]="#FFA657",["Number"]="#79C0FF",["String"]="#A5D6FF",["Comment"]="#8B949E",["Default"]="#E6EDF3",["Operator"]="#E6EDF3",["Interpolation"]="#A5D6FF",["Property"]="#79C0FF",["Object"]="#FFA657",["Literal"]="#D2A8FF",["BuiltinProperty"]="#D2A8FF"},
+	github_dimmed = {["Background"]="#22272E",["Inner"]="#595D62",["Outer"]="#14171C",["Keyword"]="#F47067",["Builtin"]="#DCBDFB",["Function"]="#6BCBFF",["Type"]="#8DDB8C",["Number"]="#6CB6FF",["String"]="#96D0FF",["Comment"]="#768390",["Default"]="#ADBAC7",["Operator"]="#ADBAC7",["Interpolation"]="#F47067",["Property"]="#6CB6FF",["Object"]="#8DDB8C",["Literal"]="#DCBDFB",["BuiltinProperty"]="#6BCBFF"},
+	monaco_dark = {["Background"]="#1E1E1E",["Inner"]="#565656",["Outer"]="#121212",["Keyword"]="#C586C0",["Builtin"]="#4EC9B0",["Function"]="#DCDCAA",["Type"]="#4EC9B0",["Number"]="#B5CEA8",["String"]="#CE9178",["Comment"]="#6A9955",["Default"]="#D4D4D4",["Operator"]="#D4D4D4",["Interpolation"]="#569CD6",["Property"]="#9CDCFE",["Object"]="#4EC9B0",["Literal"]="#C586C0",["BuiltinProperty"]="#DCDCAA"},
+	monaco_light = {["Background"]="#FFFFFF",["Inner"]="#FFFFFF",["Outer"]="#999999",["Keyword"]="#AF00DB",["Builtin"]="#267F99",["Function"]="#795E26",["Type"]="#267F99",["Number"]="#098658",["String"]="#A31515",["Comment"]="#008000",["Default"]="#000000",["Operator"]="#000000",["Interpolation"]="#001080",["Property"]="#001080",["Object"]="#267F99",["Literal"]="#AF00DB",["BuiltinProperty"]="#795E26"},
+	visual_studio_dark = {["Background"]="#1E1E1E",["Inner"]="#565656",["Outer"]="#121212",["Keyword"]="#569CD6",["Builtin"]="#4EC9B0",["Function"]="#DCDCAA",["Type"]="#4EC9B0",["Number"]="#B5CEA8",["String"]="#CE9178",["Comment"]="#6A9955",["Default"]="#D4D4D4",["Operator"]="#D4D4D4",["Interpolation"]="#C586C0",["Property"]="#9CDCFE",["Object"]="#4EC9B0",["Literal"]="#C586C0",["BuiltinProperty"]="#DCDCAA"},
+	visual_studio_light = {["Background"]="#FFFFFF",["Inner"]="#FFFFFF",["Outer"]="#999999",["Keyword"]="#0000FF",["Builtin"]="#267F99",["Function"]="#795E26",["Type"]="#267F99",["Number"]="#098658",["String"]="#A31515",["Comment"]="#008000",["Default"]="#000000",["Operator"]="#000000",["Interpolation"]="#AF00DB",["Property"]="#001080",["Object"]="#267F99",["Literal"]="#AF00DB",["BuiltinProperty"]="#795E26"},
+	jetbrains_dark = {["Background"]="#2B2B2B",["Inner"]="#606060",["Outer"]="#1A1A1A",["Keyword"]="#CC7832",["Builtin"]="#9876AA",["Function"]="#FFC66D",["Type"]="#A9B7C6",["Number"]="#6897BB",["String"]="#6A8759",["Comment"]="#808080",["Default"]="#A9B7C6",["Operator"]="#A9B7C6",["Interpolation"]="#CC7832",["Property"]="#9876AA",["Object"]="#A9B7C6",["Literal"]="#CC7832",["BuiltinProperty"]="#FFC66D"},
+	jetbrains_light = {["Background"]="#FFFFFF",["Inner"]="#FFFFFF",["Outer"]="#999999",["Keyword"]="#000080",["Builtin"]="#660E7A",["Function"]="#795E26",["Type"]="#267F99",["Number"]="#0000FF",["String"]="#008000",["Comment"]="#808080",["Default"]="#000000",["Operator"]="#000000",["Interpolation"]="#000080",["Property"]="#0000FF",["Object"]="#267F99",["Literal"]="#660E7A",["BuiltinProperty"]="#795E26"},
+	darcula = {["Background"]="#2B2B2B",["Inner"]="#606060",["Outer"]="#1A1A1A",["Keyword"]="#CC7832",["Builtin"]="#9876AA",["Function"]="#FFC66D",["Type"]="#A9B7C6",["Number"]="#6897BB",["String"]="#6A8759",["Comment"]="#808080",["Default"]="#A9B7C6",["Operator"]="#A9B7C6",["Interpolation"]="#CC7832",["Property"]="#9876AA",["Object"]="#A9B7C6",["Literal"]="#CC7832",["BuiltinProperty"]="#FFC66D"},
+	one_dark = {["Background"]="#282C34",["Inner"]="#5E6167",["Outer"]="#181A1F",["Keyword"]="#C678DD",["Builtin"]="#56B6C2",["Function"]="#61AFEF",["Type"]="#E5C07B",["Number"]="#D19A66",["String"]="#98C379",["Comment"]="#5C6370",["Default"]="#ABB2BF",["Operator"]="#ABB2BF",["Interpolation"]="#C678DD",["Property"]="#61AFEF",["Object"]="#56B6C2",["Literal"]="#C678DD",["BuiltinProperty"]="#E5C07B"},
+	one_light = {["Background"]="#FAFAFA",["Inner"]="#FBFBFB",["Outer"]="#969696",["Keyword"]="#A626A4",["Builtin"]="#0184BC",["Function"]="#4078F2",["Type"]="#C18401",["Number"]="#986801",["String"]="#50A14F",["Comment"]="#A0A1A7",["Default"]="#383A42",["Operator"]="#383A42",["Interpolation"]="#A626A4",["Property"]="#4078F2",["Object"]="#0184BC",["Literal"]="#A626A4",["BuiltinProperty"]="#C18401"},
+	dracula = {["Background"]="#282A36",["Inner"]="#5E5F68",["Outer"]="#181920",["Keyword"]="#FF79C6",["Builtin"]="#8BE9FD",["Function"]="#50FA7B",["Type"]="#8BE9FD",["Number"]="#BD93F9",["String"]="#F1FA8C",["Comment"]="#6272A4",["Default"]="#F8F8F2",["Operator"]="#FF79C6",["Interpolation"]="#FF79C6",["Property"]="#8BE9FD",["Object"]="#50FA7B",["Literal"]="#BD93F9",["BuiltinProperty"]="#50FA7B"},
+	monokai = {["Background"]="#272822",["Inner"]="#5D5E59",["Outer"]="#171814",["Keyword"]="#F92672",["Builtin"]="#66D9EF",["Function"]="#A6E22E",["Type"]="#66D9EF",["Number"]="#AE81FF",["String"]="#E6DB74",["Comment"]="#75715E",["Default"]="#F8F8F2",["Operator"]="#F92672",["Interpolation"]="#F92672",["Property"]="#66D9EF",["Object"]="#A6E22E",["Literal"]="#AE81FF",["BuiltinProperty"]="#A6E22E"},
+	nord = {["Background"]="#2E3440",["Inner"]="#626770",["Outer"]="#1C1F26",["Keyword"]="#81A1C1",["Builtin"]="#88C0D0",["Function"]="#88C0D0",["Type"]="#8FBCBB",["Number"]="#B48EAD",["String"]="#A3BE8C",["Comment"]="#616E88",["Default"]="#D8DEE9",["Operator"]="#81A1C1",["Interpolation"]="#81A1C1",["Property"]="#81A1C1",["Object"]="#8FBCBB",["Literal"]="#B48EAD",["BuiltinProperty"]="#88C0D0"},
+	gruvbox_dark = {["Background"]="#282828",["Inner"]="#5E5E5E",["Outer"]="#181818",["Keyword"]="#FB4934",["Builtin"]="#83A598",["Function"]="#B8BB26",["Type"]="#8EC07C",["Number"]="#D3869B",["String"]="#B8BB26",["Comment"]="#928374",["Default"]="#EBDBB2",["Operator"]="#FE8019",["Interpolation"]="#FB4934",["Property"]="#83A598",["Object"]="#8EC07C",["Literal"]="#D3869B",["BuiltinProperty"]="#B8BB26"},
+	gruvbox_light = {["Background"]="#FBF1C7",["Inner"]="#FCF4D5",["Outer"]="#979177",["Keyword"]="#9D0006",["Builtin"]="#076678",["Function"]="#79740E",["Type"]="#427B58",["Number"]="#8F3F71",["String"]="#79740E",["Comment"]="#928374",["Default"]="#3C3836",["Operator"]="#AF3A03",["Interpolation"]="#9D0006",["Property"]="#076678",["Object"]="#427B58",["Literal"]="#8F3F71",["BuiltinProperty"]="#79740E"},
+	solarized_dark = {["Background"]="#002B36",["Inner"]="#406068",["Outer"]="#001A20",["Keyword"]="#859900",["Builtin"]="#2AA198",["Function"]="#268BD2",["Type"]="#B58900",["Number"]="#D33682",["String"]="#2AA198",["Comment"]="#586E75",["Default"]="#839496",["Operator"]="#93A1A1",["Interpolation"]="#859900",["Property"]="#268BD2",["Object"]="#B58900",["Literal"]="#D33682",["BuiltinProperty"]="#2AA198"},
+	solarized_light = {["Background"]="#FDF6E3",["Inner"]="#FEF8EA",["Outer"]="#989488",["Keyword"]="#859900",["Builtin"]="#2AA198",["Function"]="#268BD2",["Type"]="#B58900",["Number"]="#D33682",["String"]="#2AA198",["Comment"]="#93A1A1",["Default"]="#657B83",["Operator"]="#586E75",["Interpolation"]="#859900",["Property"]="#268BD2",["Object"]="#B58900",["Literal"]="#D33682",["BuiltinProperty"]="#2AA198"},
+	tokyo_night = {["Background"]="#1A1B26",["Inner"]="#53545C",["Outer"]="#101017",["Keyword"]="#BB9AF7",["Builtin"]="#7DCFFF",["Function"]="#7AA2F7",["Type"]="#2AC3DE",["Number"]="#FF9E64",["String"]="#9ECE6A",["Comment"]="#565F89",["Default"]="#A9B1D6",["Operator"]="#89DDFF",["Interpolation"]="#BB9AF7",["Property"]="#7AA2F7",["Object"]="#2AC3DE",["Literal"]="#FF9E64",["BuiltinProperty"]="#7DCFFF"},
+	tokyo_night_light = {["Background"]="#D5D6DB",["Inner"]="#E0E0E4",["Outer"]="#808083",["Keyword"]="#9854F1",["Builtin"]="#007197",["Function"]="#34548A",["Type"]="#33635C",["Number"]="#965027",["String"]="#485E30",["Comment"]="#848CB5",["Default"]="#3760BF",["Operator"]="#006C86",["Interpolation"]="#9854F1",["Property"]="#34548A",["Object"]="#33635C",["Literal"]="#965027",["BuiltinProperty"]="#007197"},
+	catppuccin_mocha = {["Background"]="#1E1E2E",["Inner"]="#565662",["Outer"]="#12121C",["Keyword"]="#CBA6F7",["Builtin"]="#89DCEB",["Function"]="#89B4FA",["Type"]="#F9E2AF",["Number"]="#FAB387",["String"]="#A6E3A1",["Comment"]="#6C7086",["Default"]="#CDD6F4",["Operator"]="#89DCEB",["Interpolation"]="#F5C2E7",["Property"]="#89B4FA",["Object"]="#F9E2AF",["Literal"]="#FAB387",["BuiltinProperty"]="#89DCEB"},
+	catppuccin_latte = {["Background"]="#EFF1F5",["Inner"]="#F3F4F8",["Outer"]="#8F9193",["Keyword"]="#8839EF",["Builtin"]="#04A5E5",["Function"]="#1E66F5",["Type"]="#DF8E1D",["Number"]="#FE640B",["String"]="#40A02B",["Comment"]="#9CA0B0",["Default"]="#4C4F69",["Operator"]="#179299",["Interpolation"]="#EA76CB",["Property"]="#1E66F5",["Object"]="#DF8E1D",["Literal"]="#FE640B",["BuiltinProperty"]="#04A5E5"},
+	ayu_dark = {["Background"]="#0B0E14",["Inner"]="#484A4F",["Outer"]="#07080C",["Keyword"]="#FF8F40",["Builtin"]="#59C2FF",["Function"]="#FFB454",["Type"]="#59C2FF",["Number"]="#D2A6FF",["String"]="#AAD94C",["Comment"]="#626A73",["Default"]="#BFBDB6",["Operator"]="#F29668",["Interpolation"]="#FF8F40",["Property"]="#59C2FF",["Object"]="#FFB454",["Literal"]="#D2A6FF",["BuiltinProperty"]="#FFB454"},
+	ayu_light = {["Background"]="#FAFAFA",["Inner"]="#FBFBFB",["Outer"]="#969696",["Keyword"]="#FA8D3E",["Builtin"]="#55B4D4",["Function"]="#F2AE49",["Type"]="#399EE6",["Number"]="#A37ACC",["String"]="#86B300",["Comment"]="#ABB0B6",["Default"]="#575F66",["Operator"]="#ED9366",["Interpolation"]="#F07171",["Property"]="#399EE6",["Object"]="#F2AE49",["Literal"]="#A37ACC",["BuiltinProperty"]="#F2AE49"},
+	ayu_mirage = {["Background"]="#1F2430",["Inner"]="#575B64",["Outer"]="#13161D",["Keyword"]="#FFAD66",["Builtin"]="#5CCFE6",["Function"]="#FFD580",["Type"]="#5CCFE6",["Number"]="#D4BFFF",["String"]="#BAE67E",["Comment"]="#707A8C",["Default"]="#CCCAC2",["Operator"]="#F29E74",["Interpolation"]="#FFAD66",["Property"]="#5CCFE6",["Object"]="#FFD580",["Literal"]="#D4BFFF",["BuiltinProperty"]="#FFD580"},
+	night_owl = {["Background"]="#011627",["Inner"]="#40505D",["Outer"]="#010D17",["Keyword"]="#C792EA",["Builtin"]="#82AAFF",["Function"]="#82AAFF",["Type"]="#FFCB8B",["Number"]="#F78C6C",["String"]="#ADDb67",["Comment"]="#637777",["Default"]="#D6DEEB",["Operator"]="#7FDBCA",["Interpolation"]="#C792EA",["Property"]="#82AAFF",["Object"]="#FFCB8B",["Literal"]="#F78C6C",["BuiltinProperty"]="#82AAFF"},
+	palenight = {["Background"]="#292D3E",["Inner"]="#5E626E",["Outer"]="#191B25",["Keyword"]="#C792EA",["Builtin"]="#89DDFF",["Function"]="#82AAFF",["Type"]="#FFCB6B",["Number"]="#F78C6C",["String"]="#C3E88D",["Comment"]="#676E95",["Default"]="#A6ACCD",["Operator"]="#89DDFF",["Interpolation"]="#C792EA",["Property"]="#82AAFF",["Object"]="#FFCB6B",["Literal"]="#F78C6C",["BuiltinProperty"]="#89DDFF"},
+	rose_pine = {["Background"]="#191724",["Inner"]="#52515B",["Outer"]="#0F0E16",["Keyword"]="#C4A7E7",["Builtin"]="#9CCFD8",["Function"]="#EBBCBA",["Type"]="#F6C177",["Number"]="#C4A7E7",["String"]="#9CCFD8",["Comment"]="#6E6A86",["Default"]="#E0DEF4",["Operator"]="#908CAA",["Interpolation"]="#C4A7E7",["Property"]="#9CCFD8",["Object"]="#F6C177",["Literal"]="#C4A7E7",["BuiltinProperty"]="#EBBCBA"},
+	kanagawa = {["Background"]="#1F1F28",["Inner"]="#57575E",["Outer"]="#131318",["Keyword"]="#957FB8",["Builtin"]="#7E9CD8",["Function"]="#E6C384",["Type"]="#7FB4CA",["Number"]="#D27E99",["String"]="#98BB6C",["Comment"]="#727169",["Default"]="#DCD7BA",["Operator"]="#C0A36E",["Interpolation"]="#957FB8",["Property"]="#7E9CD8",["Object"]="#7FB4CA",["Literal"]="#D27E99",["BuiltinProperty"]="#E6C384"},
+	synthwave = {["Background"]="#241B2F",["Inner"]="#5B5463",["Outer"]="#16101C",["Keyword"]="#FF7EDB",["Builtin"]="#36F9F6",["Function"]="#72F1B8",["Type"]="#36F9F6",["Number"]="#F97E72",["String"]="#FDFDFD",["Comment"]="#848484",["Default"]="#F4F4F4",["Operator"]="#FF7EDB",["Interpolation"]="#FF7EDB",["Property"]="#36F9F6",["Object"]="#72F1B8",["Literal"]="#F97E72",["BuiltinProperty"]="#72F1B8"},
+	cyberpunk = {["Background"]="#0A0A12",["Inner"]="#47474D",["Outer"]="#06060B",["Keyword"]="#FF2A6D",["Builtin"]="#05D9E8",["Function"]="#01FFC3",["Type"]="#05D9E8",["Number"]="#F9F002",["String"]="#D1F7FF",["Comment"]="#4B5563",["Default"]="#D1F7FF",["Operator"]="#FF2A6D",["Interpolation"]="#FF2A6D",["Property"]="#05D9E8",["Object"]="#01FFC3",["Literal"]="#F9F002",["BuiltinProperty"]="#01FFC3"},
+	hacker = {["Background"]="#000000",["Inner"]="#404040",["Outer"]="#000000",["Keyword"]="#00FF41",["Builtin"]="#00CC33",["Function"]="#00FF41",["Type"]="#00CC33",["Number"]="#00FF41",["String"]="#00AA2A",["Comment"]="#006B1B",["Default"]="#00FF41",["Operator"]="#00CC33",["Interpolation"]="#00FF41",["Property"]="#00CC33",["Object"]="#00FF41",["Literal"]="#00FF41",["BuiltinProperty"]="#00FF41"},
+	terminal_green = {["Background"]="#000000",["Inner"]="#404040",["Outer"]="#000000",["Keyword"]="#00FF00",["Builtin"]="#00CC00",["Function"]="#00FF00",["Type"]="#00CC00",["Number"]="#00FF00",["String"]="#00AA00",["Comment"]="#007700",["Default"]="#00FF00",["Operator"]="#00CC00",["Interpolation"]="#00FF00",["Property"]="#00CC00",["Object"]="#00FF00",["Literal"]="#00FF00",["BuiltinProperty"]="#00FF00"},
+	terminal_amber = {["Background"]="#080600",["Inner"]="#464440",["Outer"]="#050400",["Keyword"]="#FFB000",["Builtin"]="#FFCC66",["Function"]="#FFD27F",["Type"]="#FFCC66",["Number"]="#FFAA00",["String"]="#FFE0A3",["Comment"]="#806000",["Default"]="#FFB000",["Operator"]="#FFCC66",["Interpolation"]="#FFB000",["Property"]="#FFCC66",["Object"]="#FFD27F",["Literal"]="#FFAA00",["BuiltinProperty"]="#FFD27F"},
+	obsidian = {["Background"]="#111111",["Inner"]="#4C4C4C",["Outer"]="#0A0A0A",["Keyword"]="#C792EA",["Builtin"]="#82AAFF",["Function"]="#82AAFF",["Type"]="#89DDFF",["Number"]="#F78C6C",["String"]="#C3E88D",["Comment"]="#545454",["Default"]="#D8DEE9",["Operator"]="#89DDFF",["Interpolation"]="#C792EA",["Property"]="#82AAFF",["Object"]="#89DDFF",["Literal"]="#F78C6C",["BuiltinProperty"]="#82AAFF"},
+	midnight = {["Background"]="#0B1020",["Inner"]="#484C58",["Outer"]="#070A13",["Keyword"]="#B48EAD",["Builtin"]="#81A1C1",["Function"]="#88C0D0",["Type"]="#8FBCBB",["Number"]="#D08770",["String"]="#A3BE8C",["Comment"]="#4C566A",["Default"]="#D8DEE9",["Operator"]="#81A1C1",["Interpolation"]="#B48EAD",["Property"]="#81A1C1",["Object"]="#8FBCBB",["Literal"]="#D08770",["BuiltinProperty"]="#88C0D0"},
+	ocean = {["Background"]="#071E26",["Inner"]="#45565C",["Outer"]="#041217",["Keyword"]="#C792EA",["Builtin"]="#89DDFF",["Function"]="#82AAFF",["Type"]="#2DE2E6",["Number"]="#F78C6C",["String"]="#C3E88D",["Comment"]="#49656B",["Default"]="#D6DEEB",["Operator"]="#89DDFF",["Interpolation"]="#C792EA",["Property"]="#82AAFF",["Object"]="#2DE2E6",["Literal"]="#F78C6C",["BuiltinProperty"]="#89DDFF"},
+	forest = {["Background"]="#101812",["Inner"]="#4C524D",["Outer"]="#0A0E0B",["Keyword"]="#C4D35A",["Builtin"]="#62D6A7",["Function"]="#A8D672",["Type"]="#62D6A7",["Number"]="#D9A441",["String"]="#9BE564",["Comment"]="#506054",["Default"]="#DCE8D8",["Operator"]="#62D6A7",["Interpolation"]="#C4D35A",["Property"]="#62D6A7",["Object"]="#A8D672",["Literal"]="#D9A441",["BuiltinProperty"]="#A8D672"},
+	coffee = {["Background"]="#211914",["Inner"]="#58524F",["Outer"]="#140F0C",["Keyword"]="#E8A87C",["Builtin"]="#82C0CC",["Function"]="#F2C078",["Type"]="#D9B08C",["Number"]="#C58B5C",["String"]="#C8E6A0",["Comment"]="#75645A",["Default"]="#E8DDD5",["Operator"]="#D9B08C",["Interpolation"]="#E8A87C",["Property"]="#82C0CC",["Object"]="#D9B08C",["Literal"]="#C58B5C",["BuiltinProperty"]="#F2C078"},
+	slate = {["Background"]="#20252B",["Inner"]="#585C60",["Outer"]="#13161A",["Keyword"]="#E06C75",["Builtin"]="#56B6C2",["Function"]="#61AFEF",["Type"]="#E5C07B",["Number"]="#D19A66",["String"]="#98C379",["Comment"]="#69727D",["Default"]="#ABB2BF",["Operator"]="#ABB2BF",["Interpolation"]="#C678DD",["Property"]="#61AFEF",["Object"]="#E5C07B",["Literal"]="#D19A66",["BuiltinProperty"]="#56B6C2"},
+	graphite = {["Background"]="#181818",["Inner"]="#525252",["Outer"]="#0E0E0E",["Keyword"]="#FF6B9D",["Builtin"]="#6CCFF6",["Function"]="#9BE564",["Type"]="#6CCFF6",["Number"]="#C8A2FF",["String"]="#F7E27E",["Comment"]="#666666",["Default"]="#E0E0E0",["Operator"]="#BDBDBD",["Interpolation"]="#FF6B9D",["Property"]="#6CCFF6",["Object"]="#9BE564",["Literal"]="#C8A2FF",["BuiltinProperty"]="#9BE564"},
+	amethyst = {["Background"]="#17121F",["Inner"]="#514D57",["Outer"]="#0E0B13",["Keyword"]="#D580FF",["Builtin"]="#7FDBFF",["Function"]="#A6FFB5",["Type"]="#9B8CFF",["Number"]="#C8A2FF",["String"]="#FFE08A",["Comment"]="#685A78",["Default"]="#E8E0F0",["Operator"]="#D0B8E8",["Interpolation"]="#D580FF",["Property"]="#7FDBFF",["Object"]="#9B8CFF",["Literal"]="#C8A2FF",["BuiltinProperty"]="#A6FFB5"},
+	emerald = {["Background"]="#0B1712",["Inner"]="#48514D",["Outer"]="#070E0B",["Keyword"]="#5EE6A8",["Builtin"]="#62D6E6",["Function"]="#A8E063",["Type"]="#62D6E6",["Number"]="#E6C35C",["String"]="#8FE388",["Comment"]="#506B5D",["Default"]="#D9EDE2",["Operator"]="#62D6E6",["Interpolation"]="#5EE6A8",["Property"]="#62D6E6",["Object"]="#A8E063",["Literal"]="#E6C35C",["BuiltinProperty"]="#A8E063"},
+	ruby = {["Background"]="#180D10",["Inner"]="#524A4C",["Outer"]="#0E080A",["Keyword"]="#FF6680",["Builtin"]="#7DD3FC",["Function"]="#FF9F7F",["Type"]="#FF7A90",["Number"]="#C4A7FF",["String"]="#B6E3A8",["Comment"]="#73515A",["Default"]="#F0DDE1",["Operator"]="#FF9F7F",["Interpolation"]="#FF6680",["Property"]="#7DD3FC",["Object"]="#FF7A90",["Literal"]="#C4A7FF",["BuiltinProperty"]="#FF9F7F"},
+	azure = {["Background"]="#081522",["Inner"]="#465059",["Outer"]="#050D14",["Keyword"]="#7C83FF",["Builtin"]="#5CE1E6",["Function"]="#75BFFF",["Type"]="#5CE1E6",["Number"]="#B69CFF",["String"]="#9BE564",["Comment"]="#526B80",["Default"]="#DCEEFF",["Operator"]="#75BFFF",["Interpolation"]="#7C83FF",["Property"]="#75BFFF",["Object"]="#5CE1E6",["Literal"]="#B69CFF",["BuiltinProperty"]="#75BFFF"},
+	crimson = {["Background"]="#170B0B",["Inner"]="#514848",["Outer"]="#0E0707",["Keyword"]="#FF4D6D",["Builtin"]="#FF9F68",["Function"]="#FFCB6B",["Type"]="#FF758F",["Number"]="#C792EA",["String"]="#A8E063",["Comment"]="#6F4B52",["Default"]="#F5DFE2",["Operator"]="#FF9F68",["Interpolation"]="#FF4D6D",["Property"]="#FF9F68",["Object"]="#FF758F",["Literal"]="#C792EA",["BuiltinProperty"]="#FFCB6B"},
+	high_contrast_dark = {["Background"]="#000000",["Inner"]="#404040",["Outer"]="#000000",["Keyword"]="#FFFF00",["Builtin"]="#00FFFF",["Function"]="#00FF00",["Type"]="#00FFFF",["Number"]="#FFAA00",["String"]="#FFFFFF",["Comment"]="#AAAAAA",["Default"]="#FFFFFF",["Operator"]="#FFFFFF",["Interpolation"]="#FFFF00",["Property"]="#00FFFF",["Object"]="#00FF00",["Literal"]="#FFAA00",["BuiltinProperty"]="#00FF00"},
+	high_contrast_light = {["Background"]="#FFFFFF",["Inner"]="#FFFFFF",["Outer"]="#999999",["Keyword"]="#0000FF",["Builtin"]="#008080",["Function"]="#008000",["Type"]="#008080",["Number"]="#800080",["String"]="#800000",["Comment"]="#666666",["Default"]="#000000",["Operator"]="#000000",["Interpolation"]="#0000FF",["Property"]="#0000FF",["Object"]="#008000",["Literal"]="#800080",["BuiltinProperty"]="#008000"},
+	paper = {["Background"]="#F7F3E8",["Inner"]="#F9F6EE",["Outer"]="#94928B",["Keyword"]="#8B3A62",["Builtin"]="#2F6F7E",["Function"]="#6B5B3E",["Type"]="#3E756D",["Number"]="#A05A2C",["String"]="#5B6E3B",["Comment"]="#9A9485",["Default"]="#302E2A",["Operator"]="#514D45",["Interpolation"]="#8B3A62",["Property"]="#2F6F7E",["Object"]="#3E756D",["Literal"]="#A05A2C",["BuiltinProperty"]="#6B5B3E"},
+	blueprint = {["Background"]="#0A2342",["Inner"]="#475A71",["Outer"]="#061528",["Keyword"]="#FFD166",["Builtin"]="#5CE1E6",["Function"]="#7CFFCB",["Type"]="#5CE1E6",["Number"]="#FF9F68",["String"]="#C6F7FF",["Comment"]="#527A9E",["Default"]="#E4F4FF",["Operator"]="#A8D8FF",["Interpolation"]="#FFD166",["Property"]="#5CE1E6",["Object"]="#7CFFCB",["Literal"]="#FF9F68",["BuiltinProperty"]="#7CFFCB"},
+	neon = {["Background"]="#090014",["Inner"]="#46404F",["Outer"]="#05000C",["Keyword"]="#FF00A8",["Builtin"]="#00E5FF",["Function"]="#39FF14",["Type"]="#00E5FF",["Number"]="#B026FF",["String"]="#FFF01F",["Comment"]="#5D4A68",["Default"]="#F8F8FF",["Operator"]="#FF00A8",["Interpolation"]="#FF00A8",["Property"]="#00E5FF",["Object"]="#39FF14",["Literal"]="#B026FF",["BuiltinProperty"]="#39FF14"},
+	minimal_dark = {["Background"]="#181818",["Inner"]="#525252",["Outer"]="#0E0E0E",["Keyword"]="#C586C0",["Builtin"]="#56B6C2",["Function"]="#DCDCAA",["Type"]="#56B6C2",["Number"]="#D19A66",["String"]="#98C379",["Comment"]="#666666",["Default"]="#CCCCCC",["Operator"]="#AAAAAA",["Interpolation"]="#C586C0",["Property"]="#56B6C2",["Object"]="#DCDCAA",["Literal"]="#D19A66",["BuiltinProperty"]="#DCDCAA"},
+	minimal_light = {["Background"]="#FAFAFA",["Inner"]="#FBFBFB",["Outer"]="#969696",["Keyword"]="#8A2BE2",["Builtin"]="#008B8B",["Function"]="#795E26",["Type"]="#008080",["Number"]="#B35C00",["String"]="#008000",["Comment"]="#888888",["Default"]="#333333",["Operator"]="#555555",["Interpolation"]="#8A2BE2",["Property"]="#008B8B",["Object"]="#008080",["Literal"]="#B35C00",["BuiltinProperty"]="#795E26"},
+	terminal = {["Background"]="#101010",["Inner"]="#4C4C4C",["Outer"]="#0A0A0A",["Keyword"]="#FFFFFF",["Builtin"]="#00FFFF",["Function"]="#FFFFFF",["Type"]="#00FFFF",["Number"]="#FFFF00",["String"]="#00FF00",["Comment"]="#808080",["Default"]="#E0E0E0",["Operator"]="#FFFFFF",["Interpolation"]="#FFFFFF",["Property"]="#00FFFF",["Object"]="#FFFFFF",["Literal"]="#FFFF00",["BuiltinProperty"]="#00FF00"},
 }
 
 local kw = {
 	["and"] = true, ["break"] = true, ["do"] = true, ["else"] = true, ["elseif"] = true, ["end"] = true, ["export"] = true,
 	["for"] = true, ["function"] = true, ["if"] = true, ["in"] = true, ["local"] = true, ["not"] = true, ["or"] = true,
 	["repeat"] = true, ["return"] = true, ["then"] = true, ["type"] = true, ["until"] = true, ["while"] = true,
-	["continue"] = true
+	["continue"] = true, ["self"] = true,
 }
 
 local bi = {
@@ -276,6 +277,77 @@ local bi = {
 	["PhysicalProperties"] = true, ["NumberRange"] = true, ["NumberSequence"] = true,
 	["ColorSequence"] = true, ["Rect"] = true, ["Faces"] = true, ["Axes"] = true, ["math"] = true,
 	["string"] = true, ["table"] = true, ["coroutine"] = true, ["os"] = true, ["utf8"] = true, ["debug"] = true
+}
+
+local property = {
+	"AbsolutePosition","AbsoluteRotation","AbsoluteSize","AnchorPoint","Archivable","AutoButtonColor",
+	"BackgroundColor3","BackgroundTransparency","BorderColor3","BorderMode","BorderSizePixel",
+	"CanvasPosition","CanvasSize","CellSize","CellPadding","ClipsDescendants","Color","CornerRadius",
+	"CurrentCamera","Enabled","Font","FontFace","LayoutOrder","MaxVisibleGraphemes","Name",
+	"OffsetStuds","Orientation","Position","Priority","Rotation","Size","Text","TextColor3",
+	"TextSize","TextTransparency","TextXAlignment","TextYAlignment","Transparency","Visible",
+	"ZIndex","Value","Parent","ClassName","Material","BrickColor","Reflectance","CanCollide",
+	"CanQuery","CanTouch","CastShadow","Massless","Anchored","CFrame","Velocity","AssemblyLinearVelocity",
+	"AssemblyAngularVelocity","Position","Orientation","Size","PivotOffset","WorldPivot",
+	"PrimaryPart","RigType","WalkSpeed","JumpPower","JumpHeight","HipHeight","Health","MaxHealth",
+	"DisplayName","UserId","AccountAge","Team","TeamColor","Neutral","Character","CharacterAutoLoads",
+	"RespawnLocation","CameraType","CameraSubject","FieldOfView","ViewportSize","MouseBehavior",
+	"MouseIconEnabled","TargetFilter","Brightness","ClockTime","GeographicLatitude","FogColor",
+	"FogEnd","FogStart","Ambient","OutdoorAmbient","ExposureCompensation","GlobalShadows",
+	"Technology","EnvironmentDiffuseScale","EnvironmentSpecularScale","ColorShift_Bottom",
+	"ColorShift_Top","Sky","Atmosphere","SoundId","Volume","PlaybackSpeed","Playing","Looped",
+	"TimePosition","TimeLength","EmitterSize","RollOffMaxDistance","RollOffMinDistance",
+	"RollOffMode","Image","ImageColor3","ImageTransparency","ScaleType","SliceCenter",
+	"SliceScale","TileSize","Video","IsPlaying","CurrentLine","LineNumber","MultiLine",
+	"TextWrapped","TextEditable","ClearTextOnFocus","PlaceholderText","PlaceholderColor3",
+	"TextScaled","TextFits","RichText","Selectable","Active","Interactable","Modal",
+	"ScrollingEnabled","ScrollBarThickness","ScrollBarImageColor3","ScrollBarImageTransparency",
+	"ScrollBarImageColor3","ElasticBehavior","ScrollingDirection","AutomaticCanvasSize",
+	"UIStroke","UIGradient","UIAspectRatioConstraint","UIScale","UICorner","UIListLayout",
+	"UIGridLayout","UIPadding","UITableLayout","UITextSizeConstraint","UIPageLayout",
+	"UIFlexItem","FillDirection","HorizontalAlignment","VerticalAlignment","Padding",
+	"SortOrder","Wraps","FillDirectionMaxCells","StartCorner","CellPadding","CellSize",
+	"TweenTime","EasingDirection","EasingStyle","TextTransparency","TextStrokeColor3",
+	"TextStrokeTransparency","TextScaled","LineHeight","MaxVisibleGraphemes","RichText",
+	"AutomaticSize","SizeConstraint","AspectRatio","DominantAxis"
+}
+
+local object = {
+	"Workspace","Players","Lighting","ReplicatedFirst","ReplicatedStorage","ServerScriptService",
+	"ServerStorage","StarterGui","StarterPack","StarterPlayer","Teams","SoundService","Chat",
+	"TextChatService","MaterialService","LocalizationService","TestService","RunService",
+	"UserInputService","ContextActionService","TweenService","HttpService","DataStoreService",
+	"MarketplaceService","PhysicsService","CollectionService","Debris","GuiService",
+	"InsertService","MessagingService","PathfindingService","PolicyService","ProximityPromptService",
+	"ScriptContext","Stats","TeleportService","TextService","VoiceChatService","VRService"
+}
+
+local literal = {["nil"] = true, ["true"] = true, ["false"] = true}
+
+local bi_property = {
+	"new","fromRGB","fromHSV","fromHex","fromScale","fromOffset","lookAt","Angles","fromEulerAnglesXYZ","fromEulerAnglesYXZ","fromAxisAngle","identity","zero","one","random","floor","ceil","abs","acos","asin","atan","atan2","cos","sin","tan","clamp","max","min","sign","sqrt","pow","exp","log","round","noise","lerp","rad","cosh","deg","fmod","frexp","isfinite","isinf","isnan","ldexp","log10","modf","randomseed","sinh","tanh","e","huge","nan","phi","pi","sqrt2","tau",
+	"AccessModifierType","AccessoryType","ActionOnStopSync","ActionType","ActivePayerStatus","ActuatorRelativeTo","ActuatorType","AdAvailabilityResult","AdFormat","AdShape","AdTeleportMethod","AdUIEventType","AdUIType","AdUnitStatus","AdornCullingMode","AdornShading","AgeCheckStatus","AlignType","AlphaMode","AnalyticsCustomFieldKeys","AnalyticsEconomyAction","AnalyticsEconomyFlowType","AnalyticsEconomyTransactionType","AnalyticsLogLevel","AnalyticsProgressionStatus",
+	"AnalyticsProgressionType","AnimationClipFromVideoStatus","AnimationNodeBlendMode","AnimationNodeType","AnimationPriority","AnimatorRetargetingMode","AntiAliasing","AppLifecycleManagerState","AppUpdateStatus","ApplyShadowMode","ApplyStrokeMode","AspectType","AssetCreatorType","AssetFetchStatus","AssetType","AssetTypeVerification","AudioApiRollout","AudioChannelLayout","AudioFilterType","AudioSampleFormat","AudioSimulationFidelity","AudioSubType","AudioWindowSize",
+	"AuthorityMode","AutoIndentRule","AutomaticSize","AvatarAssetType","AvatarChatServiceFeature","AvatarContextMenuOption","AvatarItemType","AvatarPromptResult","AvatarSettingsAccessoryLimitMethod","AvatarSettingsAccessoryMode","AvatarSettingsAnimationClipsMode","AvatarSettingsAnimationPacksMode","AvatarSettingsAppearanceMode","AvatarSettingsBuildMode","AvatarSettingsClothingMode","AvatarSettingsCollisionMode","AvatarSettingsCustomAccessoryMode","AvatarSettingsCustomBodyType",
+	"AvatarSettingsCustomClothingMode","AvatarSettingsHitAndTouchDetectionMode","AvatarSettingsJumpMode","AvatarSettingsLegacyCollisionMode","AvatarSettingsScaleMode","AvatarUnificationMode","Axis","BenefitType","BinType","BodyPart","BodyPartR15","BorderMode","BorderStrokePosition","BreakReason","BreakpointRemoveReason","BulkMoveMode","BundleType","Button","ButtonStyle","CageType","CameraMode","CameraNavigationModel","CameraPanMode","CameraSpeedAdjustBinding","CameraType",
+	"CaptureGalleryPermission","CaptureType","CatalogCategoryFilter","CatalogSortAggregation","CatalogSortType","CellBlock","CellMaterial","CellOrientation","CharacterControlMode","ChatCallbackType","ChatColor","ChatMode","ChatPrivacyMode","ChatRestrictionStatus","ChatStyle","ChatVersion","ClientAnimatorThrottlingMode","CloseReason","CollaboratorStatus","CollisionFidelity","CommandPermission","CompletionAcceptanceBehavior","CompletionItemKind","CompletionItemTag",
+	"CompositeValueCurveType","CompressionAlgorithm","ComputerCameraMovementMode","ComputerMovementMode","ConfigSnapshotErrorState","ConnectionState","ContentSourceType","ContextActionPriority","ContextActionResult","ControlMode","CoreGuiType","CreateAssetResult","CreateContentResult","CreateOutfitFailure","CreatorType","CreatorTypeFilter","CurrencyType","CustomCameraMode","DataStoreRequestType","DebugBreakModeType","DebuggerEndReason","DebuggerExceptionBreakMode",
+	"DebuggerFrameType","DebuggerPauseReason","DebuggerResumeType","DebuggerStatus","DefaultScriptSyncFileType","DevCameraOcclusionMode","DevComputerCameraMovementMode","DevComputerMovementMode","DevTouchCameraMovementMode","DevTouchMovementMode","DeveloperMemoryTag","DeviceForm","DeviceLevel","DeviceSimulatorScalingMode","DeviceType","DialogBehaviorType","DialogPurpose","DialogTone","DigitsRigDescriptionSide","DisplaySize","DistanceAttenuationMode","DomainType",
+	"DominantAxis","DraftStatusCode","DragDetectorDragStyle","DragDetectorPermissionPolicy","DragDetectorResponseStyle","DraggerCoordinateSpace","DraggerMovementMode","EasingDirection","EasingStyle","ElasticBehavior","EmitterPositionType","EnviromentalPhysicsThrottle","ExperienceAuthScope","ExperienceEventStatus","ExplosionType","ExternalEditorMode","FACSDataLod","FacialAgeEstimationResultType","FacialAnimationStreamingState","FacsActionUnit","FieldOfViewMode","FileMode",
+	"FileSystemWalkMode","FillDirection","FilterErrorType","FilterResult","FinishRecordingOperation","FluidFidelity","FluidForces","Font","FontSize","FontStyle","ForceLimitMode","FormFactor","FrameStyle","FramerateManagerMode","FunctionalTestResult","GameAvatarType","GamepadType","GearGenreSetting","GearType","Genre","GradientTileMode","GradientType","GraphicsMode","GraphicsOptimizationMode","GroupMembershipStatus","GuiState","HandlesStyle","HapticEffectType","HashAlgorithm",
+	"HighlightDepthMode","HorizontalAlignment","HoverAnimateSpeed","HttpCompression","HttpContentType","HttpError","HumanoidCollisionType","HumanoidDisplayDistanceType","HumanoidHealthDisplayType","HumanoidRigType","HumanoidStateType","IKCollisionsMode","IKControlConstraintSupport","IKControlType","IXPLoadingStatus","ImageAlphaType","ImageCombineType","InOut","InfoType","InitialDockState","InputActionType","InputBindingType","InputSink","InputType","InstanceFileSyncStatus",
+	"IntermediateMeshGenerationResult","InterpolationThrottlingMode","InviteState","ItemLineAlignment","JoinSource","JointCreationMode","KeyCode","KeyCodeStringFormat","KeyInterpolationMode","LeftRight","LexemeType","LightingStyle","Limb","LineJoinMode","ListDisplayMode","ListenerLocation","ListenerPositionType","ListenerType","LoadCharacterLayeredClothing","LoadDynamicHeads","LocationType","LuauTypeCheckMode","MakeupType","MarketplaceBulkPurchasePromptStatus",
+	"MarketplaceItemPurchaseStatus","MarketplaceProductType","MatchmakingType","Material","MaterialPattern","MembershipType","MeshAttribute","MeshPartDetailLevel","MeshPartHeadsAndAccessories","MeshScaleUnit","MeshType","MessageType","ModelLevelOfDetail","ModelStreamingBehavior","ModelStreamingMode","ModerationStatus","ModifierKey","MouseBehavior","MoveState","MuteState","NameOcclusion","NegateOperationHiddenHistory","NetworkOwnership","NetworkStatus","NoiseType","NormalId",
+	"OrientationAlignmentMode","OutfitSource","OutfitType","OutputLayoutMode","OverrideMouseIconBehavior","PackagePermission","PartType","ParticleEmitterShape","ParticleEmitterShapeInOut","ParticleEmitterShapeStyle","ParticleFlipbookLayout","ParticleFlipbookMode","ParticleFlipbookTextureCompatible","ParticleOrientation","PathStatus","PathWaypointAction","PathfindingUseImprovedSearch","PeoplePageLayout","PermissionLevelShown","PhysicalConstraintType","PhysicsSteppingMethod",
+	"Platform","PlaybackState","PlayerActions","PlayerCharacterDestroyBehavior","PlayerChatType","PlayerExitReason","PlayerPlatformSpenderStatus","PluginConnectionTargetType","PoseEasingDirection","PoseEasingStyle","PositionAlignmentMode","PredictionMode","PredictionStatus","PredictiveStreamingMode","PreferredInput","PreferredTextSize","PrimalPhysicsSolver","PrimitiveType","ProductLocationRestriction","ProductPurchaseChannel","ProductPurchaseDecision","PromptCreateAssetResult",
+	"PromptCreateAvatarResult","PromptExperienceDetailsResult","PromptPublishAssetResult","PropertyStatus","ProximityPromptExclusivity","ProximityPromptInputType","ProximityPromptStyle","PurchaseOption","QualityLevel","R15CollisionType","RaycastFilterType","ReadCapturesFromGalleryResult","ReceiptDecision","ReceiptType","RecommendationActionType","RecommendationImpressionType","RecommendationItemContentType","RecommendationItemVisibility","RecommendationPreferenceTargetType",
+	"RecommendationPreferenceType","RejectCharacterDeletions","RenderFidelity","RenderPriority","RenderingCacheOptimizationMode","ReplicateInstanceDestroySetting","ResamplerMode","ReservedHighlightId","RestPose","ReverbType","RibbonTool","RollOffMode","RolloutState","RotationOrder","RotationType","RsvpStatus","RtlTextSupport","RunContext","RunState","RuntimeUndoBehavior","SafeAreaCompatibility","SalesTypeFilter","SandboxedInstanceMode","SaveFilter","SavedQualitySetting",
+	"ScaleType","ScopeCheckResult","ScreenInsets","ScreenOrientation","ScreenshotCaptureResult","ScriptStoppedReason","ScriptVariableScope","ScrollBarInset","ScrollingDirection","SecurityCapability","SelectionBehavior","SelectionRenderMode","SelfViewPosition","SensorMode","SensorUpdateType","ServiceVisibility","Severity","ShowAdResult","SignalBehavior","SizeConstraint","SlimTintMode","SlimTranscoderStatus","SolverConvergenceMetricType","SolverConvergenceVisualizationMode",
+	"SortDirection","SortOrder","StartCorner","StateObjectFieldType","Status","StepFrequency","StreamOutBehavior","StreamingIntegrityMode","StreamingPauseMode","StrokeSizingMode","StudioCaptureBufferStatus","StudioCaptureScreenshotFormat","StudioPlaceUpdateFailureReason","StudioScriptEditorColorCategories","StudioScriptEditorColorPresets","StudioStyleGuideColor","StudioStyleGuideModifier","Style","SubscriptionExpirationReason","SubscriptionPaymentStatus","SubscriptionPeriod",
+	"SubscriptionState","SurfaceConstraint","SurfaceGuiSizingMode","SurfaceType","SwipeDirection","TableMajorAxis","TeamCreateErrorState","Technology","TeleportMethod","TeleportResult","TeleportState","TeleportType","TerrainAcquisitionMethod","TerrainFace","TextChatMessageStatus","TextDirection","TextFilterContext","TextTruncate","TextXAlignment","TextYAlignment","TextureMode","TextureQueryType","ThreadPoolConfig","ThrottlingPriority","ThumbnailSize","ThumbnailType",
+	"TickCountSampleMethod","TonemapperPreset","TopBottom","TouchCameraMovementMode","TouchMovementMode","TrackerError","TrackerExtrapolationFlagMode","TrackerFaceTrackingStatus","TrackerLodFlagMode","TrackerLodValueMode","TrackerMode","TrackerPromptEvent","TrackerType","TriStateBoolean","TweenStatus","UICaptureMode","UIDragDetectorBoundingBehavior","UIDragDetectorDragRelativity","UIDragDetectorDragSpace","UIDragDetectorDragStyle","UIDragDetectorResponseStyle","UIDragSpeedAxisMapping",
+	"UIFlexAlignment","UIFlexMode","UITheme","UploadCaptureResult","UserCFrame","UserInputState","UserInputType","VRComfortSetting","VRControllerModelMode","VRLaserPointerMode","VRScaling","VRSessionState","VRTouchpad","VRTouchpadMode","VelocityConstraintMode","VerifiedLevel","VerticalAlignment","VerticalScrollBarPosition","VibrationMotor","VideoCaptureResult","VideoCaptureStartedResult","VideoDeviceCaptureQuality","VideoError","VideoSampleSize","ViewMode","VirtualCursorMode",
+	"VirtualInputMode","VoiceChatDistanceAttenuationType","VoiceChatState","VoiceControlPath","VolumetricAudio","WaterDirection","WaterForce","WebStreamClientState","WebStreamClientType","WeldConstraintPreserve","WhenUserFirstPlayed","WhisperChatPrivacyMode","WrapLayerAutoSkin","WrapLayerDebugMode","WrapTargetDebugMode","ZIndexBehavior","byte","char","find","format","gmatch","gsub","len","lower","match","pack","packsize","rep","reverse","split","sub","unpack","upper"
 }
 
 local notificationHeight = 0
@@ -297,7 +369,7 @@ function check(...)
 			break
 		end
 	end
-	
+
 	--[[ removed in 1.5.9
 	if not began and fn ~= "Begin" then
 		return warn(err, "Script must start with Library:Begin()")
@@ -382,7 +454,7 @@ end
 
 function outline(obj,v1,v2,inner,settings)
 	local config = settings or config
-	
+
 	local stroke = Instance.new("UIStroke")
 	stroke.Color = config.outline0
 	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
@@ -512,15 +584,15 @@ function lib:Window(parent,title,size,settings) -- v0.0.1, creation; v0.0.3, ren
 		end
 	end
 
-	local collapsable = settings.collapsable or false
+	local collapsable = settings.collapsable ~= false
 	local ishoverlabel = settings.ishoverlabel or false
-	local Xresizable = settings.Xresizable or false
-	local Yresizable = settings.Yresizable or false
+	local Xresizable = settings.Xresizable ~= false
+	local Yresizable = settings.Yresizable ~= false
 	local isdropdown = settings.isdropdown or false
-	local draggable = settings.draggable or false
+	local draggable = settings.draggable ~= false
 	local noheader = settings.noheader or false
 	local noscroll = settings.noscroll or false
-	local closable = settings.closable or false
+	local closable = settings.closable ~= false
 	local nobar = settings.nobar or false
 	local icon = settings.symbol or nil
 
@@ -1092,7 +1164,7 @@ function lib:Toggle(parent,text,settings)
 		sttg = box:Clone()
 		sttg.TextColor3 = settings.text1
 		sttg.TextSize = 16
-		sttg.Text = "≡"
+		sttg.Text = "="
 		sttg.Parent = row
 
 		sttg.MouseButton1Click:Connect(function()
@@ -1768,7 +1840,7 @@ function lib:ColorPicker(parent,text,color,settings)
 				refresh()
 			end
 		end)
-		
+
 		local function update()
 			pickerWindow.Position = UDim2.new(0,preview.AbsolutePosition.X + 22,0,preview.AbsolutePosition.Y - 143 - (gui.IgnoreGuiInset and 0 or 58))
 		end
@@ -2143,18 +2215,18 @@ function lib:TextBox(parent,text,settings)
 			hoverLabel(parent, label, "About "..text, settings.hoverLabel, settings)
 		end
 	end
-	
+
 	local row = Instance.new("Frame")
 	row.Size = UDim2.new(1,0,0,settings.elementS)
 	row.BackgroundTransparency = 1
 	row.Parent = parent
-	
+
 	local frame = Instance.new("Frame",row)
 	frame.Size = UDim2.new(1,0,0,settings.objectS)
 	frame.BackgroundColor3 = settings.textbox
 	frame.Position = UDim2.new(0,0,.5,-settings.objectS / 2)
 	frame.BorderSizePixel = 0
-	
+
 	local corner = Instance.new("UICorner",frame)
 	corner.CornerRadius = UDim.new(0,4)
 
@@ -2197,14 +2269,14 @@ function lib:CodeBox(parent,text,settings)
 			return
 		end
 	end
-	
+
 	local cbc = settings.style and cb_configs[settings.style] or cb_configs.studio
 	local ptext = settings.text or ""
 
 	local row = Instance.new("ScrollingFrame")
 	row.Size = settings.size or UDim2.new(1,0,0,200)
 	row.BorderSizePixel = 0
-	
+
 	local bg = Color3.fromHex(cbc["Background"])
 	row.BackgroundColor3 = Color3.fromHex(cbc["Background"])
 	row.ScrollBarImageColor3 = Color3.fromRGB(math.min(bg.R * 255 + 54, 255),math.min(bg.G * 255 + 54, 255),math.min(bg.B * 255 + 54, 255)) -- I was too lazy to do it manually or with a python script
@@ -2219,37 +2291,56 @@ function lib:CodeBox(parent,text,settings)
 	textbox.Size = UDim2.new(0.98,0,1,0)
 	textbox.Position = UDim2.new(0,6,0,0)
 	textbox.BackgroundTransparency = 1
-	textbox.Font = settings.font0
 	textbox.TextSize = settings.textS
-	textbox.TextWrapped = true
+	--textbox.TextWrapped = true
 	textbox.TextXAlignment = Enum.TextXAlignment.Left
 	textbox.TextYAlignment = Enum.TextYAlignment.Top
 	textbox.PlaceholderText = ptext
 	textbox.Font = Enum.Font.Code
+	textbox.RichText = true
 	textbox.MultiLine = true
 	textbox.Text = text
 	textbox.TextColor3 = settings.text1
 	textbox.ClearTextOnFocus = settings.clear or false
 	textbox.TextEditable = not (settings.display or false)
+
+	local faketext = textbox:Clone()
+	faketext.TextEditable = false
+	faketext.Interactable = false
+	faketext.Parent = row
 	
-	local faketext = Instance.new("TextLabel",textbox)
-	faketext.Size = UDim2.new(1,0,1,0)
-	faketext.BackgroundTransparency = 1
-	faketext.Font = Enum.Font.Code
-	faketext.TextWrapped = true
-	faketext.RichText = true
-	faketext.TextXAlignment = Enum.TextXAlignment.Left
-	faketext.TextYAlignment = Enum.TextYAlignment.Top
-	faketext.TextColor3 = settings.text0
-	faketext.TextSize = settings.textS
-	faketext.Text = text
+	local propertySet = {}
+	local objectSet = {}
+	local literalSet = {}
+	local biPropertySet = {}
+
+	for _, v in ipairs(property) do
+		propertySet[v] = true
+	end
+
+	for _, v in ipairs(object) do
+		objectSet[v] = true
+	end
+
+	for v in pairs(literal) do
+		literalSet[v] = true
+	end
+
+	for _, v in ipairs(bi_property) do
+		biPropertySet[v] = true
+	end
 
 	local function update()
 		local t = textbox.Text
-		t = t:gsub("<font.->", ""):gsub("</font>", "")
+		--t = t:gsub("<font.->", ""):gsub("</font>", "")
 
-		local function e(s) return s:gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&gt;") end
-		local function c(s, col) return '<font color="' .. col .. '">' .. e(s) .. "</font>" end
+		local function e(s)
+			return s:gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&gt;")
+		end
+
+		local function c(s, col)
+			return '<font color="' .. col .. '">' .. e(s) .. "</font>"
+		end
 
 		local function highlight(source)
 			local out = {}
@@ -2280,12 +2371,10 @@ function lib:CodeBox(parent,text,settings)
 
 			while i <= #source do
 				local s = source:sub(i)
-
 				if s:sub(1, 2) == "--" then
 					flush()
 
 					local x
-
 					if s:sub(1, 4) == "--[[" then
 						local z = s:find("]]", 5, true)
 						x = z and s:sub(1, z + 1) or s
@@ -2296,12 +2385,10 @@ function lib:CodeBox(parent,text,settings)
 
 					out[#out + 1] = c(x, cbc["Comment"])
 					i += #x
-
 				elseif s:sub(1, 1) == '"' or s:sub(1, 1) == "'" then
 					flush()
 
 					local q, j = s:sub(1, 1), 2
-
 					while j <= #s do
 						if s:sub(j, j) == "\\" then
 							j += 2
@@ -2316,22 +2403,18 @@ function lib:CodeBox(parent,text,settings)
 					local x = s:sub(1, j - 1)
 					out[#out + 1] = c(x, cbc["String"])
 					i += #x
-
 				elseif s:sub(1, 1) == "`" then
 					flush()
 
 					local j, x = 2, "`"
-
 					while j <= #s do
 						if s:sub(j, j) == "\\" then
 							x ..= s:sub(j, j + 1)
 							j += 2
-
 						elseif s:sub(j, j) == "`" then
 							x ..= "`"
 							j += 1
 							break
-
 						elseif s:sub(j, j) == "{" then
 							local start, depth = j, 1
 							j += 1
@@ -2351,7 +2434,6 @@ function lib:CodeBox(parent,text,settings)
 							x ..= '<font color="' .. cbc["Interpolation"] .. '">{</font>'
 							x ..= highlight(expr:sub(2, -2))
 							x ..= '<font color="' .. cbc["Interpolation"] .. '">}</font>'
-
 						else
 							x ..= e(s:sub(j, j))
 							j += 1
@@ -2360,7 +2442,6 @@ function lib:CodeBox(parent,text,settings)
 
 					out[#out + 1] = '<font color="' .. cbc["String"] .. '">' .. x .. "</font>"
 					i += j - 1
-
 				elseif s:sub(1, 2) == "[[" then
 					flush()
 
@@ -2369,29 +2450,43 @@ function lib:CodeBox(parent,text,settings)
 
 					out[#out + 1] = c(x, cbc["String"])
 					i += #x
-
 				elseif s:match("^%d") then
 					flush()
 
 					local x = s:match("^[%w%.]+")
 					out[#out + 1] = c(x, cbc["Number"])
 					i += #x
-
 				elseif s:match("^[%a_]") then
 					local x = s:match("^[%w_]+")
-					local before = source:sub(1, i - 1)
+					local before = source:sub(math.max(1, i - 100), i - 1)
 					local rest = s:sub(#x + 1)
 
-					local col =
-						before:match(":%s*$") and cbc["Type"]
-						or kw[x] and cbc["Keyword"]
-						or bi[x] and cbc["Builtin"]
-						or rest:match("^%s*%(") and cbc["Function"]
-						or cbc["Default"]
+					local isProperty = before:match("%.%s*$") ~= nil
+					local previousWord = before:match("([%w_]+)%s*%.$")
+
+					local col
+					if literalSet[x] then
+						col = cbc["Literal"]
+					elseif previousWord and bi[previousWord] and biPropertySet[x] then
+						col = cbc["BuiltinProperty"]
+					elseif bi[x] and not isProperty then
+						col = cbc["Builtin"]
+					elseif rest:match("^%s*%(") then
+						col = cbc["Function"]
+					elseif isProperty and propertySet[x] then
+						col = cbc["Property"]
+					elseif isProperty then
+						col = cbc["Object"]
+					elseif before:match(":%s*$") then
+						col = cbc["Type"]
+					elseif kw[x] then
+						col = cbc["Keyword"]
+					else
+						col = cbc["Default"]
+					end
 
 					add(x, col)
 					i += #x
-
 				else
 					add(s:sub(1, 1), cbc["Operator"])
 					i += 1
@@ -2404,11 +2499,13 @@ function lib:CodeBox(parent,text,settings)
 		end
 
 		row.CanvasSize = UDim2.new(0, 0, 0, textbox.TextBounds.Y + (settings.spacing or 60))
+
 		local final = highlight(t)
+
 		if #final < 200000 then
 			faketext.Text = final
 		else
-			warn(err,"Code is too long. Formatting won't be applied.")
+			warn(err, "Code is too long. Formatting won't be applied.")
 		end
 	end
 
@@ -2445,7 +2542,7 @@ function lib:CodeBox(parent,text,settings)
 			row.ScrollBarThickness = 4
 		end
 	end)
-	
+
 	settings.outline1 = Color3.fromHex(cbc["Inner"])
 	settings.outline0 = Color3.fromHex(cbc["Outer"])
 	outline(row,.5,.5,true,settings)

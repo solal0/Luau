@@ -11,7 +11,12 @@ I2B64 (Image to Base64) is a python tool that converts images into a custom base
 ### Utils
 Utils is a ModuleScript containing a bunch of usefull functions. As of now it only contains I2B64 and a base64 encoder/decoder but i'll add more over time.
 
-[Latest](https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/Utils.luau)
+`loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/Utils.luau"))()`
+
+### ByteCode Inspector
+ByteCode Inspector is a luau script decompiler who gets script's bytecode and using Luacid and LunaUX turn that bytecode into readable luau.
+
+`loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/bc_inspector.luau"))()`
 
 ## Libraries
 

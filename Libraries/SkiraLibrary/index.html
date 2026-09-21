@@ -529,7 +529,9 @@ local _, content = lib:Window(container,"Demo",UDim2.new(0,250,0,250),{position 
 
 local holder = lib:Holder(
 	content, -- parent of the holder.
-	6 -- padding between each element/column.
+	{
+		padding = UDim.new(0,6) -- padding between each element/column.
+	}
 ) -- this one is very short because there's nothing much to say about it other than the fact that it's a frame made to contain columns.`,
                 media: []
             },

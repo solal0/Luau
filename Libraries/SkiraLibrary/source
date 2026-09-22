@@ -102,6 +102,8 @@ DD/MM/2026 - 1.1: Added close callback to window.
 21/09/2026 - 1.6.1:
 + - Added more formatting colors, fixed text mismatch for good and I added optimization but still not enough.
 + - Tabs are now selected after creation automatically unless autoselect setting is false and their content is now correctly listed.
++ - Window now has a resize bar on both left and right side of the window.
++ - Tabs content is hidden when window is minimized.
 
 ]]--
 
@@ -704,10 +706,12 @@ function lib:Window(parent,title,size,settings) -- v0.0.1, creation; v0.0.3, ren
 		if v then
 			fix.Visible = false
 			content.Visible = false
+			if frame:FindFirstChild("TabsContents") then frame.TabsContents.Visible = false end
 			TS:Create(frame,TweenInfo.new(.18,Enum.EasingStyle.Quad),{Size = UDim2.new(frame.Size.X.Scale,frame.Size.X.Offset,frame.Size.Y.Scale,isdropdown and settings.objectS or 28)}):Play()
 		else
 			fix.Visible = true
 			content.Visible = true
+			if frame:FindFirstChild("TabsContents") then task.spawn(function() wait(0.05) frame.TabsContents.Visible = true end) end
 			TS:Create(frame,TweenInfo.new(.18,Enum.EasingStyle.Quad),{Size = isdropdown and settings.size and settings.size.value or oldSize}):Play()
 		end
 	end
@@ -818,13 +822,20 @@ function lib:Window(parent,title,size,settings) -- v0.0.1, creation; v0.0.3, ren
 		gradient.Parent = line
 		gradient.Transparency = NumberSequence.new{NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(.5,0),NumberSequenceKeypoint.new(1,1)}
 
-		if side == "Right" then
+		if side == "Left" then
+			gradient.Rotation = 90
+			line.Size = UDim2.new(0,2,1,0)
+			line.Position = UDim2.new(0,-1,0,0)
+			line.Name = "ResizeLeft"
+		elseif side == "Right" then
 			gradient.Rotation = 90
 			line.Size = UDim2.new(0,2,1,0)
 			line.Position = UDim2.new(1,-1,0,0)
+			line.Name = "ResizeRight"
 		elseif side == "Bottom" then
 			line.Size = UDim2.new(1,0,0,2)
 			line.Position = UDim2.new(0,0,1,-1)
+			line.Name = "ResizeHeight"
 		end
 
 		local resizing = false
@@ -899,7 +910,7 @@ function lib:Window(parent,title,size,settings) -- v0.0.1, creation; v0.0.3, ren
 		end)
 	end
 
-	if Xresizable then resize("Right") end
+	if Xresizable then resize("Left") resize("Right") end
 	if Yresizable then resize("Bottom") end
 
 	frame.Parent = parent
@@ -2693,6 +2704,10 @@ function lib:Tab(parent,title,settings)
 
 		content.Size -= UDim2.new(0,0,0,tabs.Size.Y.Offset)
 		content.Position += UDim2.new(0,0,0,tabs.Size.Y.Offset)
+		
+		if parent:FindFirstChild("ResizeLeft") then parent.ResizeLeft.ZIndex = 2 end
+		if parent:FindFirstChild("ResizeRight") then parent.ResizeRight.ZIndex = 2 end
+		if parent:FindFirstChild("ResizeHeight") then parent.ResizeHeight.ZIndex = 2 end
 	end
 
 	local tabsContents = parent:FindFirstChild("TabsContents")

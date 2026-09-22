@@ -21,7 +21,7 @@ ByteCode Inspector is a luau script decompiler who turns script's bytecode into 
 ## Libraries
 
 ### Skira Library
-Skira Library is a roblox ui library to create simple uis with little code.
+Skira Library is a fully free and open source UI library for Roblox.<br>It has it's very own documentation and allows anyone to create simple uis in no time.
 
 Official: [Website](https://skira.me/lua/SkiraLibrary/) [Documentation](https://skira.me/lua/SkiraLibrary/)
 

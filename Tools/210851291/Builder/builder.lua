@@ -172,7 +172,7 @@ builder.new = function(name,cf1,invV,tp,tpcf,anchor,cf2,binds) -- string,cframe,
             return false, "The server did not delete "..name.."."
         end
 
-        local function setColor(result,color) -- instance, Color3.fromRGB()
+        local function setColor(color) -- instance, Color3.fromRGB()
             if not painttool then return end
 
             --bait(painttool,true) -- no need for bait, painting tool doesn't check for equipped tool
@@ -190,7 +190,7 @@ builder.new = function(name,cf1,invV,tp,tpcf,anchor,cf2,binds) -- string,cframe,
             return false, "The server did not change the color of "..result.Name.." to "..color.R..","..color.G..","..color.B.."."
         end
 
-        local function setProperty(result,property,value,protect) -- instance,string,custom,boolean
+        local function setProperty(property,value,protect) -- instance,string,custom,boolean
             if not propertiestool then return end
             
             protect = protect ~= false
@@ -231,7 +231,7 @@ builder.new = function(name,cf1,invV,tp,tpcf,anchor,cf2,binds) -- string,cframe,
                 end
         end
 
-        local function setSize(result,size) -- instance,vector3
+        local function setSize(size) -- instance,vector3
             if not scaletool then return end
 
             local pp = result.PrimaryPart or result:FindFirstChild("PPart")
@@ -249,7 +249,7 @@ builder.new = function(name,cf1,invV,tp,tpcf,anchor,cf2,binds) -- string,cframe,
             return false, "The server did not change the size of "..result.Name.." to "..tostring(size).."."
         end
 
-        local function setPosition(result,position) -- instance,vector3
+        local function setPosition(position) -- instance,vector3
             if not scaletool then return end
 
             local pp = result.PrimaryPart or result:FindFirstChild("PPart")
@@ -269,7 +269,7 @@ builder.new = function(name,cf1,invV,tp,tpcf,anchor,cf2,binds) -- string,cframe,
             return false, "The server did not change the position of "..result.Name.." to "..tostring(position).."."
         end
 
-        local function setRotation(result,rotation) -- instance,vector3
+        local function setRotation(rotation) -- instance,vector3
             if not scaletool then return end
 
             local pp = result.PrimaryPart or result:FindFirstChild("PPart")
@@ -288,7 +288,6 @@ builder.new = function(name,cf1,invV,tp,tpcf,anchor,cf2,binds) -- string,cframe,
             end
             return false, "The server did not change the rotation of "..result.Name.." to "..tostring(rotation).."."
         end
-
 
 		return true, {
             instance = result,

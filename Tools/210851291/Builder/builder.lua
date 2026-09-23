@@ -145,7 +145,7 @@ builder.new = function(name,cf1,invV,tp,tpcf,anchor,cf2,binds) -- string,cframe,
 	if success then
 		getAvailable()
 
-        local local function delete()
+        local function delete()
             if not deletetool then return end
 
             if not result:IsDescendantOf(blocks) then return false, "Block is not valid" end

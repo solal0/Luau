@@ -147,18 +147,6 @@ builder.new = function(name,cf1,invV,tp,tpcf,anchor,cf2,binds) -- string,cframe,
 
         local function delete()
             if not deletetool then return end
-
-            if not result:IsDescendantOf(blocks) then return false, "Block is not valid" end
-            if result.Parent ~= blocks then
-                for i,v in pairs(blocks:GetChildren()) do
-                    if result:IsDescendantOf(v) then
-                        result = v
-                        break
-                    end
-                end
-                if result.Parent ~= blocks then return false, "wtf?" end
-            end
-
             local name = result.Name
 
             bait(deletetool,true)
@@ -167,12 +155,12 @@ builder.new = function(name,cf1,invV,tp,tpcf,anchor,cf2,binds) -- string,cframe,
 
             for i = 1, loopFor do
                 wait(cooldown)
-                if not result.Parent or result.Parent ~= blocks then return true, "The server deleted "..name.."." end
+                if not result or not result.Parent or result.Parent ~= blocks then return true, "The server deleted "..name.."." end
             end
             return false, "The server did not delete "..name.."."
         end
 
-        local function setColor(color) -- instance, Color3.fromRGB()
+        local function setColor(color) -- color3
             if not painttool then return end
 
             --bait(painttool,true) -- no need for bait, painting tool doesn't check for equipped tool
@@ -190,7 +178,7 @@ builder.new = function(name,cf1,invV,tp,tpcf,anchor,cf2,binds) -- string,cframe,
             return false, "The server did not change the color of "..result.Name.." to "..color.R..","..color.G..","..color.B.."."
         end
 
-        local function setProperty(property,value,protect) -- instance,string,custom,boolean
+        local function setProperty(property,value,protect) -- string,custom,boolean
             if not propertiestool then return end
             
             protect = protect ~= false
@@ -231,7 +219,7 @@ builder.new = function(name,cf1,invV,tp,tpcf,anchor,cf2,binds) -- string,cframe,
                 end
         end
 
-        local function setSize(size) -- instance,vector3
+        local function setSize(size) -- vector3
             if not scaletool then return end
 
             local pp = result.PrimaryPart or result:FindFirstChild("PPart")
@@ -249,7 +237,7 @@ builder.new = function(name,cf1,invV,tp,tpcf,anchor,cf2,binds) -- string,cframe,
             return false, "The server did not change the size of "..result.Name.." to "..tostring(size).."."
         end
 
-        local function setPosition(position) -- instance,vector3
+        local function setPosition(position) -- vector3
             if not scaletool then return end
 
             local pp = result.PrimaryPart or result:FindFirstChild("PPart")
@@ -269,7 +257,7 @@ builder.new = function(name,cf1,invV,tp,tpcf,anchor,cf2,binds) -- string,cframe,
             return false, "The server did not change the position of "..result.Name.." to "..tostring(position).."."
         end
 
-        local function setRotation(rotation) -- instance,vector3
+        local function setRotation(rotation) -- vector3
             if not scaletool then return end
 
             local pp = result.PrimaryPart or result:FindFirstChild("PPart")

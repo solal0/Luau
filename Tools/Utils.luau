@@ -164,4 +164,27 @@ utils.getSafeGui = function()
 	return parent
 end
 
+utils.getClipboardFunction = function()
+	for envName, env in pairs({getgenv and getgenv() or nil, _G}) do
+		for name, value in pairs(env) do
+			if type(value) == "function" and tostring(name):lower():find("clipboard", 1, true) then
+				return value
+			end
+		end
+	end
+	return nil
+end
+
+utils.findFunction = function(v)
+	local result = {}
+	for envName, env in pairs({getgenv and getgenv() or nil, _G}) do
+		for name, value in pairs(env) do
+			if type(value) == "function" and tostring(name):lower():find(v, 1, true) then
+				result[name] = value
+			end
+		end
+	end
+	return result
+end
+
 return utils

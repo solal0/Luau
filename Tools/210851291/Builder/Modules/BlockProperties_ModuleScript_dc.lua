@@ -19,7 +19,7 @@ setmetatable(Module, {
 })
 local _ = game:GetService("CollectionService")
 local _ = game:GetService("RunService")
-local _ = require(game.ReplicatedStorage.Scripts.BlockFunctions)
+local _ = loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/210851291/Builder/Modules/BlockFunctions_ModuleScript_dc.lua"))() -- require(game.ReplicatedStorage.Scripts.BlockFunctions)
 
 function stringToNum(p2, p3) --[[ Line: 16 ]]
 	local Number: number? = tonumber(p2)

@@ -1,13 +1,13 @@
 -- File created using ByteCode Inspector (https://github.com/solal0/Luau/)
 
--- Decompiled in 0s by lunaux
+-- Decompiled in 1s by lunaux
 -- Path: ReplicatedStorage.Scripts.BlockProperties
 -- Class: ModuleScript
 
 -- If the script cuts off, click Save below to have the full script as a file.
 
 -- Decompiled using LunaUX-Decompiler V1.4.4. Luau decompiler made by boydev1444 & zyx (discord.gg/2mJUD4XDDT)
--- Decompiled at Wed Sep 23 8:30:37 2026 Pacific Standard Time, took 0.059603 second(s)
+-- Decompiled at Thu Sep 24 7:12:23 2026 Pacific Standard Time, took 0.027305 second(s)
 
 local Module = {}
 setmetatable(Module, {

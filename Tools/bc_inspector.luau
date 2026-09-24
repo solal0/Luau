@@ -232,4 +232,4 @@ lib:Button(content,"Infinite Yield",{callback = function()
 	pcall(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))() end)
 end})
 
-print("ByteCode Inspector v1.2 loaded")
+print("ByteCode Inspector v1.3 loaded")

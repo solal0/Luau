@@ -18,8 +18,8 @@ local utils = loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/
 local lib = loadstring(game:HttpGet("https://skira.me/lua/SkiraLibrary/source"))()
 local g = utils.services
 
-local folder = "ByteCodeInspector/Games/"..game.GameId
-local gameName = g.MarketplaceService:GetProductInfo(game.GameId).Name
+local folder = "ByteCodeInspector/Games/"..game.PlaceId
+local gameName = g.MarketplaceService:GetProductInfo(game.PlaceId).Name
 if cansave then
 	makefolder("ByteCodeInspector")
 	makefolder("ByteCodeInspector/Games")

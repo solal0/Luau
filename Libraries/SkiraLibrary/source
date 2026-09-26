@@ -105,6 +105,9 @@ DD/MM/2026 - 1.1: Added close callback to window.
 + - Window now has a resize bar on both left and right side of the window.
 + - Tabs content is hidden when window is minimized.
 
+26/09/2026 - 1.6.1.1:
++ - Fixed left window drag not doing anything.
+
 ]]--
 
 local UIS = game:GetService("UserInputService")
@@ -841,6 +844,7 @@ function lib:Window(parent,title,size,settings) -- v0.0.1, creation; v0.0.3, ren
 		local resizing = false
 		local startMouse
 		local startSize
+		local startPos
 
 		line.MouseEnter:Connect(function()
 			if not minimized then
@@ -859,6 +863,7 @@ function lib:Window(parent,title,size,settings) -- v0.0.1, creation; v0.0.3, ren
 				resizing = true
 				startMouse = i.Position
 				startSize = frame.Size
+				startPos = frame.Position
 			end
 		end)
 
@@ -875,8 +880,12 @@ function lib:Window(parent,title,size,settings) -- v0.0.1, creation; v0.0.3, ren
 
 				local x = startSize.X.Offset
 				local y = startSize.Y.Offset
-
-				if side == "Right" then
+				
+				if side == "Left" then
+					x -= delta.X
+					x = math.max(x,max)
+					frame.Position = UDim2.new(startPos.X.Scale,startPos.X.Offset + delta.X,startPos.Y.Scale,startPos.Y.Offset)
+				elseif side == "Right" then
 					x += delta.X
 				elseif side == "Bottom" then
 					y += delta.Y
@@ -2704,7 +2713,7 @@ function lib:Tab(parent,title,settings)
 
 		content.Size -= UDim2.new(0,0,0,tabs.Size.Y.Offset)
 		content.Position += UDim2.new(0,0,0,tabs.Size.Y.Offset)
-		
+
 		if parent:FindFirstChild("ResizeLeft") then parent.ResizeLeft.ZIndex = 2 end
 		if parent:FindFirstChild("ResizeRight") then parent.ResizeRight.ZIndex = 2 end
 		if parent:FindFirstChild("ResizeHeight") then parent.ResizeHeight.ZIndex = 2 end
@@ -2806,7 +2815,7 @@ function lib:Tab(parent,title,settings)
 	ct.Value = tabContent
 	ct.Name = "Content"
 	tab:SetAttribute("Inactive",false)
-	
+
 	if settings.autoselect ~= false then setTab() end
 
 	local result = 1 / #tabs:GetChildren()
@@ -2817,7 +2826,7 @@ function lib:Tab(parent,title,settings)
 		v.Position = UDim2.new(val,0,0,0)
 		val += result
 	end
-	
+
 	tracker[tabContent] = {}
 
 	return tab,tabContent,{setTab = setTab}

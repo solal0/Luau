@@ -92,17 +92,18 @@ function getInstance(path)
 		c = parts[i] == "LocalPlayer" and c.LocalPlayer or c:FindFirstChild(parts[i])
 		if not c then
 			--print("Failed at",parts[i])
-			return nil
+			return
 		end
 	end
 	if c:IsA("ModuleScript") or c:IsA("Script") then
 		if c.ClassName == "Script" then
-			print("Scripts are impossible to save, said saveinstance. But i'll try.") -- nvm, they ARE impossible to save
+			print("Scripts are impossible to save. - SaveInstance")
+			return
 		end
 		return c
 	else
 		notify(c.." is not a valid instance")
-		return nil
+		return
 	end
 end
 

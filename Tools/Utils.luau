@@ -168,7 +168,7 @@ utils.getClipboardFunction = function()
 	for envName, env in pairs({getgenv and getgenv() or nil, _G}) do
 		for name, value in pairs(env) do
 			if type(value) == "function" and tostring(name):lower():find("clipboard", 1, true) then
-				return value
+				return value, name
 			end
 		end
 	end

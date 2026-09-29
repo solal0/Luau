@@ -20,7 +20,7 @@ ByteCode Inspector is a luau script decompiler who turns script's bytecode into 
 
 ### Subtle Subtitles
 I started this project as a custom chatbox/chat display and for the v1.1 decided to turn it into a P2P chatbox who can receive and send messages from his client to another client without cummunicating with the server as long as the other client has the same tool running.
-<br>Features:
+Features:
 - A way to mute certain users by either replacing their chats with dots or by hiding their messages entirely
 - A default chat channel and the ability to change the channel id (seed).
 <br>Changing the seed will generate a unique alphabet and communication seed.

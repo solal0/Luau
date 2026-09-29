@@ -9,7 +9,24 @@ I2B64 (Image to Base64) is a python tool that converts images into a custom base
 [Github](https://github.com/solal0/I2B64) [Latest](https://github.com/solal0/I2B64/releases/latest)
 
 ### Utils
-Utils is a ModuleScript containing a bunch of usefull functions.<br>As of now it only contains I2B64 and a base64 encoder/decoder but i'll add more over time.
+Utils is a ModuleScript containing a bunch of usefull functions.
+
+Features:
+1. Base64 encoder and decoder by @xDeltaXen (on roblox)
+   - utils.encode(string) / return string
+   - utils.decode(string) / return string
+3. I2B64 lua side (listed above)
+   - utils.base64toImage(string) / return Content.fromObject(image), image, number (X), number (Y)
+5. InfiniteYield's secure services table
+   - utils.services.ServiceName
+7. InfiniteYield's random string generator
+   - utils.randomString() / return string
+8. InfiniteYield's safe gui finder
+   - utils.getSafeGui() / return ScreenGui
+9. A function to get the first available clipboard function
+   - utils.getClipboardFunction() / return function, name
+10. A function to find a function from a word
+   - utils.findFunction(string) / return table (i = name, v = function)
 
 `loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/Utils.luau"))()`
 

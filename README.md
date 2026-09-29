@@ -9,7 +9,7 @@ I2B64 (Image to Base64) is a python tool that converts images into a custom base
 [Github](https://github.com/solal0/I2B64) [Latest](https://github.com/solal0/I2B64/releases/latest)
 
 ### Utils
-Utils is a ModuleScript containing a bunch of usefull functions.
+A table containing a bunch of usefull functions.
 
 Features:
 ```lua

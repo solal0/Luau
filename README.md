@@ -66,7 +66,7 @@ Features:
 - A notification count when minimized
 
 ```lua
-loadstring(game:HttpGet("soon"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/subtle_subtitles.luau"))()
 ```
 
 ## Libraries

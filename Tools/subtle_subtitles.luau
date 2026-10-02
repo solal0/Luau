@@ -7,9 +7,6 @@
 -- v1.2 - Added per channel Alphabet
 -- v1.3 - Browsed channels will keep getting updated as messages are sent in them
 
--- I'll do the in game testing later
--- Edit my script however you want as long as you credit my github in your project.
-
 local P = game:GetService("Players")
 
 -- Generated with Codify
@@ -799,7 +796,7 @@ function show(who,said)
 	msg.Visible = true
 
 	local X,Y = msg.TextBounds.X / msg.Parent.AbsoluteSize.X, msg.TextBounds.Y
-	msg.Size = UDim2.new(X+.014,0,1,0)
+	msg.Size = UDim2.new(1,0,0,Y) -- was msg.Size = UDim2.new(X+.014,0,0,Y)
 
 	if not open and notificationsEnabled then
 		newNotifications += 1

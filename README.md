@@ -78,3 +78,76 @@ Skira Library is a fully free and open source UI library for Roblox.
 Official: [Website](https://skira.me/lua/SkiraLibrary/) [Documentation](https://skira.me/lua/SkiraLibrary/)
 
 Github: [Website](https://skira.me/lua/SkiraLibrary/) [Documentation](https://skira.me/lua/SkiraLibrary/)
+
+### Stand UI
+Based off Stand's ui, a GTAV mod menu, Stand UI is a UI library where simplicity is key.
+I like Skira Library but there's a lot of settings to remember, too many actually. That's part of why I decided to make this one.
+Since it's simpler, every element only requires a function and a string at max and the doc can fit just below this text.
+
+Note: Stand UI only supports PC because of the navigation controls and no, i'm not gonna change that. At least I didn't plan to.
+
+- Config (all these can be overwritten if set in the settings table of the Window call)
+```lua
+{
+	-- colors
+	header = Color3.new(1,0,1),
+	selected = Color3.new(1,0,1),
+	scrollbar = Color3.new(1,0,1),
+	background = Color3.new(0,0,0),
+	selectedTab = Color3.new(1,0,1),
+	selectedOption = Color3.new(1,0,1),
+	
+	notificationBar = Color3.new(1,0,1),
+	notificationFull = Color3.fromRGB(157,0,157),
+	
+	textColor = Color3.new(1,1,1),
+	hoveredTextColor = Color3.new(1,1,1),
+	
+	-- keys
+	exit = Enum.KeyCode.Escape,
+	contentUp = Enum.KeyCode.Up,
+	enter = Enum.KeyCode.Return,
+	commandBar = Enum.KeyCode.U,
+	toggle = Enum.KeyCode.Insert,
+	back = Enum.KeyCode.Backspace,
+	tabUp = Enum.KeyCode.RightShift,
+	contentDown = Enum.KeyCode.Down,
+	tabDown = Enum.KeyCode.RightControl,
+}
+```
+
+- Example
+```lua
+local gui = Instance.new("ScreenGui",game.Players.LocalPlayer.PlayerGui)
+local window = ui.Window(gui,"Stand UI 0.0.1")
+
+-- (Name:string, Settings:{CommandBar:true?}?)
+local s = window.NewTab("Self")
+local v = window.NewTab("Vehicle")
+return {Tab:Frame, Content:Frame, Select:Function, Unselect:Function, Remove:Function, Back:Function and all NewInstance functions}
+
+-- (Name:string, Settings:{OnSelect:Function?, OnUnselect:Function?, OnRemove:Function?}?)
+local action = s.NewAction("Example Action")
+return {Select:Function, Unselect:Function, Remove:Function}
+
+-- (Name:string, Settings:{OnSelect:Function?, OnUnselect:Function?, OnRemove:Function?}?)
+local toggle = s.NewAction("Example Toggle")
+return {Select:Function, Unselect:Function, Remove:Function}
+
+-- (Name:string, Settings:{OnSelect:Function?, OnUnselect:Function?, OnRemove:Function?}?)
+local category = s.NewCategory("Example Category")
+return {Tab:Frame, Content:Frame, Select:Function, Unselect:Function, Remove:Function, Back:Function and all NewInstance functions}
+
+-- (Parent:ScreenGui, Title:string, Text:string)
+ui.Prompt(gui,"Stand UI",`Hey, thanks for trying out Stand UI ! A ui library for roblox based off the famous Grand Theft Auto V mod menu Stand.\n\nCredits\n- Developped by CaptainSkira (https://github.com/solal0)\n- Inspired by Stand's ui (https://stand.sh)`)
+return Prompt:Frame
+
+-- (Parent:ScreenGui, Text:string, Seconds:number?)
+ui.Notify(gui,"Command executed successfully ! :D",3)
+return nil,nada,nothing,rien,none
+```
+
+- Loadstring
+```lua
+loadstring(game:HttpGet("soon..."))()
+```

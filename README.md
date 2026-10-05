@@ -84,10 +84,11 @@ Based off Stand's ui, a GTAV mod menu, Stand UI is a UI library where simplicity
 I like Skira Library but there's a lot of settings to remember, too many actually. That's part of why I decided to make this one.
 Since it's simpler, every element only requires a function and a string at max and the doc can fit just below this text.
 
-Note: Stand UI only supports PC because of the navigation controls and no, i'm not gonna change that. At least I didn't plan to.
+Note: Stand UI only supports PC because of the navigation controls and no, i'm not gonna change that. At least I didn't plan to.<br>
 
-- Config (all these can be overwritten if set in the settings table of the Window call)
 ```lua
+-- Config (all these can be overwritten if set in the settings table of the Window call)
+
 {
 	-- colors
 	header = Color3.new(1,0,1),
@@ -116,8 +117,9 @@ Note: Stand UI only supports PC because of the navigation controls and no, i'm n
 }
 ```
 
-- Example
 ```lua
+-- Example
+
 local gui = Instance.new("ScreenGui",game.Players.LocalPlayer.PlayerGui)
 local window = ui.Window(gui,"Stand UI 0.0.1")
 
@@ -147,7 +149,8 @@ ui.Notify(gui,"Command executed successfully ! :D",3)
 return nil,nada,nothing,rien,none
 ```
 
-- Loadstring
 ```lua
+-- Loadstring
+
 loadstring(game:HttpGet("soon..."))()
 ```

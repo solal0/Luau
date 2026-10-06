@@ -2163,7 +2163,7 @@ function lib:KeyPicker(parent,text,settings)
 		end
 	end
 
-	local holder = lib:Holder(parent{padding = UDim.new(0,6)})
+	local holder = lib:Holder(parent,{padding = UDim.new(0,6)})
 	local column1 = lib:Column(holder,UDim2.new(1,-130,0,0),Enum.HorizontalAlignment.Left)
 	local column2 = lib:Column(holder,UDim2.new(0,130,0,0),Enum.HorizontalAlignment.Right) -- biggest KeyCode is MouseMiddleButton, who fits perfectly within 130
 	local label = lib:Label(column1,text,{wrapped = false})

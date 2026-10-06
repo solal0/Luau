@@ -2,6 +2,7 @@ if not cloneref or type(cloneref) ~= "function" then
 	cloneref = function(...) return ... end
 end
 
+local alphabet = {"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"}
 local utils = {}
 
 utils.services = setmetatable({}, { -- thanks IY
@@ -21,7 +22,7 @@ utils.services = setmetatable({}, { -- thanks IY
 -- base64 made by xDeltaXen: https://www.roblox.com/users/1298068279
 -- dev forum post: https://devforum.roblox.com/t/base64-encoding-and-decoding-in-lua/1719860
 
-utils.encode = function(data)
+function utils.encode(data)
 	local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 	return ((data:gsub('.', function(x) 
 		local r,b='',x:byte()
@@ -36,7 +37,7 @@ utils.encode = function(data)
 end
 
 -- this function converts base64 to string
-utils.decode = function(data)
+function utils.decode(data)
 	local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 	data = string.gsub(data, '[^'..b..'=]', '')
 	return (data:gsub('.', function(x)
@@ -54,7 +55,7 @@ end
 
 -- I2B64 (https://github.com/solal0/I2B64) by CaptainSkira
 
-utils.base64toImage = function(base64)
+function utils.base64toImage(base64)
 	local data
 
 	if utils.icons[base64] then
@@ -123,7 +124,7 @@ utils.base64toImage = function(base64)
 	--     for Image instances,       raw    X      Y
 end
 
-utils.randomString = function()
+function utils.randomString()
 	local length = math.random(10,20)
 	local array = {}
 	for i = 1, length do
@@ -134,7 +135,7 @@ end
 
 -- taken from Infinite Yield
 local CoreGui = utils.services.CoreGui or utils.services.Players.LocalPlayer.PlayerGui
-utils.getSafeGui = function()
+function utils.getSafeGui()
 	local parent = nil
 	if gethui then
 		local Main = Instance.new("ScreenGui")
@@ -164,7 +165,7 @@ utils.getSafeGui = function()
 	return parent
 end
 
-utils.getClipboardFunction = function()
+function utils.getClipboardFunction()
 	for envName, env in pairs({getgenv and getgenv() or nil, _G}) do
 		for name, value in pairs(env) do
 			if type(value) == "function" and tostring(name):lower():find("clipboard", 1, true) then
@@ -175,7 +176,7 @@ utils.getClipboardFunction = function()
 	return nil
 end
 
-utils.findFunction = function(v)
+function utils.findFunction(v)
 	local result = {}
 	for envName, env in pairs({getgenv and getgenv() or nil, _G}) do
 		for name, value in pairs(env) do
@@ -183,6 +184,22 @@ utils.findFunction = function(v)
 				result[name] = value
 			end
 		end
+	end
+	return result
+end
+
+function utils.toBase26(x) -- ty steven454766
+	local result = ""
+	if x < 1 then return result end
+
+	local quotient = x
+	local remainder = -1
+
+	while quotient ~= 0 do
+		local dec = quotient - 1
+		remainder = dec % #alphabet
+		quotient = math.floor(dec / #alphabet)
+		result = alphabet[remainder + 1] .. result
 	end
 	return result
 end

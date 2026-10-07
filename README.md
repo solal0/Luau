@@ -128,6 +128,37 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/head
 
 ------
 
+### Blurred Gui
+A module to give ui elements a blur effect
+Blurred Gui is a modified version of @ImSnox's Blur Controller, adapted into a ModuleScript
+
+
+```lua
+-- Change settings if needed, calling this function is optional
+BlurredGui.Init({
+    PartSize -- default to 0.01
+    Extra -- default to Vector3.new(0,0,0)
+	BlurSize -- default to Vector2.new(10, 10)
+	PartTransparency -- default to 1 - 1e-7
+    FarIntensity -- default to 0
+	NearIntensity -- default to 0.25
+	FocusDistance -- default to 0.25
+	InFocusRadius -- default to 0
+})
+
+-- Create a blur
+BlurredGui.New(
+    frame:Frame, -- UI element to apply the blur onto
+    shape:string? -- optional, defaults to "Rectangle" but can be set to "Oval"
+)
+```
+
+```lua
+loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/BlurredGui.luau"))()
+```
+
+------
+
 ### Subtle Subtitles
 I started this project as a custom chatbox/chat display and for the v1.1 decided to turn it into a P2P chatbox who can receive and send messages from his client to another client without communicating with the server as long as the other client has the same tool running.
 

@@ -138,12 +138,12 @@ Blurred Gui is a modified version of @ImSnox's Blur Controller, adapted into a M
 BlurredGui.Init({
     PartSize -- default to 0.01
     Extra -- default to Vector3.new(0,0,0)
-	BlurSize -- default to Vector2.new(10, 10)
-	PartTransparency -- default to 1 - 1e-7
+    BlurSize -- default to Vector2.new(10, 10)
+    PartTransparency -- default to 1 - 1e-7
     FarIntensity -- default to 0
-	NearIntensity -- default to 0.25
-	FocusDistance -- default to 0.25
-	InFocusRadius -- default to 0
+    NearIntensity -- default to 0.25
+    FocusDistance -- default to 0.25
+    InFocusRadius -- default to 0
 })
 
 -- Create a blur

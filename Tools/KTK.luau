@@ -2139,13 +2139,9 @@ end
 
 function data.SetImage(Image:Instance,Name:string,Outline:boolean?)
 	local icon = type(Name) == "table" and Name or data.GetKey(Name,Outline)
-	if icon then
-		Image.ImageRectSize = Vector2.new(64,64)
-		Image.ImageRectOffset = icon.Vector
-		Image.Image = icon.Url
-	else
-		Image.Image = ""
-	end
+	Image.ImageRectSize = Vector2.new(64,64)
+	Image.ImageRectOffset = icon.Vector
+	Image.Image = icon.Url
 end
 
 return data

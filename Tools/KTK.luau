@@ -8,7 +8,7 @@
 -- You can use KTK for personal, educational, and commercial purposes
 -- Support by crediting 'Kenney' or 'www.kenney.nl' (this is not a requirement)
 
-data = {AllUseOutline = false} -- can be set to true so all icons are their outline version
+data = {AllUseOutline = false} -- can be set to true so all keys are their outline version
 
 data.All = {
 	["ControllerBatteryEmpty"] = {"rbxassetid://112473244576060", Vector2.new(0, 0)},
@@ -2139,9 +2139,13 @@ end
 
 function data.SetImage(Image:Instance,Name:string,Outline:boolean?)
 	local icon = type(Name) == "table" and Name or data.GetKey(Name,Outline)
-	Image.ImageRectSize = Vector2.new(64,64)
-	Image.ImageRectOffset = icon.Vector
-	Image.Image = icon.Url
+	if icon then
+		Image.ImageRectSize = Vector2.new(64,64)
+		Image.ImageRectOffset = icon.Vector
+		Image.Image = icon.Url
+	else
+		Image.Image = ""
+	end
 end
 
 return data

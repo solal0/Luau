@@ -113,8 +113,7 @@ function utils.toImage(base64)
 
 	image:WritePixelsBuffer(Vector2.new(0,0), Vector2.new(width,height), out)
 
-	return Content.fromObject(image),image,width,height
-	--     for Image instances,       raw    X      Y
+	return {Image = Content.fromObject(image), Raw = image, X = width, Y = height}
 end
 
 function utils.randomString()

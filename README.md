@@ -86,7 +86,7 @@ utils.decode(string)
 return string
 
 -- 2. I2B64 lua side (listed above)
-utils.base64toImage(string)
+utils.toImage(string)
 return Content.fromObject(image), image, width (number), height (number)
 
 -- 3. InfiniteYield's secure services table

@@ -55,15 +55,8 @@ end
 
 -- I2B64 (https://github.com/solal0/I2B64) by CaptainSkira
 
-function utils.base64toImage(base64)
-	local data
-
-	if utils.icons[base64] then
-		data = utils.decode(utils.icons[base64])
-	else
-		data = utils.decode(base64)
-	end
-
+function utils.toImage(base64)
+	local data = utils.decode(base64)
 	local pos = 1
 
 	local function u8()

@@ -85,7 +85,7 @@ return string
 utils.decode(string)
 return string
 
--- 2. I2B64 lua side (listed above)
+-- 2. I2B64 lua side (listed near the bottom)
 utils.toImage(string)
 return Content.fromObject(image), image, width (number), height (number)
 

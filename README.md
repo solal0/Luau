@@ -151,6 +151,9 @@ BlurredGui.New(
     frame:Frame, -- UI element to apply the blur onto
     shape:string? -- optional, defaults to "Rectangle" but can be set to "Oval"
 )
+
+-- Remove a blur
+BlurredGui.Remove(frame:Frame) -- if you delete an instance who has a blur, the blur will automatically be removed.
 ```
 
 ```lua
@@ -176,7 +179,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/head
 ------
 
 ### I2B64
-I2B64 (Image to Base64) is a python tool that converts images into a custom base64<br>and using luau allows you to recreate that image in Roblox using EditableImages
+I2B64 (Image to Base64) is a python tool that converts images into a custom base64<br>and using luau allows you to recreate that image in Roblox with EditableImages
 
 [Github](https://github.com/solal0/I2B64) [Latest](https://github.com/solal0/I2B64/releases/latest)
 

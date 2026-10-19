@@ -196,4 +196,8 @@ function utils.toBase26(x) -- ty steven454766
 	return result
 end
 
+function utils.getHttpFunction()
+	return request or http_request or (syn and syn.request) or nil
+end
+
 return utils

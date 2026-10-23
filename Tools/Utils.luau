@@ -200,4 +200,20 @@ function utils.getHttpFunction()
 	return request or http_request or (syn and syn.request) or nil
 end
 
+function utils.getInstance(path)
+	local parts = string.split(path, ".")
+	local id = parts[1]
+	local c = id == "game" and game or id:find("GetService", 1, true) and game:GetService(id:match('"([^"]+)"')) or workspace
+
+	for i = 2, #parts do
+		c = parts[i] == "LocalPlayer" and c.LocalPlayer or c:FindFirstChild(parts[i])
+		if not c then
+			--print("Failed at",parts[i])
+			return
+		end
+	end
+
+	return c
+end
+
 return utils

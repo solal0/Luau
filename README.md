@@ -194,9 +194,7 @@ Libraries
 Skira Library is a fully free and open source UI library for Roblox.
 <br>It has it's very own documentation and allows anyone to create simple uis in no time.
 
-Official: [Website](https://skira.me/lua/SkiraLibrary/) [Documentation](https://skira.me/lua/SkiraLibrary/)
-
-Github: [Website](https://skira.me/lua/SkiraLibrary/) [Documentation](https://skira.me/lua/SkiraLibrary/)
+[Website](https://skira.me/lua/SkiraLibrary/) [Documentation](https://skira.me/lua/SkiraLibrary/)
 
 ------
 

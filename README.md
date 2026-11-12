@@ -100,17 +100,25 @@ return string
 utils.getSafeGui()
 return ScreenGui
 
--- 6. A function to get the first available clipboard function
+-- 6. Get the first available clipboard function
 utils.getClipboardFunction()
 return function, name
 
--- 7. A function to find a function from a word
+-- 7. Find a function using a word
 utils.findFunction(string)
 return table (name, function)
 
--- 8. A function to convert numbers into letters with 1 being A, 26 being Z and 27 being AA
+-- 8. Convert numbers into letters with 1 being A, 26 being Z and 27 being AA
 utils.toBase26(number)
 return string
+
+-- 9. Get http function
+utils.getHttpFunction()
+return function
+
+-- 10. Get object from string path
+utils.getInstance(string) -- e.g. "game.Workspace.Baseplate"
+return Instance
 ```
 
 ```lua

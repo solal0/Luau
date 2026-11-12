@@ -126,6 +126,13 @@ function utils.randomString()
 end
 
 -- taken from Infinite Yield
+function missing(t, f, fallback)
+	if type(f) == t then return f end
+	return fallback
+end
+syn = missing("table", syn)
+gethui = missing("function", gethui or get_hidden_gui)
+syn_protect_gui = missing("function", syn and syn.protect_gui)
 local CoreGui = utils.services.CoreGui or utils.services.Players.LocalPlayer.PlayerGui
 function utils.getSafeGui()
 	local parent = nil

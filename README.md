@@ -105,7 +105,7 @@ utils.clipboard()
 return function, name
 
 -- 7. Find a function using a word
-utils.findFunction(string)
+utils.find(string)
 return table (name, function)
 
 -- 8. Convert numbers into letters with 1 being A, 26 being Z and 27 being AA

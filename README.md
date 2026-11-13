@@ -16,18 +16,18 @@ Lucide is a module that serves [lucide.dev](https://lucide.dev) icons in 64x64.
 ```lua
 -- Format:
 GetIcon (
-    Name:string -- icon's name from lucide.dev
+    string -- icon's name from lucide.dev
 ) : {
-    Url:string, -- icon's sheet rbxassetid string
-    Vector:Vector2 -- icon's coordinates on the sheet
+    string, -- spritesheet's rbxassetid
+    Vector2 -- coordinates
 }
 -- Usage:
 Lucide.GetIcon("user") -- will return { "rbxassetid://84945752309065", Vector2.new(448, 832) }
 
 -- Format:
 SetImage(
-    Image:Instance,
-    Name:string -- icon's name from lucide.dev
+    Instance,
+    string -- icon's name from lucide.dev
 )
 -- Usage:
 Lucide.SetIcon(Image,"user")
@@ -48,20 +48,20 @@ KeyToKey is a module that serves [kenney.nl](https://www.kenney.nl) icons in 64x
 ```lua
 -- Format:
 GetKey (
-    Name:string -- can be a UserInputType/KeyCode name or a specific key name from kenney.nl
-    Oultine:boolean? -- optional, will fallback to KTK.AllUseOutline if not defined
+    string -- can be a UserInputType/KeyCode name or a specific key name from kenney.nl
+    boolean? -- optional, will fallback to KTK.AllUseOutline if not defined
 ) : {
-    Url:string, -- key's sheet rbxassetid string
-    Vector:Vector2 -- key's coordinates on the sheet
+    string, -- spritesheet's rbxassetid
+    Vector2 -- key's coordinates on the sheet
 }
 -- Usage:
 KTK.GetKey("MouseButton1",true) -- will return { "rbxassetid://116958231932199", Vector2.new(640, 320) }
 
 -- Format:
 SetImage(
-    Image:Instance,
-    Name:string -- can be a UserInputType/KeyCode name or a specific key name from kenney.nl
-    Oultine:boolean? -- optional, will fallback to KTK.AllUseOutline if not defined
+    Instance,
+    string -- can be a UserInputType/KeyCode name or a specific key name from kenney.nl
+    boolean? -- optional, will fallback to KTK.AllUseOutline if not defined
 )
 -- Usage:
 KTK.SetIcon(Image,"MouseButton1",true)
@@ -156,12 +156,12 @@ BlurredGui.Init({
 
 -- Create a blur
 BlurredGui.New(
-    frame:Frame, -- UI element to apply the blur onto
-    shape:string? -- optional, defaults to "Rectangle" but can be set to "Oval"
+    Instance, -- UI element to apply the blur onto
+    string? -- optional, defaults to "Rectangle" but can be set to "Oval"
 )
 
 -- Remove a blur
-BlurredGui.Remove(frame:Frame) -- if you delete an instance who has a blur, the blur will automatically be removed.
+BlurredGui.Remove(Instance) -- if you delete an instance who has a blur, the blur will automatically be removed.
 ```
 
 ```lua

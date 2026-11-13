@@ -134,7 +134,7 @@ syn = missing("table", syn)
 gethui = missing("function", gethui or get_hidden_gui)
 syn_protect_gui = missing("function", syn and syn.protect_gui)
 local CoreGui = utils.services.CoreGui or utils.services.Players.LocalPlayer.PlayerGui
-function utils.getSafeGui()
+function utils.getGui()
 	local parent = nil
 	if gethui then
 		local Main = Instance.new("ScreenGui")
@@ -164,7 +164,7 @@ function utils.getSafeGui()
 	return parent
 end
 
-function utils.getClipboardFunction()
+function utils.clipboard()
 	for envName, env in pairs({getgenv and getgenv() or nil, _G}) do
 		for name, value in pairs(env) do
 			if type(value) == "function" and tostring(name):lower():find("clipboard", 1, true) then
@@ -175,7 +175,7 @@ function utils.getClipboardFunction()
 	return nil
 end
 
-function utils.findFunction(v)
+function utils.find(v)
 	local result = {}
 	for envName, env in pairs({getgenv and getgenv() or nil, _G}) do
 		for name, value in pairs(env) do
@@ -203,7 +203,7 @@ function utils.toBase26(x) -- ty steven454766
 	return result
 end
 
-function utils.getHttpFunction()
+function utils.request()
 	return request or http_request or (syn and syn.request) or nil
 end
 

@@ -97,11 +97,11 @@ utils.randomString()
 return string
 
 -- 5. InfiniteYield's safe gui finder
-utils.getSafeGui()
+utils.getGui()
 return ScreenGui
 
 -- 6. Get the first available clipboard function
-utils.getClipboardFunction()
+utils.clipboard()
 return function, name
 
 -- 7. Find a function using a word
@@ -113,7 +113,7 @@ utils.toBase26(number)
 return string
 
 -- 9. Get http function
-utils.getHttpFunction()
+utils.request()
 return function
 
 -- 10. Get object from string path

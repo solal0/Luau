@@ -22,7 +22,7 @@ Most elements share these settings:
 | Setting | Description | Value |
 | --- | --- | --- |
 | `Name` | Element's name, passed as the first argument | `string` |
-| `Settings.Command` | Adds a command to the Command Box | `{Name = string, Info = string?}` |
+| `Settings.Command` | Adds a command to the Command Box | `{string, string?}` |
 | `Settings.Inform` | Displays information below the tabs when selected | `string` |
 | `Settings.Function` | Callback used by the element | `function` |
 
@@ -33,7 +33,7 @@ The Command Box executes commands without navigating through the menu. Press `KE
 
 Commands are created with `Settings.Command`:
 ```lua
-tab.NewAction("Hello",{Command = {Name = "hello",Info = "Prints Hello, World!"},Function = function() print("Hello, World!") end})
+tab.NewAction("Hello",{Command = {"hello","Prints Hello, World!"},Function = function() print("Hello, World!") end})
 ```
 
 | Feature | Description |
@@ -128,7 +128,7 @@ Setting's Table:
 | `Display` | Displays text on the right | `string` |
 | `Clipboard` | Copies text to the clipboard | `string` |
 | `Function` | Called when activated, including when `Link` or `Clipboard` is set | `function` |
-| `Command` | Adds a command to the Command Box | `{Name = string, Info = string?}` |
+| `Settings.Command` | Adds a command to the Command Box | `{string, string?}` |
 | `Inform` | Shows information when selected | `string` |
 
 `Clipboard` takes priority over `Link`. The link icon takes priority over `Display`.
@@ -160,7 +160,7 @@ Setting's Table:
 | --- | --- | --- |
 | `Default` | Initial state, false by default | `boolean` |
 | `Function` | Called with the current toggle state | `function` |
-| `Command` | Adds a command to the Command Box | `{Name = string, Info = string?}` |
+| `Settings.Command` | Adds a command to the Command Box | `{string, string?}` |
 | `Inform` | Shows information when selected | `string` |
 
 The Command Box accepts `on`, `off`, `true`, and `false`.
@@ -169,7 +169,7 @@ Return: `nil`
 
 Example:
 ```lua
-tab.NewToggle("Enabled",{Default = false,Command = {Name = "enabled"},Function = function(state) print(state) end})
+tab.NewToggle("Enabled",{Default = false,Command = {"enabled"},Function = function(state) print(state) end})
 ```
 
 ### 2.4 NewValue
@@ -189,7 +189,7 @@ Setting's Table:
 | `Default` | Initial value, defaults to the minimum | `number` |
 | `Speed` | Amount added or subtracted using arrow keys | `number` |
 | `Function` | Called with the current value on interaction | `function` |
-| `Command` | Adds a command to the Command Box | `{Name = string, Info = string?}` |
+| `Settings.Command` | Adds a command to the Command Box | `{string, string?}` |
 | `Inform` | Shows information when selected | `string` |
 
 If `Speed` is omitted, it is determined from the default value's decimal precision. Arrow-key adjustments wrap around the range.
@@ -203,7 +203,7 @@ Return:
 
 Example:
 ```lua
-local speed = tab.NewValue("Speed",0,100,{Default = 25,Speed = 5,Command = {Name = "speed"},Function = function(value) print(value) end})
+local speed = tab.NewValue("Speed",0,100,{Default = 25,Speed = 5,Command = {"speed"},Function = function(value) print(value) end})
 speed.setValue(50)
 ```
 
@@ -256,7 +256,7 @@ Setting's Table:
 | --- | --- | --- |
 | `Default` | Initially selected option, defaults to the first entry | `string` |
 | `Function` | Called with the selected index and value | `function` |
-| `Command` | Adds a command to the Command Box | `{Name = string, Info = string?}` |
+| `Settings.Command` | Adds a command to the Command Box | `{string, string?}` |
 | `Inform` | Shows information when selected | `string` |
 
 Use a sequential list of strings. `Default` must match an entry in the list. Selection wraps around at either end.
@@ -282,7 +282,7 @@ Setting's Table:
 | --- | --- | --- |
 | `Default` | Initial text, empty by default | `string` |
 | `Function` | Called with the updated text | `function` |
-| `Command` | Adds a command to the Command Box | `{Name = string, Info = string?}` |
+| `Settings.Command` | Adds a command to the Command Box | `{string, string?}` |
 | `Inform` | Shows information when selected | `string` |
 
 Press Enter on the element to open the Command Box with its command filled in. A command is automatically created from the element name if omitted.
@@ -313,20 +313,20 @@ Setting's Table:
 | `Id` | Identifier for the key in `stand.Keys` | `string` |
 | `Key` | Initial key, defaults to `Enum.KeyCode.None` | `EnumItem` |
 | `Function` | Function associated with the keybind | `function` |
-| `Command` | Adds a command to the Command Box | `{Name = string, Info = string?}` |
+| `Settings.Command` | Adds a command to the Command Box | `{string, string?}` |
 | `Inform` | Shows information when selected | `string` |
 
 Supports `Enum.KeyCode` and `Enum.UserInputType`. Press Enter to open the Command Box and enter a new key name.
 
 Return:
 ```lua
-.setText(string) -- Attempts to assign a key using its enum name
+.setKey(string) -- Attempts to assign a key using its enum name
 ```
 
 Example:
 ```lua
 local key = tab.NewKey("Menu Key",{Id = "KEY_TOGGLE",Key = Enum.KeyCode.F4,Function = function() print("Pressed") end})
-key.setText("F5")
+key.setKey("F5")
 ```
 
 ### 2.9 NewSeparator
@@ -467,7 +467,7 @@ stand.Prompt("Confirmation","Reset settings?",3,function(index) print(index) end
 
 ### 5.1 Default Element
 ```lua
-tab.NewAction("I'm a name",{Function = function() print("Hello, World!") end,Inform = "This option will print 'Hello, World!'",Command = {Name = "print",Info = "Prints Hello, World!"}})
+tab.NewAction("I'm a name",{Function = function() print("Hello, World!") end,Inform = "This option will print 'Hello, World!'",Command = {"print","Prints Hello, World!"}})
 ```
 
 ### 5.2 Multiple Tabs
@@ -488,8 +488,8 @@ advanced.NewSelector("Mode",{"Normal","Fast","Slow"},{Function = function(index,
 
 ### 5.4 Commands
 ```lua
-tab.NewToggle("Godmode",{Command = {Name = "godmode",Info = "Toggle godmode"},Function = function(state) print(state) end})
-tab.NewValue("Speed",0,100,{Default = 25,Command = {Name = "speed"},Function = function(value) print(value) end})
+tab.NewToggle("Godmode",{Command = {"godmode","Toggle godmode"},Function = function(state) print(state) end})
+tab.NewValue("Speed",0,100,{Default = 25,Command = {"speed"},Function = function(value) print(value) end})
 ```
 
 Command Box usage:
@@ -511,7 +511,7 @@ color.setHex("00FF00")
 ### 5.6 Keybinds
 ```lua
 local key = tab.NewKey("Toggle Key",{Id = "KEY_TOGGLE",Key = Enum.KeyCode.F4})
-key.setText("F5")
+key.setKey("F5")
 print(stand.Keys.KEY_TOGGLE)
 ```
 

@@ -1,12 +1,8 @@
 -- Stand UI v1 by @CaptainSkira (https://github.com/solal0)
 
---[[ TODO:
-- ADD COMMANDS AND NOTIFICATIONS BUT COMMANDS FIRST !!!!!!!!!!!!!!!!!!!! -- It's done, shush
-- finish NewKey, fix separator not triggering next option -- done
-- fix options not being correctly selected when entering a category -- done
-- add blur and add Keybinds display with KTK
-]]--
-
+-- TODO: ADD COMMANDS AND NOTIFICATIONS BUT COMMANDS FIRST !!!!!!!!!!!!!!!!!!!! -- It's done, shush
+-- TODO: finish NewKey, fix separator not triggering next option -- done
+-- TODO: fix options not being correctly selected when entering a category -- done
 
 -- tables
 blocked = {}
@@ -16,9 +12,9 @@ ui = {Tabs = {},Keys = {},KeyCalls = {}}
 
 
 -- dependencies
-ui.Utils = loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/Utils.luau"))()
-ui.Blur = loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/BlurredGui.luau"))()
-ui.KeyToKey = loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/KTK.luau"))()
+ui.Utils = require(script.Utils) -- loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/Utils.luau"))()
+ui.Blur = require(script.BlurredGui).Init() -- loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/BlurredGui.luau"))()
+ui.KeyToKey = require(script.KeyToKey) -- loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/KTK.luau"))()
 ui.Icons = {
 	Icons = {
 		["Search"] = {"rbxassetid://131150936834233",Vector2.new(256,256),Vector2.new(0,0)},
@@ -154,7 +150,6 @@ ui.Keys.KEY_TOGGLE = Enum.KeyCode.F4
 -- services
 CAS = ui.Utils.services.ContextActionService
 UIS = ui.Utils.services.UserInputService
-AS = ui.Utils.services.AssetService
 
 
 -- functions
@@ -162,6 +157,11 @@ function sCall(v,...)
 	if v and type(v) == "function" then
 		return v(...)
 	end
+end
+function fatal(err)
+	Prompt("StandUI - Error",err.."\n\nWould you like to Unload StandUI ?",3,function(v)if v == 1 then ui.unload() end end)
+	warn("[StandUI]",err)
+	coroutine.yield()
 end
 
 function setProperty(a,b,c)
@@ -209,10 +209,12 @@ function setActive(i,v) -- doesn't use setColor cuz it would create too many con
 		setProperty(i,ui.TRANSPARENCY_THEME,"BackgroundTransparency")
 		setProperty(i,ui.COLOR_THEME,"BackgroundColor3")
 		--i.BackgroundColor3 = ui.COLOR_THEME.Value
+		ui.Blur.Remove(i)
 	else
 		setProperty(i,ui.TRANSPARENCY,"BackgroundTransparency")
 		setProperty(i,ui.COLOR_BACKGROUND,"BackgroundColor3")
 		--i.BackgroundColor3 = ui.COLOR_BACKGROUND.Value
+		ui.Blur.New(i)
 	end
 end
 
@@ -372,7 +374,19 @@ function combine(a,b)
 	return b
 end
 
+function getInfo()
+	local source,i,highest = debug.info(1,"s"),2,1
+	while debug.info(i,"f") do
+		if debug.info(i,"s") ~= source then break end
+		highest = i
+		i += 1
+	end
+	local last = 4 < highest and debug.info(3,"n")
+	return debug.info(highest,"n"),debug.info(highest+1,"l"),debug.info(highest+1,"s"),last
+end
+
 function GetCommandName(Name)
+	if type(Name) ~= "string" then fatal(`Expected a string but got {Name} ({typeof(Name)})`) end
 	Name = string.lower(Name):gsub(" ", "")
 	local count = 1
 	for i,v in pairs(commands) do -- see if name is already taken and how many times
@@ -384,6 +398,7 @@ function GetCommandName(Name)
 end
 
 function NewCommand(Name,Function,Text,Type)
+	CheckArguments({{Name,"string"},{Function,"function"},{Text,"string",0},{Type,"string"}})
 	local name,count = GetCommandName(Name)
 	table.insert(commands,{OGName = Name, Name = name..(count > 1 and count or ""), Call = Function, Info = Text and " - "..Text or "", Type = Type})
 	return table.maxn(commands)
@@ -405,7 +420,7 @@ function NewOption(obj,Name,Settings)
 	local info,cmdInfo,command
 	if Settings then
 		if Settings.Command then
-			local index = NewCommand(Settings.Command.Name,Settings.Call,Settings.Command.Info,Settings.Type)
+			local index = NewCommand(Settings.Command[1],Settings.Call,Settings.Command[2],Settings.Type)
 			command = commands[index]
 		end
 
@@ -439,6 +454,25 @@ function NewOption(obj,Name,Settings)
 	end
 
 	return option,tab,i,Settings
+end
+
+function CheckArguments(def,sttg)
+	local from,at,source,from2 = getInfo()
+	if def then
+		for i,v in pairs(def) do
+			if not v[1] and not v[3] or v[1] and typeof(v[1]) ~= v[2] then
+				fatal(`{source}:{at}:[{from}]{from2 and `[{from2}]` or ""} invalid argument #{i} (expected {v[2]}, got {typeof(v[1])})`)
+			end
+		end
+	end
+	if sttg then
+		for i,v in pairs(sttg) do
+			if v[1] ~= nil and typeof(v[1]) ~= v[2] then
+				fatal(`{source}:{at}:[{from}] invalid argument #{i} in settings (expected {v[2]}, got {typeof(v[1])})`)
+			end
+		end
+	end
+	return true
 end
 
 
@@ -571,6 +605,7 @@ function CommandBox(command)
 			end
 			wait()
 			exit()
+			Notify("Command executed successfully! :)")
 		elseif i.KeyCode == ui.Keys.KEY_ESCAPE then
 			exit()
 		elseif i.KeyCode == ui.Keys.KEY_AUTOFILL then
@@ -590,27 +625,27 @@ function Inform(Text:string)
 	
 	local tabs = ui.Main.Tabs
 	local b26 = ui.Utils.toBase26
-	local name = b26(#tabs:GetChildren())
+	local count = #tabs:GetChildren()
 
-	local infoList = tabs:FindFirstChild(b26(#tabs:GetChildren()-1)) -- ignore UIListLayout
-	if infoList and not infoList:IsA("ScrollingFrame") then
+	local infoList = tabs:FindFirstChildOfClass("ScrollingFrame")
+	if not infoList then
 		infoList = new("ScrollingFrame",tabs)
 		infoList.Size = UDim2.new(1,0,1,0)
 		infoList.ClipsDescendants = false
+		infoList.Name = b26(count)
 		infoList.Transparency = 1
-		infoList.Name = name
 
 		local list = new("UIListLayout",infoList)
 		list.HorizontalAlignment = Enum.HorizontalAlignment.Right
 		list.Padding = UDim.new(0,ui.SIZE_GAP)
 
 		local separator = new("Frame",infoList)
-		separator.Name = b26(#infoList:GetChildren())
 		separator.Size = UDim2.new(1,0,0,0)
+		separator.Name = b26(count)
 
 		tabs.ChildAdded:Connect(function()
-			name = b26(#tabs:GetChildren())
-			infoList.Name = name
+			count = #tabs:GetChildren()
+			infoList.Name = b26(count)
 		end)
 	end
 
@@ -619,8 +654,8 @@ function Inform(Text:string)
 	info.Position = UDim2.new(0,ui.SIZE_INFORMATION_X-ui.SIZE_TAB_X,0,0)
 	setProperty(info,ui.TRANSPARENCY,"BackgroundTransparency")
 	setProperty(info,ui.COLOR_BACKGROUND,"BackgroundColor3")
-	info.Name = b26(#infoList:GetChildren() - 1)
 	info.Interactable = false
+	info.Name = b26(count-1)
 	info.Text = Text
 	
 	local fix = new("Frame",info)
@@ -714,29 +749,6 @@ function Notify(Text:string,Length:number?)
 	end)
 end
 
-function CheckArguments(def,sttg)
-	local source = debug.info(2,"s")
-	local from = debug.info(2,"n")
-	local at = debug.info(3,"l")
-	if def then
-		for i,v in pairs(def) do
-			if not v[1] and not v[3] or typeof(v[1]) ~= v[2] then
-				warn(`{source}:{at}:[{from}] invalid argument #{i} in settings (expected {v[2]}, got {typeof(v[1])})`)
-				return false
-			end
-		end
-	end
-	if sttg then
-		for i,v in pairs(sttg) do
-			if v[1] ~= nil and typeof(v[1]) ~= v[2] then
-				warn(`{source}:{at}:[{from}] invalid argument #{i} in settings (expected {v[2]}, got {typeof(v[1])})`)
-				return false
-			end
-		end
-	end
-	return true
-end
-
 function Prompt(Title:string,Text:string,Type:number?,Function:()->number?)
 	if not CheckArguments({{Title,"string"},{Text,"string"},{Type,"number",0},{Function,"function",0}}) then return end
 
@@ -801,7 +813,7 @@ function NewText(obj,Name:string,Settings:{Default:string?,Function:()->()?,Info
 
 	-- vars
 	local text = Settings.Default or ""
-	local command = Settings.Command and GetCommandName(Settings.Command.Name) or GetCommandName(Name)
+	local command = Settings.Command and GetCommandName(Settings.Command[1]) or GetCommandName(Name)
 	
 	-- functions
 	local function update(v)
@@ -813,7 +825,7 @@ function NewText(obj,Name:string,Settings:{Default:string?,Function:()->()?,Info
 	end
 	
 	-- data
-	local data = {Inform = Settings.Inform, Command = Settings.Command or {Name = Name}, Type = "Text", Call = function(a)
+	local data = {Inform = Settings.Inform, Command = Settings.Command or {Name}, Type = "Text", Call = function(a)
 		if a then
 			update(a)
 		else
@@ -1045,7 +1057,7 @@ function NewColor(obj,Name:string,Settings:{Id:string?,Default:Color3?,Function:
 	Settings = Settings or {}
 	if not CheckArguments({{Name,"string"}},{{Settings.Id,"string"},{Settings.Default,"color3"},{Settings.Function,"function"},{Settings.Inform,"string"},{Settings.Command,"table"}}) then return end
 	
-	local command = Settings.Command and GetCommandName(Settings.Command.Name) or GetCommandName(Name)
+	local command = Settings.Command and GetCommandName(Settings.Command[1]) or GetCommandName(Name)
 	local c = Settings.Id and ui[Settings.Id] and ui[Settings.Id].Value or Settings.Default or Color3.new(0,0,0)
 	local display,current
 	local values = {}
@@ -1080,7 +1092,7 @@ function NewColor(obj,Name:string,Settings:{Id:string?,Default:Color3?,Function:
 		local component = ({"R","G","B"})[i]
 		values[i] = cat.NewValue(v,0,255,{
 			Default = math.round(c[component]*255),
-			Command = {Name = command..component},
+			Command = {command..component},
 			Function = function(value)
 				local r,g,b = math.round(c.R*255),math.round(c.G*255),math.round(c.B*255)
 				if i == 1 then r = value elseif i == 2 then g = value else b = value end
@@ -1091,7 +1103,7 @@ function NewColor(obj,Name:string,Settings:{Id:string?,Default:Color3?,Function:
 	cat.NewSeparator("Other")
 	cat.NewText("Enter Hex Color",{
 		Inform = "Enter a six-digit hexadecimal color.",
-		Command = {Name = Name, Info = "Enter a six-digit hexadecimal color."},
+		Command = {command,"Enter a six-digit hexadecimal color."},
 		Function = function(v) if v then fromHex(v) end end
 	})
 	_,display = cat.NewAction("Current Color (Hex)",{Display = string.upper(c:ToHex()),Clipboard = string.upper(c:ToHex())})
@@ -1241,22 +1253,22 @@ function NewKey(obj,Name:string,Id:string,Settings:{Key:EnumItem?,Function:()->(
 	local option,tab,i,label
 
 	-- vars
-	local command = Settings.Command and GetCommandName(Settings.Command.Name) or GetCommandName(Name)
-	ui.Keys[Settings.Id] = Settings.Key or ui.Keys[Settings.Id] or Enum.KeyCode.None
+	local command = Settings.Command and GetCommandName(Settings.Command[1]) or GetCommandName(Name)
+	ui.Keys[Id] = Settings.Key or ui.Keys[Id] or Enum.KeyCode.None
 	
 	-- functions
 	local function update(v)
-		local last = ui.Keys[Settings.Id]
-		ui.Keys[Settings.Id] = Enum.KeyCode:FromName(v) or Enum.UserInputType:FromName(v) or ui.Keys[Settings.Id]
-		if ui.Keys[Settings.Id] ~= last then
-			label.Text = ui.Keys[Settings.Id].Name.." "
+		local last = ui.Keys[Id]
+		ui.Keys[Id] = Enum.KeyCode:FromName(v) or Enum.UserInputType:FromName(v) or ui.Keys[Id]
+		if ui.Keys[Id] ~= last then
+			label.Text = ui.Keys[Id].Name.." "
 		end
 	end
 	
-	table.insert(ui.KeyCalls,{Key = ui.Keys[Settings.Id],Call = Settings.Function or function()end})
+	table.insert(ui.KeyCalls,{Key = ui.Keys[Id],Call = Settings.Function or function()end})
 
 	-- data
-	local data = {Inform = Settings.Inform, Command = Settings.Command or {Name = Name}, Type = "Key", Call = function(a)
+	local data = {Inform = Settings.Inform, Command = Settings.Command or {Name}, Type = "Key", Call = function(a)
 		if a then
 			update(a)
 		else
@@ -1270,7 +1282,7 @@ function NewKey(obj,Name:string,Id:string,Settings:{Key:EnumItem?,Function:()->(
 	label.TextXAlignment = Enum.TextXAlignment.Right
 	label.Size = UDim2.new(1,0,0,ui.SIZE_OPTION_Y)
 	label.BackgroundTransparency = 1
-	label.Text = ui.Keys[Settings.Id].Name.." "
+	label.Text = ui.Keys[Id].Name.." "
 
 	-- finalize
 	data.Index = i
@@ -1375,8 +1387,8 @@ function NewCategory(obj,Name:string)
 		NewColor = function(Name:string,Settings:{Default:Color3?,Function:()->()?,Inform:string?,Command:{Name:string,Info:string?}?}?)
 			return NewColor(tabObj.Categories[catI],Name,Settings)
 		end,
-		NewKey = function(Name:string,Settings:{Id:string,Key:EnumItem?,Function:()->()?,Inform:string?,Command:{Name:string,Info:string?}?})
-			return NewKey(tabObj.Categories[catI],Name,Settings)
+		NewKey = function(Name:string,Id:string,Settings:{Key:EnumItem?,Function:()->()?,Inform:string?,Command:{Name:string,Info:string?}?})
+			return NewKey(tabObj.Categories[catI],Name,Id,Settings)
 		end,
 		NewText = function(Name:string,Settings:{Default:string?,Function:()->()?,Inform:string?,Command:{Name:string,Info:string?}?}?)
 			return NewText(tabObj.Categories[catI],Name,Settings)
@@ -1472,8 +1484,8 @@ function NewTab(Name:string)
 		NewColor = function(Name:string,Settings:{Default:Color3?,Function:()->()?,Inform:string?,Command:{Name:string,Info:string?}?}?)
 			return NewColor(ui.Tabs[index],Name,Settings)
 		end,
-		NewKey = function(Name:string,Settings:{Id:string,Key:EnumItem?,Function:()->()?,Inform:string?,Command:{Name:string,Info:string?}?})
-			return NewKey(ui.Tabs[index],Name,Settings)
+		NewKey = function(Name:string,Id:string,Settings:{Key:EnumItem?,Function:()->()?,Inform:string?,Command:{Name:string,Info:string?}?})
+			return NewKey(ui.Tabs[index],Name,Id,Settings)
 		end,
 		NewText = function(Name:string,Settings:{Default:string?,Function:()->()?,Inform:string?,Command:{Name:string,Info:string?}?}?)
 			return NewText(ui.Tabs[index],Name,Settings)
@@ -1564,7 +1576,7 @@ tabs.BackgroundTransparency = 1
 tabs.ClipsDescendants = false
 tabs.Name = "Tabs"
 
-new("UIListLayout",tabs)
+new("UIListLayout",tabs).SortOrder = Enum.SortOrder.Name
 
 local content = new("Frame",main)
 content.Position += UDim2.new(0,ui.SIZE_TAB_X+ui.SIZE_GAP,0,ui.SIZE_BAR_Y+ui.SIZE_GAP)
@@ -1576,6 +1588,7 @@ ui.Bar = bar
 ui.Main = main
 ui.Open = true
 ui.BackingUpAtRoot = 0
+ui.Connections = connections
 block({ui.Keys.KEY_ENTER,ui.Keys.KEY_UP,ui.Keys.KEY_DOWN,ui.Keys.KEY_LEFT,ui.Keys.KEY_RIGHT,ui.Keys.KEY_TAB_UP,ui.Keys.KEY_TAB_DOWN,ui.Keys.KEY_TOGGLE})
 
 local LEFT_DOWN = false
@@ -1584,6 +1597,7 @@ local RIGHT_DOWN = false
 connections.InputBegan = UIS.InputBegan:Connect(function(i,gp)
 	if ui.CommandBox then return end
 	
+	gp = gp or UIS:GetFocusedTextBox() and true or false
 	local k = i.KeyCode.Name ~= "None" and i.KeyCode or i.UserInputType.Name ~= "None" and i.UserInputType
 	
 	for i,v in pairs(ui.KeyCalls) do

@@ -1077,7 +1077,6 @@ function NewColor(obj,Name:string,Settings:{Id:string?,Default:Color3?,Function:
 	end
 
 	local function fromHex(hex)
-		if not CheckArguments(Name..".SetHex",{Hex = hex},{Hex = {Required = true,Type = "string"}}) then return end
 		hex = hex:gsub("^#","")
 		if not hex:match("^%x%x%x%x%x%x$") then
 			warn(Name..".SetHex.Hex is invalid: expected a hexadecimal color (RRGGBB), got "..tostring(hex)..".")
@@ -1498,9 +1497,9 @@ ui.Title = ` StandUI ({VERSION})`
 ui.StandUI = VERSION
 
 ui.Headers = {
-	["Roblox Admin Tools"] = ui.Utils.toImage(require(script.Headers["Roblox Admin Tools"])),
-	["Stand Minimalist"] = ui.Utils.toImage(require(script.Headers["Stand Minimalist"])),
-	["Stand Nature"] = ui.Utils.toImage(require(script.Headers["Stand Nature"]))
+	["Roblox Admin Tools"] = ui.Utils.toImage(loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Libraries/StandUI/Headers/RAT.lua"))()),
+	["Stand Minimalist"] = ui.Utils.toImage(loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Libraries/StandUI/Headers/SM.lua"))()),
+	["Stand Nature"] = ui.Utils.toImage(loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Libraries/StandUI/Headers/SN.lua"))())
 }
 
 local folder = Instance.new("Folder",ui.Gui)

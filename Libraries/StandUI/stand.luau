@@ -1,8 +1,12 @@
 -- Stand UI v1 by @CaptainSkira (https://github.com/solal0)
 
--- TODO: ADD COMMANDS AND NOTIFICATIONS BUT COMMANDS FIRST !!!!!!!!!!!!!!!!!!!! -- It's done, shush
--- TODO: finish NewKey, fix separator not triggering next option -- done
--- TODO: fix options not being correctly selected when entering a category -- done
+--[[ TODO:
+- ADD COMMANDS AND NOTIFICATIONS BUT COMMANDS FIRST !!!!!!!!!!!!!!!!!!!! -- It's done, shush
+- finish NewKey, fix separator not triggering next option -- done
+- fix options not being correctly selected when entering a category -- done
+- add blur and add Keybinds display with KTK
+]]--
+
 
 -- tables
 blocked = {}
@@ -12,9 +16,9 @@ ui = {Tabs = {},Keys = {},KeyCalls = {}}
 
 
 -- dependencies
-ui.Utils = require(script.Utils) -- loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/Utils.luau"))()
-ui.Blur = require(script.BlurredGui).Init() -- loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/BlurredGui.luau"))()
-ui.KeyToKey = require(script.KeyToKey) -- loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/KTK.luau"))()
+ui.Utils = loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/Utils.luau"))()
+ui.Blur = loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/BlurredGui.luau"))()
+ui.KeyToKey = loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/KTK.luau"))()
 ui.Icons = {
 	Icons = {
 		["Search"] = {"rbxassetid://131150936834233",Vector2.new(256,256),Vector2.new(0,0)},

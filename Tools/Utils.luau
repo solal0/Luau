@@ -107,12 +107,9 @@ function utils.toImage(base64)
 		error("I2B64: image data ended before all pixels were decoded")
 	end
 
-	local image = game:GetService("AssetService"):CreateEditableImage({
-		Size = Vector2.new(width,height)
-	})
-
+	local image = game:GetService("AssetService"):CreateEditableImage({Size = Vector2.new(width,height)})
 	image:WritePixelsBuffer(Vector2.new(0,0), Vector2.new(width,height), out)
-
+	
 	return {Image = Content.fromObject(image), Raw = image, X = width, Y = height}
 end
 
@@ -205,6 +202,16 @@ end
 
 function utils.request()
 	return request or http_request or (syn and syn.request) or nil
+end
+
+function utils.openurl()
+	--[[local s,r = pcall(function() return game:GetService("LinkingService") end)
+	if s then return r.OpenUrl end]]-- this just gives an error because of RobloxScriptSecurity (I think) and idk how to spoof that
+	for _,env in pairs({getgenv and getgenv() or {},_G}) do
+		for _,name in ipairs({"openbrowser","openBrowser","openurl","openUrl","open_url","openlink","openLink","OpenBrowser"}) do
+			if type(env[name]) == "function" then return env[name] end
+		end
+	end
 end
 
 function utils.getInstance(path)

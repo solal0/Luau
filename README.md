@@ -116,6 +116,10 @@ return string
 utils.request()
 return function
 
+-- 10. Tries to get a working url opener function.
+utils.openurl()
+return function
+
 -- 10. Get object from string path
 utils.getInstance(string) -- e.g. "game.Workspace.Baseplate"
 return Instance

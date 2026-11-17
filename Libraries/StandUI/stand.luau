@@ -11,10 +11,22 @@ connections = {}
 ui = {Tabs = {},Keys = {},KeyCalls = {}}
 
 
+-- temporary
+function fetch(url)
+	local ok,source = pcall(game.HttpGet,game,url)
+	assert(ok,"HTTP failed: "..tostring(source))
+	local fn,err = loadstring(source)
+	assert(fn,"Compile failed: "..tostring(err))
+	local success,result = xpcall(fn,debug.traceback)
+	assert(success,"Runtime failed: "..tostring(result))
+	return result
+end
+
+
 -- dependencies
-ui.Utils = loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/Utils.luau"))()
-ui.Blur = loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/BlurredGui.luau"))()
-ui.KeyToKey = loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/KTK.luau"))()
+ui.Utils = fetch("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/Utils.luau")
+ui.Blur = fetch("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/BlurredGui.luau")
+ui.KeyToKey = fetch("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/KTK.luau")
 ui.Icons = {
 	Icons = {
 		["Search"] = {"rbxassetid://131150936834233",Vector2.new(256,256),Vector2.new(0,0)},
@@ -1264,7 +1276,7 @@ function NewKey(obj,Name:string,Id:string,Settings:{Key:EnumItem?,Function:()->(
 		end
 	end
 	
-	table.insert(ui.KeyCalls,{Key = ui.Keys[Id],Call = Settings.Function or function()end})
+	table.insert(ui.KeyCalls,{Id = Id,Call = Settings.Function or function()end})
 
 	-- data
 	local data = {Inform = Settings.Inform, Command = Settings.Command or {Name}, Type = "Key", Call = function(a)
@@ -1497,9 +1509,9 @@ ui.Title = ` StandUI ({VERSION})`
 ui.StandUI = VERSION
 
 ui.Headers = {
-	["Roblox Admin Tools"] = ui.Utils.toImage(loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Libraries/StandUI/Headers/RAT.lua"))()),
-	["Stand Minimalist"] = ui.Utils.toImage(loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Libraries/StandUI/Headers/SM.lua"))()),
-	["Stand Nature"] = ui.Utils.toImage(loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Libraries/StandUI/Headers/SN.lua"))())
+	["Roblox Admin Tools"] = ui.Utils.toImage(fetch("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Libraries/StandUI/Headers/RAT.lua")),
+	["Stand Minimalist"] = ui.Utils.toImage(fetch("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Libraries/StandUI/Headers/SM.lua")),
+	["Stand Nature"] = ui.Utils.toImage(fetch("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Libraries/StandUI/Headers/SN.lua")),
 }
 
 local folder = Instance.new("Folder",ui.Gui)
@@ -1600,9 +1612,7 @@ connections.InputBegan = UIS.InputBegan:Connect(function(i,gp)
 	local k = i.KeyCode.Name ~= "None" and i.KeyCode or i.UserInputType.Name ~= "None" and i.UserInputType
 	
 	for i,v in pairs(ui.KeyCalls) do
-		if k == v.Key then
-			sCall(v.Call,gp)
-		end
+		if k == ui.Keys[v.Id] then sCall(v.Call,gp) end
 	end
 
 	if ui.Open then

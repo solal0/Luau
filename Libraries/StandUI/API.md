@@ -436,7 +436,8 @@ Displays a prompt with optional buttons.
 | `0` | None |
 | `1` | OK |
 | `2` | OK, CANCEL |
-| `3` | YES, NO, CANCEL |
+| `2` | YES, NO |
+| `4` | YES, NO, CANCEL |
 
 The callback receives the selected button's index, starting at 1.
 

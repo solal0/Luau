@@ -11,22 +11,10 @@ connections = {}
 ui = {Tabs = {},Keys = {},KeyCalls = {}}
 
 
--- temporary
-function fetch(url)
-	local ok,source = pcall(game.HttpGet,game,url)
-	assert(ok,"HTTP failed: "..tostring(source))
-	local fn,err = loadstring(source)
-	assert(fn,"Compile failed: "..tostring(err))
-	local success,result = xpcall(fn,debug.traceback)
-	assert(success,"Runtime failed: "..tostring(result))
-	return result
-end
-
-
 -- dependencies
-ui.Utils = fetch("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/Utils.luau")
-ui.Blur = fetch("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/BlurredGui.luau")
-ui.KeyToKey = fetch("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/KTK.luau")
+ui.Utils = require(script.Utils) -- loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/Utils.luau"))())
+ui.Blur = require(script.BlurredGui).Init() -- loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/BlurredGui.luau"))())
+ui.KeyToKey = require(script.KeyToKey) -- loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Tools/KTK.luau"))())
 ui.Icons = {
 	Icons = {
 		["Search"] = {"rbxassetid://131150936834233",Vector2.new(256,256),Vector2.new(0,0)},
@@ -254,7 +242,7 @@ function setOption(tab,index,fromInteraction) -- any tab, index
 		setActive(tab.CurrentOption.Instance)
 		sCall(tab.CurrentOption.Unselect)
 	end
-	
+
 	if realTab then
 		if realTab.ActiveOption then
 			--setActive(realTab.ActiveOption.Instance)
@@ -262,7 +250,7 @@ function setOption(tab,index,fromInteraction) -- any tab, index
 		end
 		realTab.ActiveOption = option -- on definie ActiveOption pour que quand la category/tab est entré/sortie, le script sait quel etait la derniere option active
 	end
-	
+
 	if not sCall(option.Select) then
 		setActive(option.Instance,true)
 		tab.CurrentOption = option
@@ -634,7 +622,7 @@ end
 
 function Inform(Text:string)
 	if not CheckArguments({{Text,"string"}}) then return end
-	
+
 	local tabs = ui.Main.Tabs
 	local b26 = ui.Utils.toBase26
 	local count = #tabs:GetChildren()
@@ -669,7 +657,7 @@ function Inform(Text:string)
 	info.Interactable = false
 	info.Name = b26(count-1)
 	info.Text = Text
-	
+
 	local fix = new("Frame",info)
 	setProperty(fix,ui.TRANSPARENCY,"BackgroundTransparency")
 	setProperty(fix,ui.COLOR_BACKGROUND,"BackgroundColor3")
@@ -790,7 +778,7 @@ function Prompt(Title:string,Text:string,Type:number?,Function:()->number?)
 	local height = content.TextBounds.Y
 	container.Size = UDim2.new(1,0,0,height+8)
 	content.Size = UDim2.new(1,-8,0,height)
-	
+
 	local clearem = {}
 	if Type and Type > 0 then
 		Type = ({{"OK"},{"OK","CANCEL"},{"YES","NO"},{"YES","NO","CANCEL"}})[Type]
@@ -811,7 +799,7 @@ function Prompt(Title:string,Text:string,Type:number?,Function:()->number?)
 			table.insert(clearem,index)
 		end
 	end
-	
+
 	header.Position = UDim2.new(.5,-ui.SIZE_BAR_X/2,.5,-(ui.SIZE_BAR_Y+ui.SIZE_GAP+height+8)/2)
 
 	return header
@@ -826,7 +814,7 @@ function NewText(obj,Name:string,Settings:{Default:string?,Function:()->()?,Info
 	-- vars
 	local text = Settings.Default or ""
 	local command = Settings.Command and GetCommandName(Settings.Command[1]) or GetCommandName(Name)
-	
+
 	-- functions
 	local function update(v)
 		text = v
@@ -835,7 +823,7 @@ function NewText(obj,Name:string,Settings:{Default:string?,Function:()->()?,Info
 			Settings.Function(v)
 		end
 	end
-	
+
 	-- data
 	local data = {Inform = Settings.Inform, Command = Settings.Command or {Name}, Type = "Text", Call = function(a)
 		if a then
@@ -862,7 +850,7 @@ function NewText(obj,Name:string,Settings:{Default:string?,Function:()->()?,Info
 	if not tab.CurrentOption then
 		setOption(tab,i)
 	end
-	
+
 	return {setText = update}
 end
 
@@ -1068,7 +1056,7 @@ end
 function NewColor(obj,Name:string,Settings:{Id:string?,Default:Color3?,Function:((Color3)->())?,Inform:string?,Command:{Name:string,Info:string?}?}?)
 	Settings = Settings or {}
 	if not CheckArguments({{Name,"string"}},{{Settings.Id,"string"},{Settings.Default,"color3"},{Settings.Function,"function"},{Settings.Inform,"string"},{Settings.Command,"table"}}) then return end
-	
+
 	local command = Settings.Command and GetCommandName(Settings.Command[1]) or GetCommandName(Name)
 	local c = Settings.Id and ui[Settings.Id] and ui[Settings.Id].Value or Settings.Default or Color3.new(0,0,0)
 	local display,current
@@ -1266,7 +1254,7 @@ function NewKey(obj,Name:string,Id:string,Settings:{Key:EnumItem?,Function:()->(
 	-- vars
 	local command = Settings.Command and GetCommandName(Settings.Command[1]) or GetCommandName(Name)
 	ui.Keys[Id] = Settings.Key or ui.Keys[Id] or Enum.KeyCode.None
-	
+
 	-- functions
 	local function update(v)
 		local last = ui.Keys[Id]
@@ -1275,7 +1263,7 @@ function NewKey(obj,Name:string,Id:string,Settings:{Key:EnumItem?,Function:()->(
 			label.Text = ui.Keys[Id].Name.." "
 		end
 	end
-	
+
 	table.insert(ui.KeyCalls,{Id = Id,Call = Settings.Function or function()end})
 
 	-- data
@@ -1509,9 +1497,9 @@ ui.Title = ` StandUI ({VERSION})`
 ui.StandUI = VERSION
 
 ui.Headers = {
-	["Roblox Admin Tools"] = ui.Utils.toImage(fetch("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Libraries/StandUI/Headers/RAT.lua")),
-	["Stand Minimalist"] = ui.Utils.toImage(fetch("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Libraries/StandUI/Headers/SM.lua")),
-	["Stand Nature"] = ui.Utils.toImage(fetch("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Libraries/StandUI/Headers/SN.lua")),
+	["Roblox Admin Tools"] = ui.Utils.toImage(require(script.Headers["Roblox Admin Tools"])), -- ui.Utils.toImage(loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Libraries/StandUI/Headers/RAT.lua"))()),
+	["Stand Minimalist"] = ui.Utils.toImage(require(script.Headers["Stand Minimalist"])), -- ui.Utils.toImage(loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Libraries/StandUI/Headers/SM.lua"))()),
+	["Stand Nature"] = ui.Utils.toImage(require(script.Headers["Stand Nature"])) -- ui.Utils.toImage(loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Libraries/StandUI/Headers/SN.lua"))()),
 }
 
 local folder = Instance.new("Folder",ui.Gui)
@@ -1607,10 +1595,10 @@ local RIGHT_DOWN = false
 
 connections.InputBegan = UIS.InputBegan:Connect(function(i,gp)
 	if ui.CommandBox then return end
-	
+
 	gp = gp or UIS:GetFocusedTextBox() and true or false
 	local k = i.KeyCode.Name ~= "None" and i.KeyCode or i.UserInputType.Name ~= "None" and i.UserInputType
-	
+
 	for i,v in pairs(ui.KeyCalls) do
 		if k == ui.Keys[v.Id] then sCall(v.Call,gp) end
 	end
@@ -1718,7 +1706,7 @@ connections.InputBegan = UIS.InputBegan:Connect(function(i,gp)
 			end
 		end
 	end
-	
+
 	if k == ui.Keys.KEY_TOGGLE then
 		ui.Open = not ui.Open
 		ui.Main.Visible = ui.Open

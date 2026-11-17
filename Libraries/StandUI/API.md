@@ -222,7 +222,7 @@ Setting's Table:
 | `Id` | References an existing internal UI color property | `string` |
 | `Default` | Initial color, defaults to black | `Color3` |
 | `Function` | Called with the current color | `function` |
-| `Command` | Provides the base name for the RGB commands | `{Name = string, Info = string?}` |
+| `Command` | Provides the base name for the RGB commands | `{string, string?}` |
 | `Inform` | Optional information setting | `string` |
 
 Initial color priority: Existing `Id` color > `Default` > black. A valid `Id` also updates the corresponding internal UI color.

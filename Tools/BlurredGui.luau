@@ -102,7 +102,7 @@ function BlurredGui.New(frame:Frame, shape:string?)
 
 	game:GetService("RunService"):BindToRenderStep("...", Enum.RenderPriority.Camera.Value + 1, function()
 		if not frame or not frame.Parent then
-			BlurredGui.Remove() -- removes all nil frames
+			BlurredGui.Remove(frame) -- removes all nil frames
 		else
 			blurPart.CFrame = camera.CFrame * CFrame.new(0,0,0)
 			BlurredGui.UpdateAll()
@@ -170,6 +170,7 @@ end
 
 function BlurredGui.Init(data)
 	if init then return end
+    data = data or {}
 	EXTRA = data.Extra or Vector3.new(0,0,0)
 	BLUR_SIZE = data.BlurSize or Vector2.new(10, 10)
 	PART_SIZE = data.PartSize or 0.01

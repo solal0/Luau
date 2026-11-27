@@ -8,7 +8,7 @@
 blocked = {}
 commands = {}
 connections = {}
-ui = {Tabs = {},Keys = {},KeyCalls = {},ToUnload = {}}
+ui = {Tabs = {},Keys = {},KeyCalls = {},OnUnload = {}}
 
 
 -- dependencies
@@ -1771,7 +1771,7 @@ ui.unload = function()
 	end
 	commands = {}
 	ui = {}
-    for i,v in pairs(ui.ToUnload) do
+    for i,v in pairs(ui.OnUnload) do
         if type(v) == "function" then
             sCall(v)
         end

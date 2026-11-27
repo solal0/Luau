@@ -1497,9 +1497,9 @@ ui.Title = ` StandUI ({VERSION})`
 ui.StandUI = VERSION
 
 ui.Headers = {
-	["Roblox Admin Tools"] = ui.Utils.toImage(require(script.Headers["Roblox Admin Tools"])), -- ui.Utils.toImage(loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Libraries/StandUI/Headers/RAT.lua"))()),
-	["Stand Minimalist"] = ui.Utils.toImage(require(script.Headers["Stand Minimalist"])), -- ui.Utils.toImage(loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Libraries/StandUI/Headers/SM.lua"))()),
-	["Stand Nature"] = ui.Utils.toImage(require(script.Headers["Stand Nature"])) -- ui.Utils.toImage(loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Libraries/StandUI/Headers/SN.lua"))()),
+	["Roblox Admin Tools"] = ui.Utils.toImage(loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Libraries/StandUI/Headers/RAT.lua"))()),
+	["Stand Minimalist"] = ui.Utils.toImage(loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Libraries/StandUI/Headers/SM.lua"))()),
+	["Stand Nature"] = ui.Utils.toImage(loadstring(game:HttpGet("https://raw.githubusercontent.com/solal0/Luau/refs/heads/main/Libraries/StandUI/Headers/SN.lua"))()),
 }
 
 local folder = Instance.new("Folder",ui.Gui)

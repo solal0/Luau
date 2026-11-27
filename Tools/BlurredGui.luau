@@ -141,8 +141,8 @@ function updateGui(blurObj)
 	local pos0 = rayPlaneIntersect(planeOrigin, planeNormal, ray0.Origin, ray0.Direction)
 	local pos1 = rayPlaneIntersect(planeOrigin, planeNormal, ray1.Origin, ray1.Direction)
 
-	local pos0 = camera.CFrame:PointToObjectSpace(pos0)
-	local pos1 = camera.CFrame:PointToObjectSpace(pos1)
+	pos0 = camera.CFrame:PointToObjectSpace(pos0)
+	pos1 = camera.CFrame:PointToObjectSpace(pos1)
 
 	local size   = pos1 - pos0
 	local center = (pos0 + pos1)/2
